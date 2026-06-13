@@ -1294,6 +1294,13 @@ function generateGroupStage(teams, sepA, sepB) {
     else groupB.push(rest[i]);
   }
   shuffle(groupA); shuffle(groupB);
+  // Poner 51 en posición 1 del grupo (posición 0 descansa en ronda 1 del round-robin)
+  for (var i = 0; i < groupA.length; i++) {
+    if (groupA[i].nombre === '51') {
+      if (i !== 1 && groupA.length > 1) { var tmp = groupA[1]; groupA[1] = groupA[i]; groupA[i] = tmp; }
+      break;
+    }
+  }
   var namesA = groupA.map(function(t){return t.nombre;});
   var namesB = groupB.map(function(t){return t.nombre;});
   var matchesA = roundRobin(namesA, 'GRUPO A');
@@ -1318,15 +1325,9 @@ function generateGroupStage(teams, sepA, sepB) {
     allMatches[i].numero = i + 1;
     minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
   }
-  // Semifinales y final
-  var h1 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-  minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
-  var h2 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-  minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
-  var h3 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:0,equipoA:'1ro Grupo A',equipoB:'2do Grupo B',horario:h1,scoreA:null,scoreB:null});
-  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:1,equipoA:'1ro Grupo B',equipoB:'2do Grupo A',horario:h2,scoreA:null,scoreB:null});
-  allMatches.push({fase:'FINAL',numero:allMatches.length+1,ronda:'final',pos:0,equipoA:'Por definir',equipoB:'Por definir',horario:h3,scoreA:null,scoreB:null});
+  // Final: 1ro de cada grupo
+  var hf = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  allMatches.push({fase:'FINAL',numero:allMatches.length+1,ronda:'final',pos:0,equipoA:'1ro Grupo A',equipoB:'1ro Grupo B',horario:hf,scoreA:null,scoreB:null});
   if (!data.fixture) data.fixture = {};
   data.fixture[fixtureSport] = allMatches;
   if (!data.groups) data.groups = {};
