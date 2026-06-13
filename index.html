@@ -722,18 +722,6 @@ function renderAll() {
 }
 
 var data = loadData();
-
-// ── Inyectar J48 si no existe ──
-(function(){
-  var found = false;
-  for(var i=0;i<data.teams.length;i++){if(data.teams[i]&&data.teams[i].nombre==='J48'){found=true;break;}}
-  if(!found){
-    data.teams.push({id:data.teams.length,nombre:"J48",deporte:"futbol-masc",capitan:"Álvaro Gaston",contacto:"",status:"pendiente",jugadores:[{nombre:"Álvaro Gaston",numero:""},{nombre:"Ricardo Florentin",numero:""},{nombre:"Víctor Zacarías",numero:""},{nombre:"Toniño",numero:""},{nombre:"Alcides Cantero",numero:""},{nombre:"Axel Mendoza",numero:""},{nombre:"Cristhian Cubilla",numero:""},{nombre:"Mathias Dibujito",numero:""},{nombre:"Mathias Pika",numero:""},{nombre:"Alfalfa",numero:""},{nombre:"Hugo Bazán",numero:""},{nombre:"Ivan Davalos",numero:""},{nombre:"Alex Flores",numero:""}]});
-    saveData(data, true);
-    console.log('J48 inyectado automáticamente');
-  }
-})();
-
 var currentUser = null;
 
 // NAV
@@ -1146,6 +1134,15 @@ function openSorteoModal() {
   }
   document.getElementById('sepTeamA').innerHTML = optA;
   document.getElementById('sepTeamB').innerHTML = optB;
+  // Auto-seleccionar J48 y J43 como separados en fútbol masculino
+  if (fixtureSport === 'futbol-masc') {
+    var hasJ48 = teams.some(function(t){return t.nombre==='J48'});
+    var hasJ43 = teams.some(function(t){return t.nombre.indexOf('J43')===0});
+    if (hasJ48 && hasJ43) {
+      document.getElementById('sepTeamA').value = 'J48';
+      document.getElementById('sepTeamB').value = teams.find(function(t){return t.nombre.indexOf('J43')===0}).nombre;
+    }
+  }
   document.getElementById('sorteoModal').classList.add('show');
 }
 function closeSorteoModal() { document.getElementById('sorteoModal').classList.remove('show'); }
@@ -1220,6 +1217,28 @@ function generateFixture() {
 
   shuffle(topHalf);
   shuffle(botHalf);
+
+  // Asegurar que "51" juegue el primer partido (posición 0 del bracket)
+  if (fixtureSport === 'futbol-masc') {
+    var idx51 = -1;
+    for (var i = 0; i < topHalf.length; i++) {
+      if (topHalf[i].nombre === '51') { idx51 = i; break; }
+    }
+    if (idx51 > 0) {
+      var tmp = topHalf[0]; topHalf[0] = topHalf[idx51]; topHalf[idx51] = tmp;
+    } else if (idx51 === -1) {
+      // Buscar en botHalf y moverlo a topHalf[0]
+      for (var i = 0; i < botHalf.length; i++) {
+        if (botHalf[i].nombre === '51') {
+          var team51 = botHalf.splice(i, 1)[0];
+          var moved = topHalf[0];
+          topHalf[0] = team51;
+          botHalf.push(moved);
+          break;
+        }
+      }
+    }
+  }
 
   // Llenar con BYEs hasta completar la mitad
   while (topHalf.length < halfSize) topHalf.push({ nombre: '(BYE)', isBye: true });
