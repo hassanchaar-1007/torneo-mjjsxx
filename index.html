@@ -376,9 +376,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="section-title">👥 Equipos Inscritos</div>
     <div class="fixture-sport-tabs" id="equipos-sport-tabs">
       <button class="active" onclick="filterEquipos('todos')">Todos</button>
-      <button onclick="filterEquipos('futbol')">⚽ Fútbol</button>
-      <button onclick="filterEquipos('voley')">🏐 Volleyball</button>
-      <button onclick="filterEquipos('padel')">🏓 Padel</button>
+      <button onclick="filterEquipos('futbol-masc')">⚽ Fút. Masc</button>
+      <button onclick="filterEquipos('futbol-fem')">⚽ Fút. Fem</button>
+      <button onclick="filterEquipos('voley')">🏐 Vóley</button>
+      <button onclick="filterEquipos('padel')">🏓 Pádel</button>
     </div>
     <div id="equipos-list"></div>
     <div id="equipos-empty" class="card" style="text-align:center;display:none;">
@@ -401,9 +402,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   <div class="section-page">
     <div class="section-title">🏆 Fixture</div>
     <div class="fixture-sport-tabs" id="fixture-sport-tabs">
-      <button class="active" onclick="switchFixtureSport('futbol')">⚽ Fútbol</button>
-      <button onclick="switchFixtureSport('voley')">🏐 Volleyball</button>
-      <button onclick="switchFixtureSport('padel')">🏓 Padel</button>
+      <button class="active" onclick="switchFixtureSport('futbol-masc')">⚽ Fút. Masc</button>
+      <button onclick="switchFixtureSport('futbol-fem')">⚽ Fút. Fem</button>
+      <button onclick="switchFixtureSport('voley')">🏐 Vóley</button>
+      <button onclick="switchFixtureSport('padel')">🏓 Pádel</button>
     </div>
     <div id="fixture-content"></div>
     <div id="fixture-empty" class="card" style="text-align:center;display:none;">
@@ -719,6 +721,7 @@ function renderAll() {
   try { renderEquipos(); } catch(e) {}
   try { renderFixture(); } catch(e) {}
   try { renderGoleadores(); } catch(e) {}
+  try { updateTabCounts(); } catch(e) {}
 }
 
 var data = loadData();
@@ -886,7 +889,7 @@ var equiposFilter = 'todos';
 function filterEquipos(f) {
   equiposFilter = f;
   var btns = document.querySelectorAll('#equipos-sport-tabs button');
-  var fs = ['todos','futbol','voley','padel'];
+  var fs = ['todos','futbol-masc','futbol-fem','voley','padel'];
   for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', fs[i] === f);
   renderEquipos();
 }
@@ -897,10 +900,11 @@ function renderEquipos() {
   var teams = data.teams;
   if (equiposFilter !== 'todos') {
     teams = teams.filter(function(t) {
-      if (equiposFilter === 'futbol') return t.deporte === 'futbol-masc' || t.deporte === 'futbol-fem';
       return t.deporte === equiposFilter;
     });
   }
+  // Actualizar contadores en pestañas de equipos
+  updateTabCounts();
   if (teams.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   var sl = { 'futbol-masc':'⚽ Fútbol Masc', 'futbol-fem':'⚽ Fútbol Fem', voley:'🏐 Volleyball', padel:'🏓 Padel' };
@@ -944,6 +948,33 @@ function renderEquipos() {
   var backupSection = document.getElementById('admin-backup-section');
   if (backupSection) backupSection.style.display = isAdmin() ? 'block' : 'none';
 }
+function updateTabCounts() {
+  var d = loadData();
+  var counts = {'futbol-masc':0,'futbol-fem':0,'voley':0,'padel':0};
+  for (var i = 0; i < d.teams.length; i++) {
+    var dep = d.teams[i].deporte;
+    if (counts[dep] !== undefined) counts[dep]++;
+  }
+  var total = d.teams.length;
+  // Equipos tabs
+  var eBtns = document.querySelectorAll('#equipos-sport-tabs button');
+  var eKeys = ['todos','futbol-masc','futbol-fem','voley','padel'];
+  var eLabels = ['Todos','⚽ Fút. Masc','⚽ Fút. Fem','🏐 Vóley','🏓 Pádel'];
+  for (var i = 0; i < eBtns.length && i < eKeys.length; i++) {
+    var c = eKeys[i] === 'todos' ? total : counts[eKeys[i]];
+    eBtns[i].textContent = '';
+    eBtns[i].innerHTML = eLabels[i] + ' <span style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px;font-size:11px;margin-left:4px;">' + c + '</span>';
+  }
+  // Fixture tabs
+  var fBtns = document.querySelectorAll('#fixture-sport-tabs button');
+  var fKeys = ['futbol-masc','futbol-fem','voley','padel'];
+  var fLabels = ['⚽ Fút. Masc','⚽ Fút. Fem','🏐 Vóley','🏓 Pádel'];
+  for (var i = 0; i < fBtns.length && i < fKeys.length; i++) {
+    var c = counts[fKeys[i]];
+    fBtns[i].innerHTML = fLabels[i] + ' <span style="background:rgba(255,255,255,0.15);padding:1px 6px;border-radius:8px;font-size:11px;margin-left:4px;">' + c + '</span>';
+  }
+}
+
 function toggleJugadores(teamId) {
   var el = document.getElementById('jug-' + teamId);
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
@@ -1079,11 +1110,11 @@ function deleteTeam(id) {
 }
 
 // FIXTURE
-var fixtureSport = 'futbol';
+var fixtureSport = 'futbol-masc';
 function switchFixtureSport(sport) {
   fixtureSport = sport;
   var btns = document.querySelectorAll('#fixture-sport-tabs button');
-  var ss = ['futbol','voley','padel'];
+  var ss = ['futbol-masc','futbol-fem','voley','padel'];
   for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', ss[i] === sport);
   renderFixture();
 }
@@ -1150,7 +1181,6 @@ function closeSorteoModal() { document.getElementById('sorteoModal').classList.r
 function getTeamsForSport(sport) {
   data = loadData();
   return data.teams.filter(function(t) {
-    if (sport === 'futbol') return t.deporte === 'futbol-masc' || t.deporte === 'futbol-fem';
     return t.deporte === sport;
   });
 }
