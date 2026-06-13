@@ -178,6 +178,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   .price-hero { font-size: 32px; }
   .info-grid { grid-template-columns: 1fr; }
 }
+.group-section { margin-bottom: 18px; }
+.group-title { color: var(--teal); font-size: 16px; margin: 12px 0 6px; border-bottom: 2px solid var(--teal); padding-bottom: 4px; }
+.group-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px; }
+.group-table th { background: var(--teal); color: var(--navy); padding: 6px 4px; text-align: center; font-weight: 700; }
+.group-table td { padding: 5px 4px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--w80); }
+.group-table td:nth-child(2) { text-align: left; font-weight: 600; color: var(--white); }
+.group-table tr.qualifies td { background: rgba(0,212,170,0.1); }
+.group-table tr.qualifies td:nth-child(2) { color: var(--teal); }
+.group-table .pts { color: var(--gold); font-weight: 800; font-size: 14px; }
+.fase-divider { color: var(--gold); font-size: 15px; font-weight: 700; margin: 18px 0 8px; padding: 6px 12px; background: rgba(255,215,0,0.08); border-radius: 8px; border-left: 3px solid var(--gold); }
 </style>
 </head>
 <body>
@@ -1118,6 +1128,37 @@ function switchFixtureSport(sport) {
   for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', ss[i] === sport);
   renderFixture();
 }
+function calcGroupStandings(groupTeams, matches) {
+  var stats = {};
+  for (var i = 0; i < groupTeams.length; i++) {
+    stats[groupTeams[i]] = {pj:0,pg:0,pe:0,pp:0,gf:0,gc:0,pts:0};
+  }
+  for (var i = 0; i < matches.length; i++) {
+    var m = matches[i];
+    if (m.scoreA === null || m.scoreA === undefined) continue;
+    if (!stats[m.equipoA] || !stats[m.equipoB]) continue;
+    stats[m.equipoA].pj++; stats[m.equipoB].pj++;
+    stats[m.equipoA].gf += m.scoreA; stats[m.equipoA].gc += m.scoreB;
+    stats[m.equipoB].gf += m.scoreB; stats[m.equipoB].gc += m.scoreA;
+    if (m.scoreA > m.scoreB) {
+      stats[m.equipoA].pg++; stats[m.equipoA].pts += 3; stats[m.equipoB].pp++;
+    } else if (m.scoreA < m.scoreB) {
+      stats[m.equipoB].pg++; stats[m.equipoB].pts += 3; stats[m.equipoA].pp++;
+    } else {
+      stats[m.equipoA].pe++; stats[m.equipoA].pts += 1;
+      stats[m.equipoB].pe++; stats[m.equipoB].pts += 1;
+    }
+  }
+  var sorted = groupTeams.slice().sort(function(a,b) {
+    var sa = stats[a], sb = stats[b];
+    if (sb.pts !== sa.pts) return sb.pts - sa.pts;
+    var da = sa.gf - sa.gc, db = sb.gf - sb.gc;
+    if (db !== da) return db - da;
+    return sb.gf - sa.gf;
+  });
+  return {order: sorted, stats: stats};
+}
+
 function renderFixture() {
   data = loadData();
   var content = document.getElementById('fixture-content');
@@ -1131,8 +1172,30 @@ function renderFixture() {
   }
   empty.style.display = 'none';
   var html = '';
+  var groups = (data.groups && data.groups[fixtureSport]) || null;
+  if (groups) {
+    for (var g = 0; g < groups.length; g++) {
+      var grp = groups[g];
+      var gMatches = matches.filter(function(m){return m.fase === grp.name;});
+      var st = calcGroupStandings(grp.teams, gMatches);
+      html += '<div class="group-section"><h3 class="group-title">' + esc(grp.name) + '</h3>';
+      html += '<table class="group-table"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead><tbody>';
+      for (var i = 0; i < st.order.length; i++) {
+        var t = st.order[i], s = st.stats[t], dg = s.gf - s.gc;
+        html += '<tr' + (i < 2 ? ' class="qualifies"' : '') + '><td>' + (i+1) + '</td><td>' + esc(t) + '</td>';
+        html += '<td>'+s.pj+'</td><td>'+s.pg+'</td><td>'+s.pe+'</td><td>'+s.pp+'</td>';
+        html += '<td>'+s.gf+'</td><td>'+s.gc+'</td><td>'+(dg>0?'+':'')+dg+'</td><td class="pts">'+s.pts+'</td></tr>';
+      }
+      html += '</tbody></table></div>';
+    }
+  }
+  var lastFase = '';
   for (var i = 0; i < matches.length; i++) {
     var m = matches[i];
+    if (m.fase !== lastFase) {
+      lastFase = m.fase;
+      html += '<div class="fase-divider">' + esc(m.fase) + '</div>';
+    }
     var sh = '';
     if (m.scoreA !== undefined && m.scoreA !== null) {
       sh = '<div class="match-result">' + m.scoreA + ' - ' + m.scoreB + '</div>';
@@ -1144,7 +1207,7 @@ function renderFixture() {
       sh = '<div style="text-align:center;color:var(--w30);font-size:13px;margin-top:6px;">Por jugar</div>';
     }
     html += '<div class="match-card"><div class="match-header">' +
-      '<span class="match-phase">'+esc(m.fase)+'</span><span class="match-time">'+esc(m.horario||'')+'</span></div>' +
+      '<span class="match-phase">'+esc(m.fase)+(m.jornada?' - J'+m.jornada:'')+'</span><span class="match-time">'+esc(m.horario||'')+'</span></div>' +
       '<div class="match-teams"><div class="match-team">'+esc(m.equipoA||'Por definir')+'</div>' +
       '<div class="match-vs">VS</div><div class="match-team">'+esc(m.equipoB||'Por definir')+'</div></div>'+sh+'</div>';
   }
@@ -1193,18 +1256,87 @@ function shuffle(arr) {
   return arr;
 }
 
-function generateFixture() {
-  data = loadData();
-  var teams = getTeamsForSport(fixtureSport);
-  if (teams.length < 2) { toast('Se necesitan al menos 2 equipos'); return; }
+function roundRobin(teamNames, groupName) {
+  var list = teamNames.slice();
+  if (list.length % 2 !== 0) list.push('(BYE)');
+  var n = list.length, rounds = n - 1, half = n / 2;
+  var matches = [];
+  for (var r = 0; r < rounds; r++) {
+    for (var i = 0; i < half; i++) {
+      var home = list[i], away = list[n - 1 - i];
+      if (home === '(BYE)' || away === '(BYE)') continue;
+      matches.push({fase: groupName, jornada: r+1, equipoA: home, equipoB: away, scoreA: null, scoreB: null, ronda: 'grupo'});
+    }
+    var last = list.pop(); list.splice(1, 0, last);
+  }
+  return matches;
+}
 
-  var sepA = document.getElementById('sepTeamA').value;
-  var sepB = document.getElementById('sepTeamB').value;
-  if (sepA && sepB && sepA === sepB) { toast('Elegí dos equipos diferentes'); return; }
+function generateGroupStage(teams, sepA, sepB) {
+  var groupA = [], groupB = [], rest = [];
+  var tSepA = null, tSepB = null;
+  for (var i = 0; i < teams.length; i++) {
+    if (sepA && teams[i].nombre === sepA) tSepA = teams[i];
+    else if (sepB && teams[i].nombre === sepB) tSepB = teams[i];
+    else rest.push(teams[i]);
+  }
+  shuffle(rest);
+  if (tSepA) groupA.push(tSepA);
+  if (tSepB) groupB.push(tSepB);
+  // Poner 51 en grupo A
+  for (var i = rest.length - 1; i >= 0; i--) {
+    if (rest[i].nombre === '51') { groupA.push(rest.splice(i,1)[0]); break; }
+  }
+  // Distribuir resto equilibradamente
+  var halfA = Math.ceil(teams.length / 2);
+  for (var i = 0; i < rest.length; i++) {
+    if (groupA.length < halfA) groupA.push(rest[i]);
+    else groupB.push(rest[i]);
+  }
+  shuffle(groupA); shuffle(groupB);
+  var namesA = groupA.map(function(t){return t.nombre;});
+  var namesB = groupB.map(function(t){return t.nombre;});
+  var matchesA = roundRobin(namesA, 'GRUPO A');
+  var matchesB = roundRobin(namesB, 'GRUPO B');
+  // Asegurar 51 en el primer partido
+  for (var i = 0; i < matchesA.length; i++) {
+    if (matchesA[i].equipoA === '51' || matchesA[i].equipoB === '51') {
+      if (i > 0) { var tmp = matchesA[0]; matchesA[0] = matchesA[i]; matchesA[i] = tmp; }
+      break;
+    }
+  }
+  // Intercalar partidos de ambos grupos
+  var allMatches = [];
+  var maxLen = Math.max(matchesA.length, matchesB.length);
+  for (var i = 0; i < maxLen; i++) {
+    if (i < matchesA.length) allMatches.push(matchesA[i]);
+    if (i < matchesB.length) allMatches.push(matchesB[i]);
+  }
+  var hora = 8, minuto = 0;
+  for (var i = 0; i < allMatches.length; i++) {
+    allMatches[i].horario = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+    allMatches[i].numero = i + 1;
+    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+  }
+  // Semifinales y final
+  var h1 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+  var h2 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+  var h3 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:0,equipoA:'1ro Grupo A',equipoB:'2do Grupo B',horario:h1,scoreA:null,scoreB:null});
+  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:1,equipoA:'1ro Grupo B',equipoB:'2do Grupo A',horario:h2,scoreA:null,scoreB:null});
+  allMatches.push({fase:'FINAL',numero:allMatches.length+1,ronda:'final',pos:0,equipoA:'Por definir',equipoB:'Por definir',horario:h3,scoreA:null,scoreB:null});
+  if (!data.fixture) data.fixture = {};
+  data.fixture[fixtureSport] = allMatches;
+  if (!data.groups) data.groups = {};
+  data.groups[fixtureSport] = [{name:'GRUPO A',teams:namesA},{name:'GRUPO B',teams:namesB}];
+  saveData(data);
+  renderFixture();
+  toast('🎲 Fase de grupos: ' + namesA.length + ' + ' + namesB.length + ' equipos');
+}
 
-  closeSorteoModal();
-
-  // Calcular tamaño del cuadro (potencia de 2)
+function generateBracket(teams, sepA, sepB) {
   var bracketSize = 2;
   while (bracketSize < teams.length) bracketSize *= 2;
   var totalRounds = Math.log2(bracketSize);
@@ -1214,138 +1346,103 @@ function generateFixture() {
   else if (totalRounds === 3) roundNames = ['Cuartos de Final', 'Semifinal', 'FINAL'];
   else if (totalRounds === 4) roundNames = ['Octavos de Final', 'Cuartos de Final', 'Semifinal', 'FINAL'];
   else roundNames = ['Ronda 1', 'Cuartos de Final', 'Semifinal', 'FINAL'];
-
-  // Separar equipos en 2 mitades del cuadro
   var topHalf = [], botHalf = [], rest = [];
   var teamSepA = null, teamSepB = null;
-
   for (var i = 0; i < teams.length; i++) {
     if (sepA && teams[i].nombre === sepA) teamSepA = teams[i];
     else if (sepB && teams[i].nombre === sepB) teamSepB = teams[i];
     else rest.push(teams[i]);
   }
-
   shuffle(rest);
-
   var halfSize = bracketSize / 2;
   var topSlots = halfSize, botSlots = halfSize;
-
-  // Poner equipos separados en mitades opuestas
   if (teamSepA) { topHalf.push(teamSepA); topSlots--; }
   if (teamSepB) { botHalf.push(teamSepB); botSlots--; }
-
-  // Distribuir el resto alternando
   for (var i = 0; i < rest.length; i++) {
-    if (topHalf.length < topSlots && (topHalf.length <= botHalf.length || botHalf.length >= botSlots)) {
-      topHalf.push(rest[i]);
-    } else if (botHalf.length < botSlots) {
-      botHalf.push(rest[i]);
-    } else {
-      topHalf.push(rest[i]);
-    }
+    if (topHalf.length < topSlots && (topHalf.length <= botHalf.length || botHalf.length >= botSlots)) topHalf.push(rest[i]);
+    else if (botHalf.length < botSlots) botHalf.push(rest[i]);
+    else topHalf.push(rest[i]);
   }
-
-  shuffle(topHalf);
-  shuffle(botHalf);
-
-  // Asegurar que "51" juegue el primer partido (posición 0 del bracket)
+  shuffle(topHalf); shuffle(botHalf);
+  // 51 juega primero
   if (fixtureSport === 'futbol-masc') {
     var idx51 = -1;
-    for (var i = 0; i < topHalf.length; i++) {
-      if (topHalf[i].nombre === '51') { idx51 = i; break; }
-    }
-    if (idx51 > 0) {
-      var tmp = topHalf[0]; topHalf[0] = topHalf[idx51]; topHalf[idx51] = tmp;
-    } else if (idx51 === -1) {
-      // Buscar en botHalf y moverlo a topHalf[0]
+    for (var i = 0; i < topHalf.length; i++) { if (topHalf[i].nombre === '51') { idx51 = i; break; } }
+    if (idx51 > 0) { var tmp = topHalf[0]; topHalf[0] = topHalf[idx51]; topHalf[idx51] = tmp; }
+    else if (idx51 === -1) {
       for (var i = 0; i < botHalf.length; i++) {
-        if (botHalf[i].nombre === '51') {
-          var team51 = botHalf.splice(i, 1)[0];
-          var moved = topHalf[0];
-          topHalf[0] = team51;
-          botHalf.push(moved);
-          break;
-        }
+        if (botHalf[i].nombre === '51') { var t51 = botHalf.splice(i,1)[0]; var mv = topHalf[0]; topHalf[0] = t51; botHalf.push(mv); break; }
       }
     }
   }
-
-  // Llenar con BYEs hasta completar la mitad
-  while (topHalf.length < halfSize) topHalf.push({ nombre: '(BYE)', isBye: true });
-  while (botHalf.length < halfSize) botHalf.push({ nombre: '(BYE)', isBye: true });
-
-  // Armar bracket completo: top + bottom
+  while (topHalf.length < halfSize) topHalf.push({nombre:'(BYE)',isBye:true});
+  while (botHalf.length < halfSize) botHalf.push({nombre:'(BYE)',isBye:true});
   var bracket = topHalf.concat(botHalf);
-
-  // Generar partidos de primera ronda
-  var matches = [];
-  var hora = 8, minuto = 0;
-  var firstRoundCount = bracketSize / 2;
-  var matchNum = 1;
-
+  var matches = [], hora = 8, minuto = 0, matchNum = 1, firstRoundCount = bracketSize / 2;
   for (var i = 0; i < firstRoundCount; i++) {
     var a = bracket[i*2], b = bracket[i*2+1];
-    // Si ambos son BYE, saltar
     if (a.isBye && b.isBye) continue;
+    if (a.isBye || b.isBye) continue;
     var h = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-    if (a.isBye || b.isBye) {
-      // El equipo real pasa directo - no generar partido
-      continue;
-    }
-    matches.push({
-      fase: roundNames[0], numero: matchNum, ronda: 0, pos: i,
-      equipoA: a.nombre, equipoB: b.nombre,
-      horario: h, scoreA: null, scoreB: null
-    });
-    matchNum++;
-    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+    matches.push({fase:roundNames[0],numero:matchNum,ronda:0,pos:i,equipoA:a.nombre,equipoB:b.nombre,horario:h,scoreA:null,scoreB:null});
+    matchNum++; minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
   }
-
-  // Generar rondas siguientes
   for (var r = 1; r < totalRounds; r++) {
-    var prevRoundSize = bracketSize / Math.pow(2, r);
-    var thisRoundSize = prevRoundSize / 2;
+    var prevRoundSize = bracketSize / Math.pow(2,r), thisRoundSize = prevRoundSize / 2;
     for (var i = 0; i < thisRoundSize; i++) {
       var h = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-      // Ver si alguno de los participantes ya avanza por BYE
-      var slotA = i * 2, slotB = i * 2 + 1;
-      var prevA1 = bracket[slotA * Math.pow(2, r)];
-      var prevA2 = bracket[slotA * Math.pow(2, r) + Math.pow(2, r-1)];
-      var prevB1 = bracket[slotB * Math.pow(2, r)];
-      var prevB2 = bracket[slotB * Math.pow(2, r) + Math.pow(2, r-1)];
-
-      var nameA = 'Por definir', nameB = 'Por definir';
-
-      // Si en la ronda anterior uno era BYE, el otro pasa directo
-      if (prevA1 && prevA2) {
-        if (prevA1.isBye && !prevA2.isBye) nameA = prevA2.nombre;
-        else if (!prevA1.isBye && prevA2.isBye) nameA = prevA1.nombre;
-        else if (prevA1.isBye && prevA2.isBye) nameA = '(BYE)';
-      }
-      if (prevB1 && prevB2) {
-        if (prevB1.isBye && !prevB2.isBye) nameB = prevB2.nombre;
-        else if (!prevB1.isBye && prevB2.isBye) nameB = prevB1.nombre;
-        else if (prevB1.isBye && prevB2.isBye) nameB = '(BYE)';
-      }
-
-      if (nameA === '(BYE)' && nameB === '(BYE)') continue;
-      if (nameA === '(BYE)' || nameB === '(BYE)') continue;
-
-      matches.push({
-        fase: roundNames[r] || 'Ronda ' + (r+1), numero: matchNum, ronda: r, pos: i,
-        equipoA: nameA, equipoB: nameB,
-        horario: h, scoreA: null, scoreB: null
-      });
-      matchNum++;
-      minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+      var slotA = i*2, slotB = i*2+1;
+      var pA1 = bracket[slotA*Math.pow(2,r)], pA2 = bracket[slotA*Math.pow(2,r)+Math.pow(2,r-1)];
+      var pB1 = bracket[slotB*Math.pow(2,r)], pB2 = bracket[slotB*Math.pow(2,r)+Math.pow(2,r-1)];
+      var nA = 'Por definir', nB = 'Por definir';
+      if (pA1&&pA2){if(pA1.isBye&&!pA2.isBye)nA=pA2.nombre;else if(!pA1.isBye&&pA2.isBye)nA=pA1.nombre;else if(pA1.isBye&&pA2.isBye)nA='(BYE)';}
+      if (pB1&&pB2){if(pB1.isBye&&!pB2.isBye)nB=pB2.nombre;else if(!pB1.isBye&&pB2.isBye)nB=pB1.nombre;else if(pB1.isBye&&pB2.isBye)nB='(BYE)';}
+      if (nA==='(BYE)'&&nB==='(BYE)') continue;
+      if (nA==='(BYE)'||nB==='(BYE)') continue;
+      matches.push({fase:roundNames[r]||'Ronda '+(r+1),numero:matchNum,ronda:r,pos:i,equipoA:nA,equipoB:nB,horario:h,scoreA:null,scoreB:null});
+      matchNum++; minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
     }
   }
-
   if (!data.fixture) data.fixture = {};
   data.fixture[fixtureSport] = matches;
-  saveData(data);
-  renderFixture();
+  saveData(data); renderFixture();
   toast('🎲 Fixture sorteado: ' + matches.length + ' partidos');
+}
+
+function generateFixture() {
+  data = loadData();
+  var teams = getTeamsForSport(fixtureSport);
+  if (teams.length < 2) { toast('Se necesitan al menos 2 equipos'); return; }
+  var sepA = document.getElementById('sepTeamA').value;
+  var sepB = document.getElementById('sepTeamB').value;
+  if (sepA && sepB && sepA === sepB) { toast('Elegí dos equipos diferentes'); return; }
+  closeSorteoModal();
+  // Fútbol masculino con 6+ equipos: fase de grupos
+  if (fixtureSport === 'futbol-masc' && teams.length >= 6) {
+    generateGroupStage(teams, sepA, sepB);
+  } else if (fixtureSport === 'voley') {
+    generateAllVsAll(teams);
+  } else {
+    generateBracket(teams, sepA, sepB);
+  }
+}
+
+function generateAllVsAll(teams) {
+  var names = teams.map(function(t){return t.nombre;});
+  shuffle(names);
+  var matches = roundRobin(names, 'TODOS VS TODOS');
+  var hora = 8, minuto = 0;
+  for (var i = 0; i < matches.length; i++) {
+    matches[i].horario = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+    matches[i].numero = i + 1;
+    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+  }
+  if (!data.fixture) data.fixture = {};
+  data.fixture[fixtureSport] = matches;
+  if (!data.groups) data.groups = {};
+  data.groups[fixtureSport] = [{name:'TODOS VS TODOS', teams: names}];
+  saveData(data); renderFixture();
+  toast('🏐 Todos contra todos: ' + names.length + ' equipos, ' + matches.length + ' partidos');
 }
 function saveScore(sport,idx) {
   var a=document.getElementById('sA-'+sport+'-'+idx), b=document.getElementById('sB-'+sport+'-'+idx);
@@ -1355,7 +1452,7 @@ function saveScore(sport,idx) {
 }
 function resetFixture(sport) {
   openPwModal('Reiniciar fixture de '+sport, function(){
-    data=loadData(); if(data.fixture)data.fixture[sport]=[]; saveData(data); renderFixture(); toast('Fixture reiniciado');
+    data=loadData(); if(data.fixture)data.fixture[sport]=[]; if(data.groups)delete data.groups[sport]; saveData(data); renderFixture(); toast('Fixture reiniciado');
   });
 }
 
