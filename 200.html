@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Torneo de Integración 2026 — M.J.J.S.XX.</title>
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Torneo 2026">
+<meta name="theme-color" content="#0a0f28">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<style>
+:root {
+  --navy: #0a0f28;
+  --navy2: #0e1438;
+  --navy3: #121a42;
+  --neon: #00e676;
+  --neon-dim: #00783e;
+  --teal: #00bcd4;
+  --gold: #ffc828;
+  --gold-dim: #b89020;
+  --amber: #ffa000;
+  --purple: #8250c8;
+  --blue-e: #1e88e5;
+  --white: #fff;
+  --w80: #d2dce8;
+  --w50: #8c9bb4;
+  --w30: #465068;
+  --danger: #ef5350;
+  --success: #66bb6a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+
+/* ═══ NAV ═══ */
+.top-bar { position: sticky; top: 0; z-index: 100; background: rgba(10,15,40,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--w30); padding: 8px 12px; display: flex; align-items: center; gap: 8px; }
+.logo-mini { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; white-space: nowrap; }
+.logo-mini .cross-mini { width: 26px; height: 26px; flex: none; border-radius: 50%; }
+.nav-tabs { display: flex; gap: 3px; overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1; }
+.nav-tabs button { background: none; border: none; color: var(--w50); font-size: 12px; padding: 5px 9px; border-radius: 8px; cursor: pointer; white-space: nowrap; font-weight: 600; transition: all 0.2s; }
+.nav-tabs button.active { background: var(--neon); color: var(--navy); }
+.nav-tabs button:hover:not(.active) { color: var(--white); }
+.user-badge { font-size: 11px; color: var(--neon); background: rgba(0,230,118,0.1); padding: 4px 10px; border-radius: 12px; cursor: pointer; border: 1px solid var(--neon-dim); white-space: nowrap; flex: none; }
+
+/* ═══ PAGES ═══ */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ═══ HERO / FLYER ═══ */
+.hero { text-align: center; padding: 40px 20px 30px; background: linear-gradient(180deg, var(--navy) 0%, var(--navy3) 50%, var(--navy) 100%); position: relative; overflow: hidden; max-width: 520px; margin: 0 auto; }
+.hero::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; border: 1px solid rgba(0,230,118,0.08); border-radius: 50%; }
+.hero::after { content: ''; position: absolute; bottom: -80px; left: -80px; width: 200px; height: 200px; border: 1px solid rgba(0,230,118,0.06); border-radius: 50%; }
+.hero .label-sm { font-size: 14px; font-weight: 700; color: var(--neon); letter-spacing: 3px; text-transform: uppercase; }
+.hero .roman { font-size: 80px; font-weight: 900; line-height: 1; margin: 8px 0 0; color: var(--white); }
+.hero .title-main { font-size: 36px; font-weight: 800; line-height: 1.1; }
+.hero .title-accent { color: var(--neon); }
+.hero .year { font-size: 52px; font-weight: 900; color: var(--gold); margin: 4px 0 16px; }
+.cross-logo { margin: 0 auto 8px; }
+.hero .org-name { font-size: 14px; color: var(--w80); letter-spacing: 2px; font-family: monospace; }
+.hero-sep { width: 60%; max-width: 300px; height: 1px; background: var(--neon); margin: 20px auto; opacity: 0.5; }
+
+.sports-band { display: flex; justify-content: center; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+.sport-chip { background: rgba(0,230,118,0.1); border: 1px solid var(--neon-dim); padding: 8px 20px; border-radius: 20px; font-size: 15px; font-weight: 700; letter-spacing: 1px; }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px auto; text-align: left; }
+.info-card { background: rgba(255,255,255,0.04); border: 1px solid var(--w30); border-radius: 12px; padding: 14px; }
+.info-card .lbl { font-size: 11px; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
+.info-card .val { font-size: 18px; font-weight: 700; }
+.info-card .sub { font-size: 12px; color: var(--w50); margin-top: 2px; }
+
+.price-hero { font-size: 40px; font-weight: 900; color: var(--gold); margin: 16px 0 4px; }
+.price-label { font-size: 12px; color: var(--teal); text-transform: uppercase; letter-spacing: 2px; }
+
+.cantina-section { max-width: 400px; margin: 20px auto 0; }
+.cantina-title { font-size: 13px; color: var(--teal); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px; }
+.cantina-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted var(--w30); font-size: 14px; }
+.cantina-item .c-price { color: var(--gold); font-weight: 700; }
+
+.contact-row { margin-top: 20px; font-size: 15px; color: var(--w80); }
+.contact-row strong { color: var(--white); }
+
+.cta-inscripcion { display: inline-block; margin-top: 24px; background: var(--neon); color: var(--navy); font-size: 18px; font-weight: 800; padding: 14px 40px; border-radius: 30px; text-decoration: none; cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(0,230,118,0.3); }
+.cta-inscripcion:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(0,230,118,0.4); }
+
+/* ═══ MODALS ═══ */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal { background: var(--navy2); border: 1px solid var(--w30); border-radius: 20px; padding: 30px; width: 90%; max-width: 380px; text-align: center; }
+.modal h2 { font-size: 22px; margin-bottom: 16px; }
+.modal input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--w30); background: var(--navy); color: var(--white); font-size: 18px; text-align: center; margin: 8px 0; outline: none; font-family: inherit; }
+.modal input:focus { border-color: var(--neon); }
+.modal .btn-row { display: flex; gap: 8px; margin-top: 16px; }
+.modal .btn-row button { flex: 1; }
+.modal .error { color: var(--danger); font-size: 13px; margin-top: 8px; min-height: 18px; }
+
+/* ═══ BUTTONS ═══ */
+.btn { padding: 10px 20px; border-radius: 12px; font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s; }
+.btn-primary { background: var(--neon); color: var(--navy); }
+.btn-primary:hover { background: #00f080; }
+.btn-secondary { background: var(--w30); color: var(--white); }
+.btn-danger { background: var(--danger); color: var(--white); }
+.btn-gold { background: var(--gold); color: var(--navy); }
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: 8px; }
+.btn-block { width: 100%; }
+
+/* ═══ FORMS ═══ */
+.form-group { margin-bottom: 16px; text-align: left; }
+.form-group label { display: block; font-size: 12px; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 6px; }
+.form-group input, .form-group select { width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--w30); background: var(--navy); color: var(--white); font-size: 15px; outline: none; font-family: inherit; }
+.form-group input:focus, .form-group select:focus { border-color: var(--neon); }
+.form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238c9bb4' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+
+/* ═══ SECTION ═══ */
+.section-page { padding: 16px; max-width: 600px; margin: 0 auto; }
+.card { background: rgba(255,255,255,0.03); border: 1px solid var(--w30); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.card h3 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+
+/* ═══ TEAMS ═══ */
+.team-row { display: block; padding: 0; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent; text-align: left; }
+.team-name { font-weight: 700; text-align: left; }
+.team-sport { font-size: 12px; color: var(--teal); background: rgba(0,188,212,0.1); padding: 2px 8px; border-radius: 6px; }
+.team-pin { font-size: 12px; color: var(--gold); font-family: monospace; }
+.status-inscrito { font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; background: rgba(102,187,106,0.15); color: var(--success); }
+.btn-edit { font-size: 10px; padding: 3px 8px; background: var(--purple); color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 4px; }
+#editModal .modal { max-width: 460px; max-height: 85vh; overflow-y: auto; }
+#editModal .edit-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+#editModal .edit-row input { flex: 1; padding: 8px; background: var(--navy); border: 1px solid var(--w30); border-radius: 8px; color: var(--white); font-size: 14px; }
+#editModal .edit-row input:first-child { flex: 3; }
+#editModal .edit-row input:last-child { flex: 1; max-width: 60px; text-align: center; }
+#editModal .edit-row .rm-btn { background: var(--danger); color: white; border: none; border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 14px; flex-shrink: 0; }
+
+/* ═══ FIXTURE ═══ */
+.fixture-sport-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.fixture-sport-tabs button { padding: 8px 16px; border-radius: 10px; border: 1px solid var(--w30); background: none; color: var(--w50); font-size: 13px; font-weight: 700; cursor: pointer; }
+.fixture-sport-tabs button.active { background: var(--neon); color: var(--navy); border-color: var(--neon); }
+
+.match-card { background: rgba(255,255,255,0.03); border: 1px solid var(--w30); border-radius: 14px; padding: 14px; margin-bottom: 10px; }
+.match-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.match-phase { font-size: 11px; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.match-time { font-size: 12px; color: var(--w50); }
+.match-teams { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.match-team { flex: 1; text-align: center; font-weight: 700; font-size: 15px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.04); }
+.match-vs { font-size: 12px; color: var(--w50); font-weight: 700; }
+.match-score { display: flex; align-items: center; gap: 6px; justify-content: center; margin-top: 8px; }
+.match-score input { width: 50px; text-align: center; padding: 6px; border-radius: 8px; border: 1px solid var(--w30); background: var(--navy); color: var(--gold); font-size: 18px; font-weight: 700; }
+.match-result { text-align: center; margin-top: 6px; font-size: 20px; font-weight: 800; color: var(--gold); }
+
+/* ═══ PLAYERS ═══ */
+.player-entry { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+.player-entry input { flex: 1; }
+.player-entry .num-input { width: 60px; flex: none; text-align: center; }
+.player-entry .remove-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--danger); background: none; color: var(--danger); cursor: pointer; font-size: 16px; flex: none; display: flex; align-items: center; justify-content: center; }
+
+/* ═══ GOLEADORES ═══ */
+.gol-table { width: 100%; border-collapse: collapse; }
+.gol-table th { font-size: 11px; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; padding: 8px; text-align: left; border-bottom: 1px solid var(--w30); }
+.gol-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; }
+
+/* ═══ REGLAMENTO ═══ */
+.rule-item { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: var(--w80); display: flex; gap: 10px; }
+.rule-num { color: var(--neon); font-weight: 700; min-width: 24px; }
+
+/* ═══ TOAST ═══ */
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--neon); color: var(--navy); padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; z-index: 300; box-shadow: 0 4px 20px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+@media (max-width: 480px) {
+  .hero .roman { font-size: 60px; }
+  .hero .title-main { font-size: 28px; }
+  .hero .year { font-size: 40px; }
+  .price-hero { font-size: 32px; }
+  .info-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="top-bar">
+  <div class="logo-mini">
+<img class="cross-mini" src="logo.png" alt="M.J.J.S.XX." width="26" height="26">
+  </div>
+  <div class="nav-tabs" id="navTabs">
+    <button class="active" onclick="showPage('inicio')">Inicio</button>
+    <button onclick="showPage('inscripcion')">Inscripción</button>
+    <button onclick="showPage('equipos')">Equipos</button>
+    <button onclick="showPage('fixture')">Fixture</button>
+    <button onclick="showPage('goleadores')">Goleadores</button>
+    <button onclick="showPage('reglamento')">Reglamento</button>
+  </div>
+  <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <h2>Iniciar Sesión</h2>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Ingresá tu PIN de equipo o el código de admin</p>
+    <input type="number" id="pinInput" placeholder="PIN" inputmode="numeric">
+    <div class="error" id="loginError"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeLogin()">Cancelar</button>
+      <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PW MODAL -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal">
+    <h2>Contraseña Admin</h2>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;" id="pwDesc"></p>
+    <input type="password" id="pwInput" placeholder="Contraseña" inputmode="numeric">
+    <div class="error" id="pwError"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closePwModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmPw()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TEAM MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h2>✏️ Editar Equipo</h2>
+    <label style="color:var(--w50);font-size:12px;">Nombre del equipo:</label>
+    <input type="text" id="editTeamNameInput" placeholder="Nombre del equipo" style="width:100%;padding:8px 10px;margin:4px 0 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;">
+    <p style="color:var(--w50);font-size:11px;margin-bottom:12px;">Modificá nombre del equipo, jugadores y números.</p>
+    <div id="editPlayersList"></div>
+    <button class="btn btn-secondary btn-block" onclick="addEditRow()" style="margin:8px 0;font-size:13px;">+ Agregar jugador</button>
+    <div id="editComprobanteSection" style="margin-top:12px;padding:12px;background:rgba(0,230,118,0.06);border:1px dashed var(--w30);border-radius:10px;">
+      <div id="editCompStatus" style="font-size:12px;color:var(--w50);margin-bottom:8px;"></div>
+      <div id="editCompPreview" style="display:none;margin-bottom:8px;text-align:center;">
+        <img id="editCompImg" style="max-width:100%;max-height:150px;border-radius:8px;border:1px solid var(--w30);">
+      </div>
+      <label for="editCompFile" style="display:block;text-align:center;cursor:pointer;font-size:13px;color:var(--teal);" id="editCompLabel">
+        📷 Subir comprobante de pago
+      </label>
+      <input type="file" id="editCompFile" accept="image/*" onchange="previewEditComprobante(this)" style="display:none;">
+    </div>
+    <div class="btn-row" style="margin-top:12px;">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEditTeam()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SORTEO MODAL -->
+<div class="modal-overlay" id="sorteoModal">
+  <div class="modal" style="max-width:460px;">
+    <h2>🎲 Sorteo de Fixture</h2>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Se generará un cuadro de eliminación directa.</p>
+    <div class="card" style="padding:14px;">
+      <p style="font-size:13px;color:var(--teal);font-weight:700;margin-bottom:8px;">⚠️ Separar equipos (opcional)</p>
+      <p style="font-size:12px;color:var(--w50);margin-bottom:10px;">Estos 2 equipos irán en lados opuestos del cuadro y solo podrían cruzarse en la final.</p>
+      <select id="sepTeamA" style="width:100%;padding:8px;margin-bottom:6px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;"></select>
+      <select id="sepTeamB" style="width:100%;padding:8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;"></select>
+    </div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-secondary" onclick="closeSorteoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="generateFixture()">🎲 Sortear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: INICIO ═══ -->
+<div class="page active" id="page-inicio">
+  <div class="hero">
+    <div class="label-sm">LLEGA EL</div>
+    <div class="title-main">TORNEO DE<br><span class="title-accent">INTEGRACIÓN</span></div>
+    <div class="year">2026</div>
+<img class="cross-logo" src="logo.png" alt="M.J.J.S.XX." width="90" height="90" style="border-radius:50%;">
+    <div class="hero-sep"></div>
+    <div class="sports-band">
+      <div class="sport-chip">⚽ FÚTBOL</div>
+      <div class="sport-chip">🏐 VOLLEYBALL</div>
+      <div class="sport-chip">🏓 PADEL</div>
+    </div>
+    <div class="info-grid">
+      <div class="info-card" onclick="window.open('https://maps.app.goo.gl/f7CH3Hv7sE7b4Z9i7','_blank')" style="cursor:pointer;"><div class="lbl">Lugar</div><div class="val">Quinta la Soñada</div><div class="sub" style="color:var(--neon);">📍 Ver en Google Maps</div></div>
+      <div class="info-card"><div class="lbl">Fecha y hora</div><div class="val">Domingo 14/06</div><div class="sub">🕐 08:00 hs</div></div>
+      <div class="info-card"><div class="lbl">Contacto</div><div class="val" style="font-size:14px;">0994 196050</div><div class="sub">0973 237460</div></div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center;border:1px solid var(--gold-dim);">
+      <div class="price-label" style="margin-bottom:12px;">MONTO DE INSCRIPCIONES</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;">
+        <div style="font-size:13px;color:var(--w80);">⚽ Fútbol Masculino</div><div style="font-size:13px;font-weight:700;color:var(--gold);text-align:right;">Gs. 300.000</div>
+        <div style="font-size:13px;color:var(--w80);">⚽ Fútbol Femenino</div><div style="font-size:13px;font-weight:700;color:var(--gold);text-align:right;">Gs. 250.000</div>
+        <div style="font-size:13px;color:var(--w80);">🏐 Volleyball Mixto</div><div style="font-size:13px;font-weight:700;color:var(--gold);text-align:right;">Gs. 200.000</div>
+        <div style="font-size:13px;color:var(--w80);">🏓 Padel Americano</div><div style="font-size:13px;font-weight:700;color:var(--gold);text-align:right;">Gs. 50.000</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;background:rgba(255,60,60,0.08);border:1px solid rgba(255,60,60,0.25);">
+      <div style="font-size:14px;font-weight:700;color:#ff6b6b;margin-bottom:8px;">⚠️ Sanciones — Tarjetas</div>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <div style="font-size:13px;color:var(--w80);">🟨 Amarilla: <strong style="color:var(--gold);">Gs. 30.000</strong></div>
+        <div style="font-size:13px;color:var(--w80);">🟥 Roja: <strong style="color:#ff6b6b;">Gs. 100.000</strong></div>
+      </div>
+    </div>
+    <div class="cantina-section">
+      <div class="cantina-title">🍽 Cantina</div>
+      <div class="cantina-item"><span>Muslo a la parrilla c/ ensalada</span><span class="c-price">20.000</span></div>
+      <div class="cantina-item"><span>Hamburguesa</span><span class="c-price">10.000</span></div>
+      <div class="cantina-item"><span>Pancho</span><span class="c-price">5.000</span></div>
+      <div class="cantina-item"><span>Empanada</span><span class="c-price">5.000</span></div>
+    </div>
+    <div class="card" style="margin-top:16px;background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);">
+      <div style="font-size:14px;font-weight:700;color:var(--teal);margin-bottom:10px;">🏦 Datos para Transferencia</div>
+      <div style="font-size:13px;color:var(--w80);margin-bottom:8px;"><strong style="color:var(--gold);">Alias:</strong> 5145828 — <span style="color:var(--white);">Fabiana Centurión</span></div>
+      <div style="font-size:13px;color:var(--w80);"><strong style="color:var(--gold);">Alias:</strong> 0973729154 — <span style="color:var(--white);">Mónica Zárate</span></div>
+    </div>
+    <div class="contact-row"><strong>📞 0994 196050 · 0973 237460</strong></div>
+    <button class="cta-inscripcion" onclick="showPage('inscripcion')">¡INSCRIBÍ TU EQUIPO!</button>
+    <p style="color:var(--w30);font-size:11px;margin-top:20px;letter-spacing:1px;">¡ T E &nbsp; E S P E R A M O S !</p>
+  </div>
+</div>
+
+<!-- ═══ PAGE: INSCRIPCIÓN ═══ -->
+<div class="page" id="page-inscripcion">
+  <div class="section-page">
+    <div class="section-title">📋 Inscripción de Equipo</div>
+    <div class="card" id="inscripcion-form-card">
+      <p style="color:var(--w50);font-size:13px;margin-bottom:16px;">Completá los datos para inscribir a tu equipo. Al finalizar recibirás un <strong style="color:var(--gold)">PIN</strong> para acceder.</p>
+      <div class="form-group"><label>Modalidad deportiva</label>
+        <select id="insc-deporte" onchange="onDeporteChange()"><option value="">Seleccionar...</option><option value="futbol-masc">⚽ Fútbol Masculino (Gs. 300.000)</option><option value="futbol-fem">⚽ Fútbol Femenino (Gs. 250.000)</option><option value="voley">🏐 Volleyball Mixto (Gs. 200.000)</option><option value="padel">🏓 Padel Americano (Gs. 50.000 individual)</option></select>
+      </div>
+      <div class="form-group"><label>Nombre del equipo</label><input type="text" id="insc-nombre" placeholder="Ej: Los Campeones"></div>
+      <div class="form-group"><label>Capitán</label><input type="text" id="insc-capitan" placeholder="Nombre completo del capitán"></div>
+      <div class="form-group"><label>Teléfono del capitán</label><input type="tel" id="insc-telefono" placeholder="0991 123456"></div>
+      <div class="form-group"><label>Jugadores</label><div id="players-list"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addPlayerRow()" style="margin-top:8px;">+ Agregar jugador</button>
+      </div>
+      <div class="form-group">
+        <label>📎 Comprobante de transferencia</label>
+        <div id="comprobante-preview" style="display:none;margin-bottom:8px;text-align:center;">
+          <img id="comprobante-img" style="max-width:100%;max-height:200px;border-radius:8px;border:1px solid var(--w30);">
+          <button class="btn btn-danger btn-sm" onclick="removeComprobante()" style="margin-top:6px;">Quitar</button>
+        </div>
+        <label for="insc-comprobante" style="display:block;background:rgba(0,230,118,0.08);border:2px dashed var(--neon-dim);border-radius:12px;padding:20px;text-align:center;cursor:pointer;font-size:13px;color:var(--w50);" id="comprobante-label">
+          📷 Tocá para adjuntar foto del comprobante
+        </label>
+        <input type="file" id="insc-comprobante" accept="image/*" onchange="previewComprobante(this)" style="display:none;">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitInscripcion()" style="margin-top:16px;font-size:16px;padding:14px;">INSCRIBIR EQUIPO</button>
+    </div>
+    <div class="card" id="inscripcion-success" style="display:none;text-align:center;">
+      <div style="font-size:48px;margin-bottom:10px;">🎉</div>
+      <h3 style="justify-content:center;">¡Equipo Inscrito!</h3>
+      <p style="color:var(--w50);margin:10px 0;">Tu equipo fue registrado exitosamente.</p>
+      <div style="background:var(--navy);border:2px solid var(--gold);border-radius:16px;padding:20px;margin:16px 0;">
+        <div style="font-size:12px;color:var(--teal);text-transform:uppercase;letter-spacing:2px;">Tu PIN de acceso</div>
+        <div id="success-pin" style="font-size:48px;font-weight:900;color:var(--gold);margin:8px 0;"></div>
+        <div style="font-size:12px;color:var(--w50);">Guardá este número para acceder a tu panel</div>
+      </div>
+      <div id="success-details" style="text-align:left;font-size:13px;color:var(--w80);margin-top:12px;"></div>
+      <div style="background:rgba(0,230,118,0.06);border:1px solid rgba(0,230,118,0.2);border-radius:12px;padding:16px;margin-top:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--teal);margin-bottom:8px;">📎 Enviar comprobante de transferencia</div>
+        <p style="font-size:12px;color:var(--w50);margin-bottom:12px;">Enviá la captura de tu transferencia por WhatsApp con el nombre de tu equipo en el mensaje.</p>
+        <a id="success-whatsapp" href="#" target="_blank" style="display:inline-block;background:#25D366;color:white;font-weight:700;font-size:14px;padding:10px 24px;border-radius:20px;text-decoration:none;">📲 Enviar por WhatsApp</a>
+      </div>
+      <button class="btn btn-primary" onclick="showPage('inicio')" style="margin-top:16px;">Volver al inicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: EQUIPOS ═══ -->
+<div class="page" id="page-equipos">
+  <div class="section-page">
+    <div class="section-title">👥 Equipos Inscritos</div>
+    <div class="fixture-sport-tabs" id="equipos-sport-tabs">
+      <button class="active" onclick="filterEquipos('todos')">Todos</button>
+      <button onclick="filterEquipos('futbol')">⚽ Fútbol</button>
+      <button onclick="filterEquipos('voley')">🏐 Volleyball</button>
+      <button onclick="filterEquipos('padel')">🏓 Padel</button>
+    </div>
+    <div id="equipos-list"></div>
+    <div id="equipos-empty" class="card" style="text-align:center;display:none;">
+      <div style="font-size:36px;margin-bottom:10px;">📭</div>
+      <p style="color:var(--w50);">Aún no hay equipos inscritos</p>
+    </div>
+    <div id="admin-backup-section" style="display:none;margin-top:20px;padding:14px;background:rgba(255,215,0,0.06);border:1px solid var(--w20);border-radius:12px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gold);margin-bottom:10px;">🔒 Panel Admin — Respaldos</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="descargarBackup()" style="font-size:12px;">💾 Descargar backup JSON</button>
+        <button class="btn btn-secondary" onclick="restaurarBackup()" style="font-size:12px;">♻️ Restaurar último backup</button>
+      </div>
+      <p style="color:var(--w30);font-size:11px;margin-top:8px;">Se guarda un respaldo automático en Firebase cada vez que se modifican datos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: FIXTURE ═══ -->
+<div class="page" id="page-fixture">
+  <div class="section-page">
+    <div class="section-title">🏆 Fixture</div>
+    <div class="fixture-sport-tabs" id="fixture-sport-tabs">
+      <button class="active" onclick="switchFixtureSport('futbol')">⚽ Fútbol</button>
+      <button onclick="switchFixtureSport('voley')">🏐 Volleyball</button>
+      <button onclick="switchFixtureSport('padel')">🏓 Padel</button>
+    </div>
+    <div id="fixture-content"></div>
+    <div id="fixture-empty" class="card" style="text-align:center;display:none;">
+      <div style="font-size:36px;margin-bottom:10px;">📋</div>
+      <p style="color:var(--w50);">El fixture aún no fue generado</p>
+      <p style="color:var(--w30);font-size:12px;margin-top:4px;" id="fixture-admin-hint"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: GOLEADORES ═══ -->
+<div class="page" id="page-goleadores">
+  <div class="section-page">
+    <div class="section-title">⚽ Goleadores</div>
+    <div class="card">
+      <div id="goleadores-list"><p style="color:var(--w50);text-align:center;">Los goleadores se actualizarán durante el torneo</p></div>
+      <div id="goleador-form" style="display:none;margin-top:16px;border-top:1px solid var(--w30);padding-top:16px;">
+        <h3 style="font-size:15px;margin-bottom:10px;">Agregar Goleador</h3>
+        <div class="form-group"><label>Jugador</label><input type="text" id="gol-jugador" placeholder="Nombre"></div>
+        <div class="form-group"><label>Equipo</label><input type="text" id="gol-equipo" placeholder="Equipo"></div>
+        <div class="form-group"><label>Goles</label><input type="number" id="gol-goles" placeholder="0" min="0"></div>
+        <button class="btn btn-primary btn-sm" onclick="addGoleador()">Agregar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: REGLAMENTO ═══ -->
+<div class="page" id="page-reglamento">
+  <div class="section-page">
+    <div class="section-title">📜 Reglamento</div>
+
+    <!-- REGLAS GENERALES -->
+    <div class="card" style="border:2px solid var(--gold-dim);">
+      <h3>📋 Reglas Generales del Torneo</h3>
+      <div class="rule-item"><span class="rule-num">1</span> <strong>Planilla de jugadores:</strong> Cada equipo deberá presentar una planilla con el nombre completo y número de cédula de todos sus jugadores. Solo podrán participar los jugadores anotados en la planilla.</div>
+      <div class="rule-item"><span class="rule-num">2</span> <strong>Jugadores en más de un equipo:</strong> Un jugador podrá estar anotado en hasta dos equipos. Si ambos equipos se enfrentan, deberá elegir por cuál jugar y no podrá cambiar durante el mismo encuentro.</div>
+      <div class="rule-item"><span class="rule-num">3</span> <strong>Puntualidad:</strong> Los equipos deberán estar preparados antes del horario indicado. Si un equipo no se presenta o no completa la cantidad mínima de jugadores, la organización decidirá si pierde el partido por walkover.</div>
+      <div class="rule-item"><span class="rule-num">4</span> <strong>Calzado:</strong> Está prohibido utilizar botines. Solo se permitirá calzado deportivo adecuado para la superficie de juego.</div>
+      <div class="rule-item"><span class="rule-num">5</span> <strong>Bebidas:</strong> Está prohibido el consumo e ingreso de bebidas alcohólicas. No se permite ingresar agua o gaseosas desde afuera; las bebidas deberán adquirirse dentro del lugar del torneo.</div>
+      <div class="rule-item"><span class="rule-num">6</span> <strong>Conducta:</strong> No se permitirán insultos, amenazas, peleas ni agresiones contra jugadores, árbitros, organizadores o público. La organización podrá expulsar a cualquier persona o equipo que cause disturbios.</div>
+      <div class="rule-item"><span class="rule-num">7</span> <strong>Decisiones arbitrales:</strong> Las decisiones del árbitro son definitivas. Solo el capitán del equipo podrá dirigirse al árbitro para consultas, siempre con respeto.</div>
+      <div class="rule-item"><span class="rule-num">8</span> <strong>Responsabilidad:</strong> Cada equipo será responsable del comportamiento de sus jugadores y acompañantes. Cualquier daño causado dentro del recinto deberá ser abonado por el responsable.</div>
+      <div class="rule-item"><span class="rule-num">9</span> <strong>Aceptación:</strong> Al inscribirse y participar, todos los equipos aceptan estas reglas. Cualquier situación no contemplada será resuelta por la organización del torneo.</div>
+    </div>
+
+    <!-- FÚTBOL -->
+    <div class="card">
+      <h3>⚽ Fútbol (Masculino y Femenino)</h3>
+      <div class="rule-item"><span class="rule-num">1</span> Cada partido tendrá <strong>dos tiempos de 10 minutos</strong>. Descanso entre tiempos: 3 minutos.</div>
+      <div class="rule-item"><span class="rule-num">2</span> Entre el final de un partido y el inicio del siguiente habrá un máximo de 5 minutos.</div>
+      <div class="rule-item"><span class="rule-num">3</span> Se aplican las reglas estándar de fútbol de campo (lateral con las manos, saque de arco con el pie). <strong>No hay offside.</strong></div>
+      <div class="rule-item"><span class="rule-num">4</span> Cambios ilimitados. El jugador que sale puede volver a ingresar.</div>
+      <div class="rule-item"><span class="rule-num">5</span> 🟨 Tarjeta amarilla — Costo: Gs. 30.000.</div>
+      <div class="rule-item"><span class="rule-num">6</span> 🟥 Tarjeta roja — Costo: Gs. 100.000. El jugador expulsado deberá retirarse del área de juego.</div>
+      <div class="rule-item"><span class="rule-num">7</span> Para que el equipo esté habilitado en el siguiente partido, deberá abonar <strong>todas</strong> las multas pendientes por tarjetas (amarillas y rojas). Sin el pago total, el equipo entero no estará habilitado.</div>
+      <div class="rule-item"><span class="rule-num">8</span> La planilla de partidos deberá ser llenada para cada partido con firma del capitán y jugadores.</div>
+      <div class="rule-item"><span class="rule-num">9</span> En caso de empate: directo a <strong>penales</strong> (3 por equipo, luego muerte súbita).</div>
+    </div>
+    <div class="card">
+      <h3>🏐 Vóley de Arena (Mixto)</h3>
+      <div class="rule-item"><span class="rule-num">1</span> Equipos mixtos: se recomienda al menos 2 mujeres en cancha (equipos de 6 en cancha).</div>
+      <div class="rule-item"><span class="rule-num">2</span> Mínimo 4 jugadores por equipo para iniciar partido.</div>
+      <div class="rule-item"><span class="rule-num">3</span> Se juega <strong>1 solo set a 25 puntos</strong> con ventaja de 2 puntos (sin tope).</div>
+      <div class="rule-item"><span class="rule-num">4</span> Sistema rally-point: cada jugada otorga un punto al ganador.</div>
+      <div class="rule-item"><span class="rule-num">5</span> Cambio de cancha al llegar a los <strong>12 o 13 puntos</strong>.</div>
+      <div class="rule-item"><span class="rule-num">6</span> Rotación obligatoria de jugadores en sentido horario al recuperar el saque.</div>
+      <div class="rule-item"><span class="rule-num">7</span> Máximo 3 toques por equipo para pasar el balón al campo contrario (el bloqueo no cuenta como toque).</div>
+      <div class="rule-item"><span class="rule-num">8</span> Un jugador no puede tocar el balón 2 veces consecutivas (excepto tras un bloqueo).</div>
+      <div class="rule-item"><span class="rule-num">9</span> Está prohibido tocar la red durante el juego.</div>
+      <div class="rule-item"><span class="rule-num">10</span> El saque se realiza desde detrás de la línea de fondo. Si toca la red y pasa, es válido (let).</div>
+      <div class="rule-item"><span class="rule-num">11</span> Sustituciones libres (se permiten cambios en cualquier momento de pausa).</div>
+      <div class="rule-item"><span class="rule-num">12</span> Tolerancia de 5 minutos para inicio de partido, sujeto a pérdida por W.O.</div>
+      <div class="rule-item"><span class="rule-num">13</span> Jugadores habilitados únicamente según lista de buena fe.</div>
+    </div>
+    <div class="card">
+      <h3>🏓 Pádel</h3>
+      <div class="rule-item"><span class="rule-num">1</span> <strong>Modalidad Parejas:</strong> partidos al mejor de 3 sets. Cada set a 6 games con ventaja de 2. Tie-break a 7 puntos en caso de empate 6-6.</div>
+      <div class="rule-item"><span class="rule-num">2</span> Puntuación por game: 15, 30, 40 y deuce (iguales). Se aplica punto de oro en deuce (la pareja al resto elige lado).</div>
+      <div class="rule-item"><span class="rule-num">3</span> El saque se realiza por debajo de la cintura, de forma diagonal. La pelota debe botar en el cuadro de servicio antes de ser devuelta.</div>
+      <div class="rule-item"><span class="rule-num">4</span> Se permiten 2 intentos de saque por punto. Doble falta = punto para el rival.</div>
+      <div class="rule-item"><span class="rule-num">5</span> La pelota puede rebotar en las paredes propias después de botar en el suelo. Se pierde el punto si la pelota pega en la pared del rival sin botar primero en su suelo.</div>
+      <div class="rule-item"><span class="rule-num">6</span> Está prohibido tocar la red o invadir el campo contrario.</div>
+      <div class="rule-item"><span class="rule-num">7</span> La pelota puede salir por encima de las paredes laterales y seguir en juego si es devuelta antes del segundo bote.</div>
+      <div class="rule-item"><span class="rule-num">8</span> <strong>Modalidad Americano:</strong> todos contra todos en rondas con parejas rotativas sorteadas. Se juegan rounds de X games. Cada jugador acumula los games ganados individualmente. Gana el torneo quien más games acumule al final.</div>
+      <div class="rule-item"><span class="rule-num">9</span> Tolerancia de 5 minutos para inicio de partido, sujeto a pérdida por W.O.</div>
+      <div class="rule-item"><span class="rule-num">10</span> Jugadores habilitados únicamente según lista de buena fe.</div>
+    </div>
+    <div class="card" style="background:rgba(255,200,40,0.08);border:1px solid var(--gold-dim);">
+      <h3>💰 Inscripciones</h3>
+      <div class="rule-item"><span class="rule-num">⚽</span> Fútbol Masculino — Gs. 300.000</div>
+      <div class="rule-item"><span class="rule-num">⚽</span> Fútbol Femenino — Gs. 250.000</div>
+      <div class="rule-item"><span class="rule-num">🏐</span> Vóley de Arena Mixto — Gs. 200.000</div>
+      <div class="rule-item"><span class="rule-num">🏓</span> Pádel — Gs. 50.000</div>
+    </div>
+    <div class="card" style="background:rgba(0,230,118,0.06);border:1px solid var(--neon-dim);">
+      <h3>🏆 Premios</h3>
+      <div class="rule-item"><span class="rule-num">⚽</span> Fútbol Masculino — Oveja 20 kg</div>
+      <div class="rule-item"><span class="rule-num">⚽</span> Fútbol Femenino — Trofeo</div>
+      <div class="rule-item"><span class="rule-num">🏐</span> Vóley de Arena Mixto — Trofeo</div>
+      <div class="rule-item"><span class="rule-num">🏓</span> Pádel — Trofeo</div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+
+<script>
+// ═══ FIREBASE CONFIG ═══
+// PEGAR AQUÍ LA CONFIGURACIÓN DE FIREBASE
+var firebaseConfig = {
+  apiKey: "AIzaSyD6pdyiT3jYQkIgGxxYKrfeA02z2j3rT14",
+  authDomain: "torneo-mjjsxx.firebaseapp.com",
+  databaseURL: "https://torneo-mjjsxx-default-rtdb.firebaseio.com",
+  projectId: "torneo-mjjsxx",
+  storageBucket: "torneo-mjjsxx.firebasestorage.app",
+  messagingSenderId: "355217532241",
+  appId: "1:355217532241:web:6d33e9c774e5014ff0df70"
+};
+
+var fbReady = false;
+var db = null;
+var dbRef = null;
+
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+  dbRef = db.ref('torneo');
+  fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
+} catch(e) { console.log('Firebase no configurado, usando localStorage'); }
+
+var ADMIN_PIN = '1007';
+var STORE_KEY = 'torneo_mjjsxx_2026';
+var DEFAULT_DATA = { teams: [], fixture: {}, goleadores: [], nextPin: 1 };
+var fbSynced = false; // protección: no guardar a Firebase hasta sincronizar
+var fbMaxTeams = 0; // máximo de equipos conocidos desde Firebase — NUNCA guardar menos que esto
+
+// Ensure teams/goleadores are always arrays (Firebase converts arrays to objects)
+function fixArrays(d) {
+  if (d.teams && !Array.isArray(d.teams)) {
+    var arr = []; var keys = Object.keys(d.teams);
+    for (var i = 0; i < keys.length; i++) { if (d.teams[keys[i]]) arr.push(d.teams[keys[i]]); }
+    d.teams = arr;
+  }
+  if (!d.teams) d.teams = [];
+  if (d.goleadores && !Array.isArray(d.goleadores)) {
+    var arr2 = []; var keys2 = Object.keys(d.goleadores);
+    for (var i = 0; i < keys2.length; i++) { if (d.goleadores[keys2[i]]) arr2.push(d.goleadores[keys2[i]]); }
+    d.goleadores = arr2;
+  }
+  if (!d.goleadores) d.goleadores = [];
+  if (!d.fixture) d.fixture = {};
+  if (!d.nextPin) d.nextPin = 1;
+  for (var j = 0; j < d.teams.length; j++) {
+    var t = d.teams[j];
+    if (t.jugadores && !Array.isArray(t.jugadores)) {
+      var arr3 = []; var keys3 = Object.keys(t.jugadores);
+      for (var k = 0; k < keys3.length; k++) { if (t.jugadores[keys3[k]]) arr3.push(t.jugadores[keys3[k]]); }
+      t.jugadores = arr3;
+    }
+    if (!t.jugadores) t.jugadores = [];
+  }
+  return d;
+}
+
+function loadData() {
+  try { var d = JSON.parse(localStorage.getItem(STORE_KEY)); if (d) return fixArrays(d); } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveData(d, allowShrink) {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch(e) {}
+  if (fbReady && dbRef && fbSynced) {
+    var teamCount = d.teams ? d.teams.length : 0;
+
+    // 🛡️ PROTECCIÓN CRÍTICA: NUNCA sobreescribir Firebase con menos equipos
+    if (!allowShrink && teamCount < fbMaxTeams && fbMaxTeams > 1) {
+      console.error('🛑 BLOQUEADO: Intento de guardar ' + teamCount + ' equipos cuando el máximo conocido es ' + fbMaxTeams + '. Esto parece pérdida de datos.');
+      return;
+    }
+
+    // Actualizar máximo conocido
+    if (teamCount > fbMaxTeams) fbMaxTeams = teamCount;
+
+    // Backup rotativo (mantener últimos 5) — NO sobreescribir un solo backup
+    var bRef = firebase.database().ref('backups').push();
+    bRef.set({
+      data: d,
+      fecha: new Date().toISOString(),
+      teams: teamCount
+    }).catch(function(err) { console.error('Backup error:', err); });
+
+    // Limpiar backups viejos (mantener 5)
+    firebase.database().ref('backups').orderByKey().once('value', function(snap) {
+      var val = snap.val();
+      if (val) {
+        var keys = Object.keys(val).sort();
+        while (keys.length > 5) {
+          firebase.database().ref('backups/' + keys.shift()).remove();
+        }
+      }
+    });
+
+    // Guardar datos principales
+    dbRef.set(d).catch(function(err) { console.error('Firebase save error:', err); });
+  } else if (fbReady && dbRef && !fbSynced) {
+    console.warn('Guardado local solamente — esperando sincronización con Firebase...');
+  }
+}
+
+function descargarBackup() {
+  var d = loadData();
+  var json = JSON.stringify(d, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'torneo_backup_' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('Backup descargado ✅');
+}
+
+function restaurarBackup() {
+  if (!confirm('¿Restaurar el último backup de Firebase? Esto reemplazará los datos actuales.')) return;
+  // Buscar el backup más reciente con más equipos entre los rotativos
+  firebase.database().ref('backups').orderByKey().limitToLast(5).once('value', function(snapshot) {
+    var backups = snapshot.val();
+    if (!backups) {
+      // Fallback al backup viejo
+      firebase.database().ref('backup/data').once('value', function(snap2) {
+        var bd = snap2.val();
+        if (bd) {
+          var fixed = fixArrays(bd);
+          data = fixed;
+          fbMaxTeams = data.teams.length;
+          saveData(data, true);
+          renderAll();
+          toast('Datos restaurados desde backup ✅ (' + data.teams.length + ' equipos)');
+        } else {
+          toast('No hay backup disponible');
+        }
+      });
+      return;
+    }
+    // Encontrar el backup con más equipos
+    var bestKey = null, bestCount = 0, bestData = null;
+    var keys = Object.keys(backups);
+    for (var i = 0; i < keys.length; i++) {
+      var b = backups[keys[i]];
+      if (b && b.data && b.teams > bestCount) {
+        bestKey = keys[i];
+        bestCount = b.teams;
+        bestData = b.data;
+      }
+    }
+    if (bestData) {
+      var fixed = fixArrays(bestData);
+      data = fixed;
+      fbMaxTeams = data.teams.length;
+      saveData(data, true);
+      renderAll();
+      toast('Datos restaurados desde backup ✅ (' + data.teams.length + ' equipos, ' + bestCount + ' en backup)');
+    } else {
+      toast('No hay backup disponible');
+    }
+  });
+}
+
+// Real-time sync: when Firebase data changes, update local
+if (fbReady && dbRef) {
+  dbRef.on('value', function(snapshot) {
+    var fbData = snapshot.val();
+    if (fbData) {
+      var fbFixed = fixArrays(fbData);
+      var fbTeamCount = fbFixed.teams.length;
+
+      // Actualizar máximo conocido
+      if (fbTeamCount > fbMaxTeams) fbMaxTeams = fbTeamCount;
+
+      // Protección: si Firebase tiene más equipos que local, usar Firebase
+      if (!fbSynced || fbTeamCount >= data.teams.length) {
+        data = fbFixed;
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+        renderAll();
+      }
+      fbSynced = true;
+    } else {
+      // Firebase vacío — verificar si tenemos datos locales sustanciales
+      if (data.teams.length > 0 && data.teams.length >= fbMaxTeams) {
+        fbSynced = true;
+        dbRef.set(data).catch(function(err) { console.error('Firebase restore error:', err); });
+      } else if (data.teams.length > 0 && data.teams.length < fbMaxTeams) {
+        // Tenemos datos locales pero menos que el máximo conocido — NO subir
+        console.error('🛑 Firebase vacío pero datos locales (' + data.teams.length + ') < máximo conocido (' + fbMaxTeams + '). No se sube.');
+        fbSynced = true;
+      } else {
+        fbSynced = true;
+      }
+    }
+  });
+}
+
+function renderAll() {
+  try { renderEquipos(); } catch(e) {}
+  try { renderFixture(); } catch(e) {}
+  try { renderGoleadores(); } catch(e) {}
+}
+
+var data = loadData();
+var currentUser = null;
+
+// NAV
+function showPage(name) {
+  var pages = document.querySelectorAll('.page');
+  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+  document.getElementById('page-' + name).classList.add('active');
+  var btns = document.querySelectorAll('#navTabs button');
+  var names = ['inicio','inscripcion','equipos','fixture','goleadores','reglamento'];
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', names[i] === name);
+  if (name === 'equipos') renderEquipos();
+  if (name === 'fixture') renderFixture();
+  if (name === 'goleadores') renderGoleadores();
+  if (name === 'inscripcion') resetInscripcionForm();
+}
+
+// AUTH
+function openLogin() {
+  if (currentUser) { currentUser = null; updateUserBadge(); toast('Sesión cerrada'); renderAll(); return; }
+  document.getElementById('loginModal').classList.add('show');
+  document.getElementById('pinInput').value = '';
+  document.getElementById('loginError').textContent = '';
+  setTimeout(function(){ document.getElementById('pinInput').focus(); }, 100);
+}
+function closeLogin() { document.getElementById('loginModal').classList.remove('show'); }
+
+function doLogin() {
+  var pin = document.getElementById('pinInput').value.trim();
+  if (!pin) { document.getElementById('loginError').textContent = 'Ingresá un PIN'; return; }
+  if (pin === ADMIN_PIN) {
+    currentUser = { type: 'admin' }; closeLogin(); updateUserBadge(); toast('Bienvenido, Admin'); renderAll(); return;
+  }
+  var team = null;
+  for (var i = 0; i < data.teams.length; i++) {
+    if (String(data.teams[i].pin) === pin) { team = data.teams[i]; break; }
+  }
+  if (team) {
+    currentUser = { type: 'team', team: team }; closeLogin(); updateUserBadge(); toast('Bienvenido, ' + team.nombre); renderAll(); return;
+  }
+  document.getElementById('loginError').textContent = 'PIN incorrecto';
+}
+
+function updateUserBadge() {
+  var b = document.getElementById('userBadge');
+  if (!currentUser) { b.textContent = 'Entrar'; b.style.borderColor = 'var(--neon-dim)'; b.style.color = 'var(--neon)'; }
+  else if (currentUser.type === 'admin') { b.textContent = '🔑 Admin'; b.style.borderColor = 'var(--gold)'; b.style.color = 'var(--gold)'; }
+  else { b.textContent = '👤 ' + currentUser.team.nombre; b.style.borderColor = 'var(--teal)'; b.style.color = 'var(--teal)'; }
+}
+function isAdmin() { return currentUser && currentUser.type === 'admin'; }
+
+// PW MODAL
+var pwCallback = null;
+function openPwModal(desc, cb) {
+  document.getElementById('pwModal').classList.add('show');
+  document.getElementById('pwDesc').textContent = desc;
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').textContent = '';
+  pwCallback = cb;
+  setTimeout(function(){ document.getElementById('pwInput').focus(); }, 100);
+}
+function closePwModal() { document.getElementById('pwModal').classList.remove('show'); pwCallback = null; }
+function confirmPw() {
+  if (document.getElementById('pwInput').value === ADMIN_PIN) { closePwModal(); if (pwCallback) pwCallback(); }
+  else { document.getElementById('pwError').textContent = 'Contraseña incorrecta'; }
+}
+
+// INSCRIPTION
+function resetInscripcionForm() {
+  document.getElementById('inscripcion-form-card').style.display = 'block';
+  document.getElementById('inscripcion-success').style.display = 'none';
+  document.getElementById('insc-deporte').value = '';
+  document.getElementById('insc-nombre').value = '';
+  document.getElementById('insc-capitan').value = '';
+  document.getElementById('insc-telefono').value = '';
+  document.getElementById('insc-comprobante').value = '';
+  document.getElementById('comprobante-preview').style.display = 'none';
+  document.getElementById('comprobante-label').style.display = 'block';
+  comprobanteFile = null;
+  var pl = document.getElementById('players-list'); pl.innerHTML = '';
+  for (var i = 0; i < 5; i++) addPlayerRow();
+}
+function addPlayerRow() {
+  var pl = document.getElementById('players-list');
+  var idx = pl.children.length + 1;
+  var div = document.createElement('div'); div.className = 'player-entry';
+  div.innerHTML = '<input type="text" placeholder="Jugador #' + idx + '">' +
+    '<input type="text" class="num-input" placeholder="Nº">' +
+    '<button class="remove-btn" onclick="this.parentElement.remove()" title="Quitar">×</button>';
+  pl.appendChild(div);
+}
+function submitInscripcion() {
+  var deporte = document.getElementById('insc-deporte').value;
+  var nombre = document.getElementById('insc-nombre').value.trim();
+  var capitan = document.getElementById('insc-capitan').value.trim();
+  var telefono = document.getElementById('insc-telefono').value.trim();
+  if (!deporte) { toast('Seleccioná una modalidad'); return; }
+  if (!nombre) { toast('Ingresá el nombre del equipo'); return; }
+  if (!capitan) { toast('Ingresá el nombre del capitán'); return; }
+  if (!telefono) { toast('Ingresá el teléfono'); return; }
+
+  var entries = document.querySelectorAll('#players-list .player-entry');
+  var jugadores = [];
+  for (var i = 0; i < entries.length; i++) {
+    var inputs = entries[i].querySelectorAll('input');
+    var pName = inputs[0].value.trim();
+    var pNum = inputs[1].value.trim();
+    if (pName) jugadores.push({ nombre: pName, numero: pNum || '-' });
+  }
+  if (jugadores.length < 1) { toast('Agregá al menos 1 jugador'); return; }
+
+  data = loadData();
+  var pin = data.nextPin;
+  var teamId = Date.now();
+  var teamObj = {
+    id: teamId, pin: pin, nombre: nombre, capitan: capitan,
+    telefono: telefono, deporte: deporte, jugadores: jugadores,
+    status: 'inscrito', fecha: new Date().toISOString(),
+    comprobante: null
+  };
+  data.teams.push(teamObj);
+  data.nextPin = pin + 1;
+  saveData(data);
+
+  // Show success immediately
+  document.getElementById('inscripcion-form-card').style.display = 'none';
+  document.getElementById('inscripcion-success').style.display = 'block';
+  document.getElementById('success-pin').textContent = pin;
+  var sl = { 'futbol-masc':'Fútbol Masculino', 'futbol-fem':'Fútbol Femenino', voley:'Volleyball Mixto', padel:'Padel Americano' };
+  document.getElementById('success-details').innerHTML =
+    '<strong>' + nombre + '</strong><br>Modalidad: ' + (sl[deporte]||deporte) +
+    '<br>Capitán: ' + capitan + '<br>Jugadores: ' + jugadores.length;
+  var waMsg = encodeURIComponent('Hola, soy del equipo *' + nombre + '* (' + (sl[deporte]||deporte) + '). Adjunto comprobante de transferencia para la inscripción del torneo. PIN: ' + pin);
+  document.getElementById('success-whatsapp').href = 'https://wa.me/595994196050?text=' + waMsg;
+
+  // Upload comprobante if attached
+  if (comprobanteFile) {
+    toast('Subiendo comprobante...');
+    uploadComprobante(teamId, function(url) {
+      if (url) {
+        // Update team with comprobante URL
+        data = loadData();
+        for (var i = 0; i < data.teams.length; i++) {
+          if (String(data.teams[i].id) === String(teamId)) {
+            data.teams[i].comprobante = url;
+            break;
+          }
+        }
+        saveData(data);
+        toast('¡Comprobante subido!');
+      } else {
+        toast('Error al subir comprobante');
+      }
+      comprobanteFile = null;
+    });
+  } else {
+    toast('¡Equipo inscrito!');
+  }
+}
+
+// EQUIPOS
+var equiposFilter = 'todos';
+function filterEquipos(f) {
+  equiposFilter = f;
+  var btns = document.querySelectorAll('#equipos-sport-tabs button');
+  var fs = ['todos','futbol','voley','padel'];
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', fs[i] === f);
+  renderEquipos();
+}
+function renderEquipos() {
+  data = loadData();
+  var list = document.getElementById('equipos-list');
+  var empty = document.getElementById('equipos-empty');
+  var teams = data.teams;
+  if (equiposFilter !== 'todos') {
+    teams = teams.filter(function(t) {
+      if (equiposFilter === 'futbol') return t.deporte === 'futbol-masc' || t.deporte === 'futbol-fem';
+      return t.deporte === equiposFilter;
+    });
+  }
+  if (teams.length === 0) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  var sl = { 'futbol-masc':'⚽ Fútbol Masc', 'futbol-fem':'⚽ Fútbol Fem', voley:'🏐 Volleyball', padel:'🏓 Padel' };
+  var html = '';
+  for (var i = 0; i < teams.length; i++) {
+    var t = teams[i];
+    var del = isAdmin() ? '<button class="btn btn-danger btn-sm" onclick="deleteTeam(\''+t.id+'\')" style="margin-left:6px;">×</button>' : '';
+    var compBtn = '';
+    if (isAdmin() && t.comprobante) {
+      compBtn = '<button class="btn btn-sm" onclick="verComprobanteById(\''+t.id+'\')" style="background:var(--teal);color:white;margin-left:4px;font-size:10px;padding:3px 8px;">📎 Ver</button>';
+    } else if (isAdmin() && !t.comprobante) {
+      compBtn = '<span style="font-size:10px;color:var(--w30);margin-left:4px;">Sin comp.</span>';
+    }
+    // Lista de jugadores expandible
+    var jugHtml = '<div id="jug-' + t.id + '" class="jugadores-list" style="display:none;padding:8px 12px 12px;background:rgba(0,0,0,0.2);border-top:1px solid var(--w30);">';
+    jugHtml += '<div style="font-size:11px;color:var(--teal);font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Plantel — ' + t.jugadores.length + ' jugadores</div>';
+    jugHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px;">';
+    for (var j = 0; j < t.jugadores.length; j++) {
+      var p = t.jugadores[j];
+      jugHtml += '<div style="font-size:12px;color:var(--w80);padding:2px 0;">' +
+        '<span style="color:var(--w50);min-width:18px;display:inline-block;">' + (j+1) + '.</span> ' +
+        esc(p.nombre) + (p.numero && p.numero !== '-' ? ' <span style="color:var(--gold);font-size:10px;">#' + esc(p.numero) + '</span>' : '') +
+        '</div>';
+    }
+    jugHtml += '</div></div>';
+
+    html += '<div class="team-row" style="display:block;padding:0;overflow:hidden;">' +
+      '<div style="padding:12px 16px;cursor:pointer;" onclick="toggleJugadores(\''+t.id+'\')">' +
+      '<div class="team-name" style="text-align:left;margin-bottom:2px;">' + esc(t.nombre) + ' <span style="font-size:11px;color:var(--w30);">▼</span></div>' +
+      '<div style="font-size:12px;color:var(--w50);text-align:left;margin-bottom:6px;">' + esc(t.capitan) + ' · ' + t.jugadores.length + ' jug.' + (t.telefono ? ' · ' + esc(t.telefono) : '') + '</div>' +
+      '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
+      '<span class="team-sport">' + (sl[t.deporte]||t.deporte) + '</span>' +
+      (isAdmin() ? '<span class="team-pin">PIN:'+t.pin+'</span>' : '') +
+      (canEditTeam(t) ? '<button class="btn-edit" onclick="event.stopPropagation();openEditModal(\''+t.id+'\')">✏️ Editar</button>' : '') +
+      (t.status === 'pagado' ? '<span class="status-inscrito">✅ Pagado</span>' : '<span class="status-inscrito">Inscrito</span>') +
+      (isAdmin() ? '<button class="btn btn-sm" onclick="event.stopPropagation();toggleStatus(\''+t.id+'\')" style="font-size:10px;padding:2px 6px;margin-left:2px;" title="Cambiar estado">' + (t.status === 'pagado' ? '↩' : '✅') + '</button>' : '') +
+      compBtn + del + '</div></div>' + jugHtml + '</div>';
+  }
+  list.innerHTML = html;
+  // Mostrar panel de backup solo para admin
+  var backupSection = document.getElementById('admin-backup-section');
+  if (backupSection) backupSection.style.display = isAdmin() ? 'block' : 'none';
+}
+function toggleJugadores(teamId) {
+  var el = document.getElementById('jug-' + teamId);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+// ═══ EDIT TEAM ═══
+var editTeamId = null;
+
+function canEditTeam(t) {
+  if (isAdmin()) return true;
+  if (currentUser && currentUser.type === 'team' && String(currentUser.team.id) === String(t.id)) return true;
+  return false;
+}
+
+function openEditModal(teamId) {
+  data = loadData();
+  var team = null;
+  for (var i = 0; i < data.teams.length; i++) {
+    if (String(data.teams[i].id) === String(teamId)) { team = data.teams[i]; break; }
+  }
+  if (!team) { toast('Equipo no encontrado'); return; }
+  editTeamId = teamId;
+  editComprobanteFile = null;
+  document.getElementById('editTeamNameInput').value = team.nombre;
+  var html = '';
+  for (var j = 0; j < team.jugadores.length; j++) {
+    var p = team.jugadores[j];
+    html += editRowHtml(p.nombre, p.numero || '');
+  }
+  document.getElementById('editPlayersList').innerHTML = html;
+  // Comprobante status
+  document.getElementById('editCompFile').value = '';
+  if (team.comprobante) {
+    document.getElementById('editCompStatus').innerHTML = '✅ <span style="color:var(--teal);">Comprobante ya cargado</span>';
+    document.getElementById('editCompImg').src = team.comprobante;
+    document.getElementById('editCompPreview').style.display = 'block';
+    document.getElementById('editCompLabel').textContent = '📷 Cambiar comprobante';
+  } else {
+    document.getElementById('editCompStatus').innerHTML = '⚠️ Sin comprobante cargado';
+    document.getElementById('editCompPreview').style.display = 'none';
+    document.getElementById('editCompLabel').textContent = '📷 Subir comprobante de pago';
+  }
+  document.getElementById('editModal').classList.add('show');
+}
+
+function editRowHtml(name, num) {
+  return '<div class="edit-row">' +
+    '<input type="text" placeholder="Nombre" value="' + esc(name) + '">' +
+    '<input type="text" placeholder="#" value="' + esc(num) + '">' +
+    '<button class="rm-btn" onclick="this.parentElement.remove()">×</button>' +
+    '</div>';
+}
+
+function addEditRow() {
+  var div = document.createElement('div');
+  div.innerHTML = editRowHtml('', '');
+  document.getElementById('editPlayersList').appendChild(div.firstChild);
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('show');
+  editTeamId = null;
+}
+
+function saveEditTeam() {
+  if (!editTeamId) return;
+  var rows = document.querySelectorAll('#editPlayersList .edit-row');
+  var jugadores = [];
+  for (var i = 0; i < rows.length; i++) {
+    var inputs = rows[i].querySelectorAll('input');
+    var nombre = inputs[0].value.trim();
+    var numero = inputs[1].value.trim();
+    if (nombre) jugadores.push({ nombre: nombre, numero: numero || '-' });
+  }
+  if (jugadores.length < 1) { toast('Agregá al menos 1 jugador'); return; }
+  var nuevoNombre = document.getElementById('editTeamNameInput').value.trim();
+  if (!nuevoNombre) { toast('El nombre del equipo no puede estar vacío'); return; }
+  data = loadData();
+  for (var j = 0; j < data.teams.length; j++) {
+    if (String(data.teams[j].id) === String(editTeamId)) {
+      data.teams[j].nombre = nuevoNombre;
+      data.teams[j].jugadores = jugadores;
+      break;
+    }
+  }
+  saveData(data);
+  // Upload comprobante if new file selected
+  if (editComprobanteFile) {
+    toast('Subiendo comprobante...');
+    var savedTeamId = editTeamId;
+    uploadEditComprobante(savedTeamId, function(url) {
+      if (url) {
+        data = loadData();
+        for (var i = 0; i < data.teams.length; i++) {
+          if (String(data.teams[i].id) === String(savedTeamId)) {
+            data.teams[i].comprobante = url;
+            data.teams[i].status = 'pagado';
+            break;
+          }
+        }
+        saveData(data);
+        renderEquipos();
+        toast('Comprobante subido ✅');
+      } else {
+        toast('Error al subir comprobante');
+      }
+      editComprobanteFile = null;
+    });
+  }
+  closeEditModal();
+  renderEquipos();
+  toast('Equipo actualizado ✅');
+}
+
+function toggleStatus(id) {
+  data = loadData();
+  for (var i = 0; i < data.teams.length; i++) {
+    if (String(data.teams[i].id) === String(id)) {
+      data.teams[i].status = data.teams[i].status === 'pagado' ? 'inscrito' : 'pagado';
+      toast(data.teams[i].nombre + ': ' + (data.teams[i].status === 'pagado' ? '✅ Pagado' : 'Inscrito'));
+      break;
+    }
+  }
+  saveData(data);
+  renderEquipos();
+}
+
+function deleteTeam(id) {
+  if (!confirm('¿Eliminar este equipo?')) return;
+  data = loadData(); data.teams = data.teams.filter(function(t){return String(t.id)!==String(id);});
+  fbMaxTeams = data.teams.length; // Permitir reducción explícita por admin
+  saveData(data, true); renderEquipos(); toast('Equipo eliminado');
+}
+
+// FIXTURE
+var fixtureSport = 'futbol';
+function switchFixtureSport(sport) {
+  fixtureSport = sport;
+  var btns = document.querySelectorAll('#fixture-sport-tabs button');
+  var ss = ['futbol','voley','padel'];
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', ss[i] === sport);
+  renderFixture();
+}
+function renderFixture() {
+  data = loadData();
+  var content = document.getElementById('fixture-content');
+  var empty = document.getElementById('fixture-empty');
+  var hint = document.getElementById('fixture-admin-hint');
+  var matches = (data.fixture && data.fixture[fixtureSport]) || [];
+  if (matches.length === 0) {
+    content.innerHTML = ''; empty.style.display = 'block';
+    hint.innerHTML = isAdmin() ? '<button class="btn btn-primary btn-sm" onclick="openSorteoModal()" style="margin-top:10px;">🎲 Sortear Fixture</button>' : 'El admin generará el fixture pronto';
+    return;
+  }
+  empty.style.display = 'none';
+  var html = '';
+  for (var i = 0; i < matches.length; i++) {
+    var m = matches[i];
+    var sh = '';
+    if (m.scoreA !== undefined && m.scoreA !== null) {
+      sh = '<div class="match-result">' + m.scoreA + ' - ' + m.scoreB + '</div>';
+    } else if (isAdmin()) {
+      sh = '<div class="match-score"><input type="number" min="0" id="sA-'+fixtureSport+'-'+i+'" placeholder="-">' +
+        '<span class="score-sep">—</span><input type="number" min="0" id="sB-'+fixtureSport+'-'+i+'" placeholder="-">' +
+        '<button class="btn btn-primary btn-sm" onclick="saveScore(\''+fixtureSport+'\','+i+')">✓</button></div>';
+    } else {
+      sh = '<div style="text-align:center;color:var(--w30);font-size:13px;margin-top:6px;">Por jugar</div>';
+    }
+    html += '<div class="match-card"><div class="match-header">' +
+      '<span class="match-phase">'+esc(m.fase)+'</span><span class="match-time">'+esc(m.horario||'')+'</span></div>' +
+      '<div class="match-teams"><div class="match-team">'+esc(m.equipoA||'Por definir')+'</div>' +
+      '<div class="match-vs">VS</div><div class="match-team">'+esc(m.equipoB||'Por definir')+'</div></div>'+sh+'</div>';
+  }
+  if (isAdmin()) {
+    html += '<div style="text-align:center;margin-top:16px;"><button class="btn btn-danger btn-sm" onclick="resetFixture(\''+fixtureSport+'\')">Reiniciar Fixture</button></div>';
+  }
+  content.innerHTML = html;
+}
+function openSorteoModal() {
+  data = loadData();
+  var teams = getTeamsForSport(fixtureSport);
+  if (teams.length < 2) { toast('Se necesitan al menos 2 equipos'); return; }
+  var optA = '<option value="">(Ninguno)</option>';
+  var optB = '<option value="">(Ninguno)</option>';
+  for (var i = 0; i < teams.length; i++) {
+    optA += '<option value="'+esc(teams[i].nombre)+'">'+esc(teams[i].nombre)+'</option>';
+    optB += '<option value="'+esc(teams[i].nombre)+'">'+esc(teams[i].nombre)+'</option>';
+  }
+  document.getElementById('sepTeamA').innerHTML = optA;
+  document.getElementById('sepTeamB').innerHTML = optB;
+  document.getElementById('sorteoModal').classList.add('show');
+}
+function closeSorteoModal() { document.getElementById('sorteoModal').classList.remove('show'); }
+
+function getTeamsForSport(sport) {
+  data = loadData();
+  return data.teams.filter(function(t) {
+    if (sport === 'futbol') return t.deporte === 'futbol-masc' || t.deporte === 'futbol-fem';
+    return t.deporte === sport;
+  });
+}
+
+function shuffle(arr) {
+  for (var i = arr.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+  }
+  return arr;
+}
+
+function generateFixture() {
+  data = loadData();
+  var teams = getTeamsForSport(fixtureSport);
+  if (teams.length < 2) { toast('Se necesitan al menos 2 equipos'); return; }
+
+  var sepA = document.getElementById('sepTeamA').value;
+  var sepB = document.getElementById('sepTeamB').value;
+  if (sepA && sepB && sepA === sepB) { toast('Elegí dos equipos diferentes'); return; }
+
+  closeSorteoModal();
+
+  // Calcular tamaño del cuadro (potencia de 2)
+  var bracketSize = 2;
+  while (bracketSize < teams.length) bracketSize *= 2;
+  var totalRounds = Math.log2(bracketSize);
+  var roundNames = [];
+  if (totalRounds === 1) roundNames = ['FINAL'];
+  else if (totalRounds === 2) roundNames = ['Semifinal', 'FINAL'];
+  else if (totalRounds === 3) roundNames = ['Cuartos de Final', 'Semifinal', 'FINAL'];
+  else if (totalRounds === 4) roundNames = ['Octavos de Final', 'Cuartos de Final', 'Semifinal', 'FINAL'];
+  else roundNames = ['Ronda 1', 'Cuartos de Final', 'Semifinal', 'FINAL'];
+
+  // Separar equipos en 2 mitades del cuadro
+  var topHalf = [], botHalf = [], rest = [];
+  var teamSepA = null, teamSepB = null;
+
+  for (var i = 0; i < teams.length; i++) {
+    if (sepA && teams[i].nombre === sepA) teamSepA = teams[i];
+    else if (sepB && teams[i].nombre === sepB) teamSepB = teams[i];
+    else rest.push(teams[i]);
+  }
+
+  shuffle(rest);
+
+  var halfSize = bracketSize / 2;
+  var topSlots = halfSize, botSlots = halfSize;
+
+  // Poner equipos separados en mitades opuestas
+  if (teamSepA) { topHalf.push(teamSepA); topSlots--; }
+  if (teamSepB) { botHalf.push(teamSepB); botSlots--; }
+
+  // Distribuir el resto alternando
+  for (var i = 0; i < rest.length; i++) {
+    if (topHalf.length < topSlots && (topHalf.length <= botHalf.length || botHalf.length >= botSlots)) {
+      topHalf.push(rest[i]);
+    } else if (botHalf.length < botSlots) {
+      botHalf.push(rest[i]);
+    } else {
+      topHalf.push(rest[i]);
+    }
+  }
+
+  shuffle(topHalf);
+  shuffle(botHalf);
+
+  // Llenar con BYEs hasta completar la mitad
+  while (topHalf.length < halfSize) topHalf.push({ nombre: '(BYE)', isBye: true });
+  while (botHalf.length < halfSize) botHalf.push({ nombre: '(BYE)', isBye: true });
+
+  // Armar bracket completo: top + bottom
+  var bracket = topHalf.concat(botHalf);
+
+  // Generar partidos de primera ronda
+  var matches = [];
+  var hora = 8, minuto = 0;
+  var firstRoundCount = bracketSize / 2;
+  var matchNum = 1;
+
+  for (var i = 0; i < firstRoundCount; i++) {
+    var a = bracket[i*2], b = bracket[i*2+1];
+    // Si ambos son BYE, saltar
+    if (a.isBye && b.isBye) continue;
+    var h = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+    if (a.isBye || b.isBye) {
+      // El equipo real pasa directo - no generar partido
+      continue;
+    }
+    matches.push({
+      fase: roundNames[0], numero: matchNum, ronda: 0, pos: i,
+      equipoA: a.nombre, equipoB: b.nombre,
+      horario: h, scoreA: null, scoreB: null
+    });
+    matchNum++;
+    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+  }
+
+  // Generar rondas siguientes
+  for (var r = 1; r < totalRounds; r++) {
+    var prevRoundSize = bracketSize / Math.pow(2, r);
+    var thisRoundSize = prevRoundSize / 2;
+    for (var i = 0; i < thisRoundSize; i++) {
+      var h = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+      // Ver si alguno de los participantes ya avanza por BYE
+      var slotA = i * 2, slotB = i * 2 + 1;
+      var prevA1 = bracket[slotA * Math.pow(2, r)];
+      var prevA2 = bracket[slotA * Math.pow(2, r) + Math.pow(2, r-1)];
+      var prevB1 = bracket[slotB * Math.pow(2, r)];
+      var prevB2 = bracket[slotB * Math.pow(2, r) + Math.pow(2, r-1)];
+
+      var nameA = 'Por definir', nameB = 'Por definir';
+
+      // Si en la ronda anterior uno era BYE, el otro pasa directo
+      if (prevA1 && prevA2) {
+        if (prevA1.isBye && !prevA2.isBye) nameA = prevA2.nombre;
+        else if (!prevA1.isBye && prevA2.isBye) nameA = prevA1.nombre;
+        else if (prevA1.isBye && prevA2.isBye) nameA = '(BYE)';
+      }
+      if (prevB1 && prevB2) {
+        if (prevB1.isBye && !prevB2.isBye) nameB = prevB2.nombre;
+        else if (!prevB1.isBye && prevB2.isBye) nameB = prevB1.nombre;
+        else if (prevB1.isBye && prevB2.isBye) nameB = '(BYE)';
+      }
+
+      if (nameA === '(BYE)' && nameB === '(BYE)') continue;
+      if (nameA === '(BYE)' || nameB === '(BYE)') continue;
+
+      matches.push({
+        fase: roundNames[r] || 'Ronda ' + (r+1), numero: matchNum, ronda: r, pos: i,
+        equipoA: nameA, equipoB: nameB,
+        horario: h, scoreA: null, scoreB: null
+      });
+      matchNum++;
+      minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+    }
+  }
+
+  if (!data.fixture) data.fixture = {};
+  data.fixture[fixtureSport] = matches;
+  saveData(data);
+  renderFixture();
+  toast('🎲 Fixture sorteado: ' + matches.length + ' partidos');
+}
+function saveScore(sport,idx) {
+  var a=document.getElementById('sA-'+sport+'-'+idx), b=document.getElementById('sB-'+sport+'-'+idx);
+  if(!a||!b||a.value===''||b.value===''){toast('Ingresá ambos marcadores');return;}
+  data=loadData(); data.fixture[sport][idx].scoreA=parseInt(a.value); data.fixture[sport][idx].scoreB=parseInt(b.value);
+  saveData(data); renderFixture(); toast('Resultado guardado');
+}
+function resetFixture(sport) {
+  openPwModal('Reiniciar fixture de '+sport, function(){
+    data=loadData(); if(data.fixture)data.fixture[sport]=[]; saveData(data); renderFixture(); toast('Fixture reiniciado');
+  });
+}
+
+// GOLEADORES
+function renderGoleadores() {
+  data = loadData();
+  var list = document.getElementById('goleadores-list');
+  document.getElementById('goleador-form').style.display = isAdmin() ? 'block' : 'none';
+  if (!data.goleadores||data.goleadores.length===0) { list.innerHTML = '<p style="color:var(--w50);text-align:center;">Los goleadores se actualizarán durante el torneo</p>'; return; }
+  var sorted = data.goleadores.slice().sort(function(a,b){return b.goles-a.goles;});
+  var html = '<table class="gol-table"><thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th>';
+  if(isAdmin()) html+='<th></th>';
+  html+='</tr></thead><tbody>';
+  for(var i=0;i<sorted.length;i++){
+    var g=sorted[i], medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    html+='<tr><td>'+medal+(i+1)+'</td><td><strong>'+esc(g.jugador)+'</strong></td><td>'+esc(g.equipo)+'</td><td style="color:var(--gold);font-weight:700;">'+g.goles+'</td>';
+    if(isAdmin()) html+='<td><button class="btn btn-danger btn-sm" onclick="removeGoleador('+i+')">×</button></td>';
+    html+='</tr>';
+  }
+  html+='</tbody></table>'; list.innerHTML=html;
+}
+function addGoleador() {
+  var j=document.getElementById('gol-jugador').value.trim(), e=document.getElementById('gol-equipo').value.trim(), g=parseInt(document.getElementById('gol-goles').value)||0;
+  if(!j||!e){toast('Completá jugador y equipo');return;}
+  data=loadData(); if(!data.goleadores)data.goleadores=[];
+  data.goleadores.push({jugador:j,equipo:e,goles:g}); saveData(data);
+  document.getElementById('gol-jugador').value=''; document.getElementById('gol-equipo').value=''; document.getElementById('gol-goles').value='';
+  renderGoleadores(); toast('Goleador agregado');
+}
+function removeGoleador(idx) {
+  data=loadData(); var sorted=data.goleadores.slice().sort(function(a,b){return b.goles-a.goles;});
+  var r=sorted[idx]; data.goleadores=data.goleadores.filter(function(g){return!(g.jugador===r.jugador&&g.equipo===r.equipo);});
+  saveData(data); renderGoleadores(); toast('Eliminado');
+}
+
+// UTILS
+function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function renderAll(){renderEquipos();renderFixture();renderGoleadores();}
+
+// KEY LISTENERS
+document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.key==='Enter')confirmPw();});
+
+// DEPORTE CHANGE (padel adjusts player count hint)
+function onDeporteChange() {
+  var dep = document.getElementById('insc-deporte').value;
+  var pl = document.getElementById('players-list');
+  if (dep === 'padel') {
+    pl.innerHTML = '';
+    addPlayerRow();
+  }
+}
+
+// EDIT COMPROBANTE
+var editComprobanteFile = null;
+function previewEditComprobante(input) {
+  if (input.files && input.files[0]) {
+    editComprobanteFile = input.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('editCompImg').src = e.target.result;
+      document.getElementById('editCompPreview').style.display = 'block';
+      document.getElementById('editCompLabel').textContent = '📷 Cambiar comprobante';
+    };
+    reader.readAsDataURL(editComprobanteFile);
+  }
+}
+function uploadEditComprobante(teamId, callback) {
+  if (!editComprobanteFile) { callback(null); return; }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 800, maxH = 800;
+      var w = img.width, h = img.height;
+      if (w > maxW || h > maxH) {
+        var ratio = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+      callback(dataUrl);
+    };
+    img.onerror = function() { callback(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function() { callback(null); };
+  reader.readAsDataURL(editComprobanteFile);
+}
+
+// COMPROBANTE
+var comprobanteFile = null;
+function previewComprobante(input) {
+  if (input.files && input.files[0]) {
+    comprobanteFile = input.files[0];
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('comprobante-img').src = e.target.result;
+      document.getElementById('comprobante-preview').style.display = 'block';
+      document.getElementById('comprobante-label').style.display = 'none';
+    };
+    reader.readAsDataURL(comprobanteFile);
+  }
+}
+function removeComprobante() {
+  comprobanteFile = null;
+  document.getElementById('insc-comprobante').value = '';
+  document.getElementById('comprobante-preview').style.display = 'none';
+  document.getElementById('comprobante-label').style.display = 'block';
+}
+function uploadComprobante(teamId, callback) {
+  if (!comprobanteFile || !fbReady) { callback(null); return; }
+  // Compress image to base64 and store in Realtime Database (no Storage needed)
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var canvas = document.createElement('canvas');
+      var maxW = 800, maxH = 800;
+      var w = img.width, h = img.height;
+      if (w > maxW || h > maxH) {
+        var ratio = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+      callback(dataUrl);
+    };
+    img.onerror = function() { callback(null); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function() { callback(null); };
+  reader.readAsDataURL(comprobanteFile);
+}
+function verComprobanteById(teamId) {
+  var d = loadData();
+  for (var i = 0; i < d.teams.length; i++) {
+    if (String(d.teams[i].id) === String(teamId) && d.teams[i].comprobante) {
+      var win = window.open();
+      if (win) { win.document.write('<html><body style="margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;"><img src="'+d.teams[i].comprobante+'" style="max-width:100%;max-height:100vh;"></body></html>'); }
+      return;
+    }
+  }
+  toast('Comprobante no encontrado');
+}
+
+// INIT
+resetInscripcionForm();
+updateUserBadge();
+
+// SERVICE WORKER
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(function(reg) {
+    reg.addEventListener('updatefound', function() {
+      var newSW = reg.installing;
+      newSW.addEventListener('statechange', function() {
+        if (newSW.state === 'activated') {
+          document.getElementById('update-dot').style.display = 'block';
+        }
+      });
+    });
+    // Check for updates every 30 min
+    setInterval(function() { reg.update(); }, 1800000);
+  }).catch(function(err) { console.log('SW error:', err); });
+}
+
+function actualizarApp() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistration().then(function(reg) {
+      if (reg) {
+        reg.unregister().then(function() {
+          if ('caches' in window) {
+            caches.keys().then(function(names) {
+              Promise.all(names.map(function(n) { return caches.delete(n); })).then(function() {
+                toast('✅ Actualizando...');
+                setTimeout(function() { window.location.reload(true); }, 500);
+              });
+            });
+          } else {
+            toast('✅ Actualizando...');
+            setTimeout(function() { window.location.reload(true); }, 500);
+          }
+        });
+      } else {
+        toast('✅ Actualizando...');
+        setTimeout(function() { window.location.reload(true); }, 500);
+      }
+    });
+  } else {
+    window.location.reload(true);
+  }
+}
+</script>
+
+<!-- Update footer bar -->
+<div id="update-bar" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--navy2);border-top:1px solid var(--w20);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;">
+  <span style="font-size:11px;color:var(--w50);">v3.0 — Torneo 2026</span>
+  <button onclick="actualizarApp()" style="background:var(--teal);color:var(--navy);border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;position:relative;">
+    🔄 Actualizar
+    <span id="update-dot" style="display:none;position:absolute;top:-3px;right:-3px;width:8px;height:8px;background:#ff4444;border-radius:50%;"></span>
+  </button>
+</div>
+<div style="height:44px;"></div>
+
+</body>
+</html>

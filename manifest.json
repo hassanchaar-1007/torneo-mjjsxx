@@ -1,0 +1,24 @@
+{
+  "name": "Torneo de Integración 2026 — M.J.J.S.XX.",
+  "short_name": "Torneo 2026",
+  "description": "Torneo de Integración de Jornadas M.J.J.S.XX. 2026",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0f28",
+  "theme_color": "#0a0f28",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
