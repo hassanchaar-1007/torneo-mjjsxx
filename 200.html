@@ -1437,12 +1437,15 @@ function generateAllVsAll(teams) {
     matches[i].numero = i + 1;
     minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
   }
+  // Final: los 2 mejores de la tabla
+  var hf = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  matches.push({fase:'FINAL',numero:matches.length+1,ronda:'final',pos:0,equipoA:'1ro Tabla',equipoB:'2do Tabla',horario:hf,scoreA:null,scoreB:null});
   if (!data.fixture) data.fixture = {};
   data.fixture[fixtureSport] = matches;
   if (!data.groups) data.groups = {};
   data.groups[fixtureSport] = [{name:'TODOS VS TODOS', teams: names}];
   saveData(data); renderFixture();
-  toast('🏐 Todos contra todos: ' + names.length + ' equipos, ' + matches.length + ' partidos');
+  toast('🏐 Todos contra todos + Final: ' + names.length + ' equipos, ' + matches.length + ' partidos');
 }
 function saveScore(sport,idx) {
   var a=document.getElementById('sA-'+sport+'-'+idx), b=document.getElementById('sB-'+sport+'-'+idx);
