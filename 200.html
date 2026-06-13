@@ -722,6 +722,18 @@ function renderAll() {
 }
 
 var data = loadData();
+
+// ── Inyectar J48 si no existe ──
+(function(){
+  var found = false;
+  for(var i=0;i<data.teams.length;i++){if(data.teams[i]&&data.teams[i].nombre==='J48'){found=true;break;}}
+  if(!found){
+    data.teams.push({id:data.teams.length,nombre:"J48",deporte:"futbol-masc",capitan:"Álvaro Gaston",contacto:"",status:"pendiente",jugadores:[{nombre:"Álvaro Gaston",numero:""},{nombre:"Ricardo Florentin",numero:""},{nombre:"Víctor Zacarías",numero:""},{nombre:"Toniño",numero:""},{nombre:"Alcides Cantero",numero:""},{nombre:"Axel Mendoza",numero:""},{nombre:"Cristhian Cubilla",numero:""},{nombre:"Mathias Dibujito",numero:""},{nombre:"Mathias Pika",numero:""},{nombre:"Alfalfa",numero:""},{nombre:"Hugo Bazán",numero:""},{nombre:"Ivan Davalos",numero:""},{nombre:"Alex Flores",numero:""}]});
+    saveData(data, true);
+    console.log('J48 inyectado automáticamente');
+  }
+})();
+
 var currentUser = null;
 
 // NAV
