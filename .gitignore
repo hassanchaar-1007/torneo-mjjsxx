@@ -1,0 +1,16 @@
+# ===== Secretos / local =====
+.env
+.env.*
+
+# ===== Backups de datos del evento (pueden tener datos de participantes) =====
+torneo_backup_*.json
+*_backup_*.json
+
+# ===== Node (futuro) =====
+node_modules/
+
+# ===== Sistema =====
+desktop.ini
+Thumbs.db
+ehthumbs.db
+.DS_Store
