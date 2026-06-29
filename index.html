@@ -213,12 +213,19 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="modal-overlay" id="loginModal">
   <div class="modal">
     <h2>Iniciar Sesión</h2>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Ingresá tu PIN de equipo o el código de admin</p>
-    <input type="number" id="pinInput" placeholder="PIN" inputmode="numeric">
-    <div class="error" id="loginError"></div>
-    <div class="btn-row">
+    <p style="color:var(--w50);font-size:13px;margin-bottom:10px;">👤 Equipos: ingresá tu PIN.</p>
+    <input type="number" id="pinInput" placeholder="PIN de equipo" inputmode="numeric">
+    <div class="btn-row" style="margin-top:8px;">
       <button class="btn btn-secondary" onclick="closeLogin()">Cancelar</button>
       <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
+    </div>
+    <div style="border-top:1px solid var(--w30);margin:14px 0 10px;"></div>
+    <p style="color:var(--w50);font-size:12px;margin-bottom:8px;">🔑 Acceso staff / admin</p>
+    <input type="email" id="adminEmail" placeholder="Email" autocomplete="username" style="width:100%;padding:8px 10px;margin:4px 0;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;">
+    <input type="password" id="adminPass" placeholder="Contraseña" autocomplete="current-password" style="width:100%;padding:8px 10px;margin:4px 0;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;">
+    <div class="error" id="loginError"></div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-primary" onclick="doAdminLogin()">Entrar como staff</button>
     </div>
   </div>
 </div>
@@ -544,6 +551,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 
 <script>
@@ -571,6 +579,7 @@ try {
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
 var ADMIN_PIN = '1007';
+var ADMIN_EMAIL = 'hassan.chaar@gmail.com'; // escritura en Firebase solo para este email (ver reglas RTDB)
 var STORE_KEY = 'torneo_mjjsxx_2026';
 var DEFAULT_DATA = { teams: [], fixture: {}, goleadores: [], nextPin: 1, campeones: [{ anio: 2026, campeon: 'J48' }] };
 var fbSynced = false; // protección: no guardar a Firebase hasta sincronizar
@@ -778,9 +787,14 @@ function showPage(name) {
 
 // AUTH
 function openLogin() {
-  if (currentUser) { currentUser = null; updateUserBadge(); toast('Sesión cerrada'); renderAll(); return; }
+  if (currentUser) {
+    if (currentUser.type === 'admin' && fbReady && firebase.auth) { try { firebase.auth().signOut(); } catch(e){} }
+    currentUser = null; updateUserBadge(); toast('Sesión cerrada'); renderAll(); return;
+  }
   document.getElementById('loginModal').classList.add('show');
   document.getElementById('pinInput').value = '';
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPass').value = '';
   document.getElementById('loginError').textContent = '';
   setTimeout(function(){ document.getElementById('pinInput').focus(); }, 100);
 }
@@ -788,10 +802,7 @@ function closeLogin() { document.getElementById('loginModal').classList.remove('
 
 function doLogin() {
   var pin = document.getElementById('pinInput').value.trim();
-  if (!pin) { document.getElementById('loginError').textContent = 'Ingresá un PIN'; return; }
-  if (pin === ADMIN_PIN) {
-    currentUser = { type: 'admin' }; closeLogin(); updateUserBadge(); toast('Bienvenido, Admin'); renderAll(); return;
-  }
+  if (!pin) { document.getElementById('loginError').textContent = 'Ingresá tu PIN'; return; }
   var team = null;
   for (var i = 0; i < data.teams.length; i++) {
     if (String(data.teams[i].pin) === pin) { team = data.teams[i]; break; }
@@ -800,6 +811,32 @@ function doLogin() {
     currentUser = { type: 'team', team: team }; closeLogin(); updateUserBadge(); toast('Bienvenido, ' + team.nombre); renderAll(); return;
   }
   document.getElementById('loginError').textContent = 'PIN incorrecto';
+}
+
+function doAdminLogin() {
+  var email = (document.getElementById('adminEmail').value || '').trim();
+  var pass = document.getElementById('adminPass').value || '';
+  var errEl = document.getElementById('loginError');
+  if (!email || !pass) { errEl.textContent = 'Completá email y contraseña'; return; }
+  if (!fbReady || typeof firebase === 'undefined' || !firebase.auth) { errEl.textContent = 'Sin conexión a Firebase'; return; }
+  errEl.textContent = 'Entrando...';
+  firebase.auth().signInWithEmailAndPassword(email, pass).then(function(){
+    closeLogin(); toast('Bienvenido, staff'); // currentUser se setea en onAuthStateChanged
+  }).catch(function(){
+    errEl.textContent = 'Email o contraseña incorrectos';
+  });
+}
+
+// Restaura la sesión de staff al recargar y refleja el estado de Firebase Auth
+if (fbReady && typeof firebase !== 'undefined' && firebase.auth) {
+  firebase.auth().onAuthStateChanged(function(user){
+    if (user && user.email === ADMIN_EMAIL) {
+      currentUser = { type: 'admin' };
+    } else if (currentUser && currentUser.type === 'admin') {
+      currentUser = null;
+    }
+    try { updateUserBadge(); renderAll(); } catch(e){}
+  });
 }
 
 function updateUserBadge() {
@@ -1744,6 +1781,7 @@ function renderAll(){renderEquipos();renderFixture();renderGoleadores();try{rend
 
 // KEY LISTENERS
 document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+document.getElementById('adminPass').addEventListener('keydown',function(e){if(e.key==='Enter')doAdminLogin();});
 document.getElementById('pwInput').addEventListener('keydown',function(e){if(e.key==='Enter')confirmPw();});
 
 // DEPORTE CHANGE (padel adjusts player count hint)
