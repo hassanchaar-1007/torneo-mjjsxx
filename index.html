@@ -203,6 +203,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button onclick="showPage('equipos')">Equipos</button>
     <button onclick="showPage('fixture')">Fixture</button>
     <button onclick="showPage('goleadores')">Goleadores</button>
+    <button onclick="showPage('campeones')">🏆 Campeones</button>
     <button onclick="showPage('reglamento')">Reglamento</button>
   </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
@@ -443,6 +444,22 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
+<!-- ═══ PAGE: CAMPEONES ═══ -->
+<div class="page" id="page-campeones">
+  <div class="section-page">
+    <div class="section-title">🏆 Salón de Campeones</div>
+    <div class="card">
+      <div id="campeones-list"></div>
+      <div id="campeon-form" style="display:none;margin-top:16px;border-top:1px solid var(--w30);padding-top:16px;">
+        <h3 style="font-size:15px;margin-bottom:10px;">Agregar Campeón</h3>
+        <div class="form-group"><label>Año</label><input type="number" id="camp-anio" placeholder="2025" min="1900" max="2100"></div>
+        <div class="form-group"><label>Campeón</label><input type="text" id="camp-nombre" placeholder="Equipo / Patrulla"></div>
+        <button class="btn btn-primary btn-sm" onclick="addCampeon()">Agregar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ PAGE: REGLAMENTO ═══ -->
 <div class="page" id="page-reglamento">
   <div class="section-page">
@@ -555,7 +572,7 @@ try {
 
 var ADMIN_PIN = '1007';
 var STORE_KEY = 'torneo_mjjsxx_2026';
-var DEFAULT_DATA = { teams: [], fixture: {}, goleadores: [], nextPin: 1 };
+var DEFAULT_DATA = { teams: [], fixture: {}, goleadores: [], nextPin: 1, campeones: [{ anio: 2026, campeon: 'J48' }] };
 var fbSynced = false; // protección: no guardar a Firebase hasta sincronizar
 var fbMaxTeams = 0; // máximo de equipos conocidos desde Firebase — NUNCA guardar menos que esto
 
@@ -573,6 +590,12 @@ function fixArrays(d) {
     d.goleadores = arr2;
   }
   if (!d.goleadores) d.goleadores = [];
+  if (d.campeones && !Array.isArray(d.campeones)) {
+    var arrc = []; var keysc = Object.keys(d.campeones);
+    for (var ci = 0; ci < keysc.length; ci++) { if (d.campeones[keysc[ci]]) arrc.push(d.campeones[keysc[ci]]); }
+    d.campeones = arrc;
+  }
+  if (!d.campeones) d.campeones = [{ anio: 2026, campeon: 'J48' }];
   if (!d.fixture) d.fixture = {};
   if (!d.nextPin) d.nextPin = 1;
   for (var j = 0; j < d.teams.length; j++) {
@@ -731,6 +754,7 @@ function renderAll() {
   try { renderEquipos(); } catch(e) {}
   try { renderFixture(); } catch(e) {}
   try { renderGoleadores(); } catch(e) {}
+  try { renderCampeones(); } catch(e) {}
   try { updateTabCounts(); } catch(e) {}
 }
 
@@ -743,11 +767,12 @@ function showPage(name) {
   for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
   document.getElementById('page-' + name).classList.add('active');
   var btns = document.querySelectorAll('#navTabs button');
-  var names = ['inicio','inscripcion','equipos','fixture','goleadores','reglamento'];
+  var names = ['inicio','inscripcion','equipos','fixture','goleadores','campeones','reglamento'];
   for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', names[i] === name);
   if (name === 'equipos') renderEquipos();
   if (name === 'fixture') renderFixture();
   if (name === 'goleadores') renderGoleadores();
+  if (name === 'campeones') renderCampeones();
   if (name === 'inscripcion') resetInscripcionForm();
 }
 
@@ -1177,28 +1202,104 @@ function renderFixture() {
     for (var g = 0; g < groups.length; g++) {
       var grp = groups[g];
       var gMatches = matches.filter(function(m){return m.fase === grp.name;});
-      var st = calcGroupStandings(grp.teams, gMatches);
-      html += '<div class="group-section"><h3 class="group-title">' + esc(grp.name) + '</h3>';
-      html += '<table class="group-table"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead><tbody>';
-      for (var i = 0; i < st.order.length; i++) {
-        var t = st.order[i], s = st.stats[t], dg = s.gf - s.gc;
-        html += '<tr' + (i < 2 ? ' class="qualifies"' : '') + '><td>' + (i+1) + '</td><td>' + esc(t) + '</td>';
-        html += '<td>'+s.pj+'</td><td>'+s.pg+'</td><td>'+s.pe+'</td><td>'+s.pp+'</td>';
-        html += '<td>'+s.gf+'</td><td>'+s.gc+'</td><td>'+(dg>0?'+':'')+dg+'</td><td class="pts">'+s.pts+'</td></tr>';
+      if (grp.isPadel) {
+        // Tabla de puntos individuales acumulados para pádel americano
+        var padelPlayers = grp.players || grp.teams || [];
+        var st = calcPadelStandings(padelPlayers, matches);
+        html += '<div class="group-section"><h3 class="group-title">🏓 ' + esc(grp.name) + ' — Puntos Individuales</h3>';
+        html += '<table class="group-table"><thead><tr><th>#</th><th>Jugador</th><th>PJ</th><th>PTS</th></tr></thead><tbody>';
+        for (var i = 0; i < st.order.length; i++) {
+          var t = st.order[i], s = st.stats[t];
+          html += '<tr' + (i === 0 ? ' class="qualifies"' : '') + '><td>' + (i+1) + '</td><td>' + esc(t) + '</td>';
+          html += '<td>'+s.pj+'</td><td class="pts">'+s.pf+'</td></tr>';
+        }
+        html += '</tbody></table></div>';
+      } else {
+        var st = calcGroupStandings(grp.teams, gMatches);
+        html += '<div class="group-section"><h3 class="group-title">' + esc(grp.name) + '</h3>';
+        html += '<table class="group-table"><thead><tr><th>#</th><th>Equipo</th><th>PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th></tr></thead><tbody>';
+        for (var i = 0; i < st.order.length; i++) {
+          var t = st.order[i], s = st.stats[t], dg = s.gf - s.gc;
+          html += '<tr' + (i < 2 ? ' class="qualifies"' : '') + '><td>' + (i+1) + '</td><td>' + esc(t) + '</td>';
+          html += '<td>'+s.pj+'</td><td>'+s.pg+'</td><td>'+s.pe+'</td><td>'+s.pp+'</td>';
+          html += '<td>'+s.gf+'</td><td>'+s.gc+'</td><td>'+(dg>0?'+':'')+dg+'</td><td class="pts">'+s.pts+'</td></tr>';
+        }
+        html += '</tbody></table></div>';
       }
-      html += '</tbody></table></div>';
     }
   }
+  // Resolver nombres de semis/final basado en tabla de posiciones
+  var resolved = {};
+  if (groups) {
+    for (var g = 0; g < groups.length; g++) {
+      var grp = groups[g];
+      var gMatches = matches.filter(function(m){return m.fase === grp.name;});
+      var gn = grp.name; // "GRUPO A" o "GRUPO B" o "TODOS VS TODOS"
+      if (grp.isPadel) continue;
+      var st2 = calcGroupStandings(grp.teams, gMatches);
+      // Guardar con todas las variantes de nombre (GRUPO A, Grupo A, etc.)
+      var gnLower = gn.charAt(0) + gn.slice(1).toLowerCase(); // "Grupo a" → "Grupo A"
+      // Corregir capitalización: "GRUPO A" → "Grupo A"
+      var gnTitle = gn.split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();}).join(' ');
+      if (st2.order.length >= 1) { resolved['1ro ' + gn] = st2.order[0]; resolved['1ro ' + gnTitle] = st2.order[0]; }
+      if (st2.order.length >= 2) { resolved['2do ' + gn] = st2.order[1]; resolved['2do ' + gnTitle] = st2.order[1]; }
+      if (st2.order.length >= 1) resolved['1ro Tabla'] = st2.order[0];
+      if (st2.order.length >= 2) resolved['2do Tabla'] = st2.order[1];
+    }
+  }
+  // Resolver ganadores de semis y final (con soporte de penales)
+  function getMatchWinnerSide(m) {
+    if (m.scoreA > m.scoreB) return 'A';
+    if (m.scoreB > m.scoreA) return 'B';
+    // Empate: revisar penales
+    if (m.penalesA !== null && m.penalesA !== undefined && m.penalesB !== null && m.penalesB !== undefined) {
+      return m.penalesA > m.penalesB ? 'A' : 'B';
+    }
+    return null; // empate sin penales
+  }
+  for (var i = 0; i < matches.length; i++) {
+    var m = matches[i];
+    if (m.fase === 'SEMIFINAL' && m.scoreA !== null && m.scoreA !== undefined) {
+      var side = getMatchWinnerSide(m);
+      var winner = side === 'A' ? (resolved[m.equipoA] || m.equipoA) : (resolved[m.equipoB] || m.equipoB);
+      resolved['Ganador Semi ' + (m.pos + 1)] = winner;
+    }
+  }
+
+  // Detectar campeón
+  var champion = null;
+  for (var i = 0; i < matches.length; i++) {
+    if (matches[i].fase === 'FINAL' && matches[i].scoreA !== null && matches[i].scoreA !== undefined) {
+      var fa = matches[i], nameA = resolved[fa.equipoA] || fa.equipoA, nameB = resolved[fa.equipoB] || fa.equipoB;
+      var side = getMatchWinnerSide(fa);
+      if (side) champion = side === 'A' ? nameA : nameB;
+    }
+  }
+  if (champion) {
+    html += '<div style="text-align:center;margin:20px 0;padding:20px;background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,215,0,0.05));border:2px solid var(--gold);border-radius:16px;">';
+    html += '<div style="font-size:40px;margin-bottom:8px;">🏆</div>';
+    html += '<div style="color:var(--gold);font-size:22px;font-weight:800;">CAMPEÓN</div>';
+    html += '<div style="color:var(--white);font-size:20px;font-weight:700;margin-top:6px;">' + esc(champion) + '</div>';
+    html += '</div>';
+  }
+
   var lastFase = '';
   for (var i = 0; i < matches.length; i++) {
     var m = matches[i];
+    // Resolver nombres placeholder
+    var displayA = resolved[m.equipoA] || m.equipoA || 'Por definir';
+    var displayB = resolved[m.equipoB] || m.equipoB || 'Por definir';
     if (m.fase !== lastFase) {
       lastFase = m.fase;
       html += '<div class="fase-divider">' + esc(m.fase) + '</div>';
     }
     var sh = '';
     if (m.scoreA !== undefined && m.scoreA !== null) {
-      sh = '<div class="match-result">' + m.scoreA + ' - ' + m.scoreB + '</div>';
+      sh = '<div class="match-result">' + m.scoreA + ' - ' + m.scoreB;
+      if (m.penalesA !== null && m.penalesA !== undefined) {
+        sh += '<div style="font-size:11px;color:var(--w50);margin-top:2px;">(Pen: ' + m.penalesA + ' - ' + m.penalesB + ')</div>';
+      }
+      sh += '</div>';
     } else if (isAdmin()) {
       sh = '<div class="match-score"><input type="number" min="0" id="sA-'+fixtureSport+'-'+i+'" placeholder="-">' +
         '<span class="score-sep">—</span><input type="number" min="0" id="sB-'+fixtureSport+'-'+i+'" placeholder="-">' +
@@ -1208,8 +1309,8 @@ function renderFixture() {
     }
     html += '<div class="match-card"><div class="match-header">' +
       '<span class="match-phase">'+esc(m.fase)+(m.jornada?' - J'+m.jornada:'')+'</span><span class="match-time">'+esc(m.horario||'')+'</span></div>' +
-      '<div class="match-teams"><div class="match-team">'+esc(m.equipoA||'Por definir')+'</div>' +
-      '<div class="match-vs">VS</div><div class="match-team">'+esc(m.equipoB||'Por definir')+'</div></div>'+sh+'</div>';
+      '<div class="match-teams"><div class="match-team">'+esc(displayA)+'</div>' +
+      '<div class="match-vs">VS</div><div class="match-team">'+esc(displayB)+'</div></div>'+sh+'</div>';
   }
   if (isAdmin()) {
     html += '<div style="text-align:center;margin-top:16px;"><button class="btn btn-danger btn-sm" onclick="resetFixture(\''+fixtureSport+'\')">Reiniciar Fixture</button></div>';
@@ -1323,11 +1424,18 @@ function generateGroupStage(teams, sepA, sepB) {
   for (var i = 0; i < allMatches.length; i++) {
     allMatches[i].horario = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
     allMatches[i].numero = i + 1;
-    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+    minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
   }
-  // Final: 1ro de cada grupo
+  // Semifinales: 1ro A vs 2do B, 1ro B vs 2do A
+  var hs1 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:0,equipoA:'1ro Grupo A',equipoB:'2do Grupo B',horario:hs1,scoreA:null,scoreB:null});
+  minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
+  var hs2 = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+  allMatches.push({fase:'SEMIFINAL',numero:allMatches.length+1,ronda:'semi',pos:1,equipoA:'1ro Grupo B',equipoB:'2do Grupo A',horario:hs2,scoreA:null,scoreB:null});
+  minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
+  // Final
   var hf = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
-  allMatches.push({fase:'FINAL',numero:allMatches.length+1,ronda:'final',pos:0,equipoA:'1ro Grupo A',equipoB:'1ro Grupo B',horario:hf,scoreA:null,scoreB:null});
+  allMatches.push({fase:'FINAL',numero:allMatches.length+1,ronda:'final',pos:0,equipoA:'Ganador Semi 1',equipoB:'Ganador Semi 2',horario:hf,scoreA:null,scoreB:null});
   if (!data.fixture) data.fixture = {};
   data.fixture[fixtureSport] = allMatches;
   if (!data.groups) data.groups = {};
@@ -1386,7 +1494,7 @@ function generateBracket(teams, sepA, sepB) {
     if (a.isBye || b.isBye) continue;
     var h = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
     matches.push({fase:roundNames[0],numero:matchNum,ronda:0,pos:i,equipoA:a.nombre,equipoB:b.nombre,horario:h,scoreA:null,scoreB:null});
-    matchNum++; minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+    matchNum++; minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
   }
   for (var r = 1; r < totalRounds; r++) {
     var prevRoundSize = bracketSize / Math.pow(2,r), thisRoundSize = prevRoundSize / 2;
@@ -1401,7 +1509,7 @@ function generateBracket(teams, sepA, sepB) {
       if (nA==='(BYE)'&&nB==='(BYE)') continue;
       if (nA==='(BYE)'||nB==='(BYE)') continue;
       matches.push({fase:roundNames[r]||'Ronda '+(r+1),numero:matchNum,ronda:r,pos:i,equipoA:nA,equipoB:nB,horario:h,scoreA:null,scoreB:null});
-      matchNum++; minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+      matchNum++; minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
     }
   }
   if (!data.fixture) data.fixture = {};
@@ -1423,6 +1531,8 @@ function generateFixture() {
     generateGroupStage(teams, sepA, sepB);
   } else if (fixtureSport === 'voley') {
     generateAllVsAll(teams);
+  } else if (fixtureSport === 'padel') {
+    generatePadelAmericano(teams);
   } else {
     generateBracket(teams, sepA, sepB);
   }
@@ -1436,7 +1546,7 @@ function generateAllVsAll(teams) {
   for (var i = 0; i < matches.length; i++) {
     matches[i].horario = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
     matches[i].numero = i + 1;
-    minuto += 30; if (minuto >= 60) { hora++; minuto = 0; }
+    minuto += 25; if (minuto >= 60) { hora++; minuto -= 60; }
   }
   // Final: los 2 mejores de la tabla
   var hf = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
@@ -1448,6 +1558,104 @@ function generateAllVsAll(teams) {
   saveData(data); renderFixture();
   toast('🏐 Todos contra todos + Final: ' + names.length + ' equipos, ' + matches.length + ' partidos');
 }
+
+function generatePadelAmericano(teams) {
+  // Recopilar todos los jugadores individuales de pádel
+  var allPlayers = [];
+  for (var i = 0; i < teams.length; i++) {
+    var jug = teams[i].jugadores || [];
+    for (var j = 0; j < jug.length; j++) {
+      allPlayers.push(jug[j].nombre || jug[j]);
+    }
+  }
+  if (allPlayers.length < 4) { toast('Se necesitan al menos 4 jugadores para pádel'); return; }
+  shuffle(allPlayers);
+  // Si impar, uno descansa por ronda (rotativo)
+  var sitOut = (allPlayers.length % 2 !== 0);
+  var numRounds = Math.min(allPlayers.length - 1, 8);
+  var usedPairs = {};
+  var matches = [];
+
+  function pairKey(a, b) { return a < b ? a + '|' + b : b + '|' + a; }
+
+  function findUniquePairs(players) {
+    // Intentar hasta 200 shuffles para encontrar parejas sin repetir
+    for (var attempt = 0; attempt < 200; attempt++) {
+      var list = players.slice();
+      shuffle(list);
+      var pairs = [], valid = true;
+      for (var i = 0; i + 1 < list.length; i += 2) {
+        var key = pairKey(list[i], list[i+1]);
+        if (usedPairs[key]) { valid = false; break; }
+        pairs.push([list[i], list[i+1]]);
+      }
+      if (valid) return pairs;
+    }
+    // Fallback: devolver lo que hay
+    var list = players.slice(); shuffle(list);
+    var pairs = [];
+    for (var i = 0; i + 1 < list.length; i += 2) pairs.push([list[i], list[i+1]]);
+    return pairs;
+  }
+
+  for (var r = 0; r < numRounds; r++) {
+    var roundPlayers = allPlayers.slice();
+    // Si impar, uno descansa (rotativo)
+    if (sitOut) roundPlayers.splice(r % roundPlayers.length, 1);
+
+    var pairs = findUniquePairs(roundPlayers);
+    // Marcar parejas como usadas
+    for (var p = 0; p < pairs.length; p++) {
+      usedPairs[pairKey(pairs[p][0], pairs[p][1])] = true;
+    }
+    // Crear partidos: pareja vs pareja
+    for (var i = 0; i + 1 < pairs.length; i += 2) {
+      matches.push({
+        fase: 'RONDA ' + (r + 1), jornada: r + 1,
+        equipoA: pairs[i][0] + ' / ' + pairs[i][1],
+        equipoB: pairs[i+1][0] + ' / ' + pairs[i+1][1],
+        jugA1: pairs[i][0], jugA2: pairs[i][1],
+        jugB1: pairs[i+1][0], jugB2: pairs[i+1][1],
+        scoreA: null, scoreB: null, ronda: 'padel'
+      });
+    }
+  }
+  // Asignar horarios (cada 15 min)
+  var hora = 8, minuto = 0;
+  for (var i = 0; i < matches.length; i++) {
+    matches[i].horario = (hora<10?'0':'')+hora+':'+(minuto<10?'0':'')+minuto;
+    matches[i].numero = i + 1;
+    minuto += 15; if (minuto >= 60) { hora++; minuto -= 60; }
+  }
+  if (!data.fixture) data.fixture = {};
+  data.fixture[fixtureSport] = matches;
+  if (!data.groups) data.groups = {};
+  data.groups[fixtureSport] = [{name:'PÁDEL AMERICANO', players: allPlayers, isPadel: true}];
+  saveData(data); renderFixture();
+  toast('🏓 Pádel Americano: ' + allPlayers.length + ' jugadores, ' + numRounds + ' rondas, ' + matches.length + ' partidos. Parejas únicas!');
+}
+
+function calcPadelStandings(players, matches) {
+  var stats = {};
+  for (var i = 0; i < players.length; i++) {
+    stats[players[i]] = {pj:0, pf:0};
+  }
+  for (var i = 0; i < matches.length; i++) {
+    var m = matches[i];
+    if (m.scoreA === null || m.scoreA === undefined) continue;
+    // Ambos jugadores del equipo A reciben scoreA puntos
+    if (m.jugA1 && stats[m.jugA1]) { stats[m.jugA1].pj++; stats[m.jugA1].pf += m.scoreA; }
+    if (m.jugA2 && stats[m.jugA2]) { stats[m.jugA2].pj++; stats[m.jugA2].pf += m.scoreA; }
+    // Ambos jugadores del equipo B reciben scoreB puntos
+    if (m.jugB1 && stats[m.jugB1]) { stats[m.jugB1].pj++; stats[m.jugB1].pf += m.scoreB; }
+    if (m.jugB2 && stats[m.jugB2]) { stats[m.jugB2].pj++; stats[m.jugB2].pf += m.scoreB; }
+  }
+  var sorted = players.slice().sort(function(a,b) {
+    return stats[b].pf - stats[a].pf;
+  });
+  return {order: sorted, stats: stats};
+}
+
 function saveScore(sport,idx) {
   var a=document.getElementById('sA-'+sport+'-'+idx), b=document.getElementById('sB-'+sport+'-'+idx);
   if(!a||!b||a.value===''||b.value===''){toast('Ingresá ambos marcadores');return;}
@@ -1492,10 +1700,47 @@ function removeGoleador(idx) {
   saveData(data); renderGoleadores(); toast('Eliminado');
 }
 
+// CAMPEONES (Salón de Campeones)
+function renderCampeones() {
+  data = loadData();
+  var list = document.getElementById('campeones-list');
+  if (!list) return;
+  var form = document.getElementById('campeon-form');
+  if (form) form.style.display = isAdmin() ? 'block' : 'none';
+  var c = (data.campeones || []).slice().sort(function(a,b){ return (b.anio||0)-(a.anio||0); });
+  if (c.length === 0) { list.innerHTML = '<p style="color:var(--w50);text-align:center;">Aún no hay campeones registrados</p>'; return; }
+  var html = '';
+  for (var i = 0; i < c.length; i++) {
+    var medal = i === 0 ? '🏆' : '🎖️';
+    html += '<div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:8px;padding:12px 14px;border:1px solid var(--w30);">'
+      + '<div style="font-size:26px;">' + medal + '</div>'
+      + '<div style="flex:1;"><div style="font-size:12px;color:var(--w50);">' + esc(String(c[i].anio || '')) + '</div>'
+      + '<div style="font-size:17px;font-weight:800;color:var(--gold);">' + esc(c[i].campeon || '') + '</div></div>';
+    if (isAdmin()) html += '<button class="btn btn-danger btn-sm" onclick="removeCampeon(' + Number(c[i].anio) + ')">×</button>';
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+function addCampeon() {
+  var anio = parseInt(document.getElementById('camp-anio').value) || 0;
+  var nombre = document.getElementById('camp-nombre').value.trim();
+  if (!anio || !nombre) { toast('Completá año y campeón'); return; }
+  data = loadData(); if (!data.campeones) data.campeones = [];
+  data.campeones = data.campeones.filter(function(x){ return Number(x.anio) !== anio; });
+  data.campeones.push({ anio: anio, campeon: nombre });
+  saveData(data);
+  document.getElementById('camp-anio').value = ''; document.getElementById('camp-nombre').value = '';
+  renderCampeones(); toast('Campeón agregado 🏆');
+}
+function removeCampeon(anio) {
+  data = loadData(); data.campeones = (data.campeones || []).filter(function(x){ return Number(x.anio) !== Number(anio); });
+  saveData(data); renderCampeones(); toast('Eliminado');
+}
+
 // UTILS
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
-function renderAll(){renderEquipos();renderFixture();renderGoleadores();}
+function renderAll(){renderEquipos();renderFixture();renderGoleadores();try{renderCampeones();}catch(e){}}
 
 // KEY LISTENERS
 document.getElementById('pinInput').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
