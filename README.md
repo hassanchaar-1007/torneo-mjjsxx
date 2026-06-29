@@ -4,7 +4,7 @@ PWA para gestionar un **torneo deportivo de integración** del movimiento (fútb
 
 ## Stack
 - **App:** todo en `index.html` (HTML + CSS + JS vanilla, sin framework ni build).
-- **PWA:** `sw.js` (offline), `manifest.json`, íconos. `200.html` = fallback de **Netlify** (SPA).
+- **PWA:** `sw.js` (offline), `manifest.json`, íconos. `200.html` = fallback de **Surge.sh** (SPA).
 - **Datos:** en el navegador (localStorage) con **backup/restauración por JSON**. Sin backend.
 
 ## Cómo correr (local)
@@ -15,7 +15,8 @@ python -m http.server 8000
 ```
 
 ## Deploy
-Estático en **Netlify** (la carpeta del repo se publica tal cual; `200.html` maneja el ruteo SPA/offline).
+Actualmente estático en **Surge.sh** (`200.html` maneja el ruteo SPA/offline).
+**Plan: migrar a Cloudflare Pages** (consistencia con CHS/Estudio + mejor CDN/límites). Al migrar: `200.html` → `_redirects` con `/* /index.html 200`.
 
 ## Estructura
 | Archivo | Para qué |
