@@ -10,7 +10,7 @@
 ## Stack
 - **Todo en `index.html`** (~97 KB): HTML + CSS + JS **vanilla**, sin framework ni build. Paleta navy/neón.
 - **PWA**: `sw.js` (service worker, funciona offline), `manifest.json`, íconos. `200.html` = fallback SPA (convención de **Surge.sh** → está desplegada en Surge). **Plan: migrar a Cloudflare Pages** (consistencia con CHS/Estudio); al migrar, `200.html` → `_redirects`.
-- **Datos**: en el navegador (localStorage) con **backup/restauración por JSON** (archivos `torneo_backup_*.json`). No tiene backend ni base de datos.
+- **Datos**: **Firebase Realtime Database** (sync en tiempo real entre dispositivos) + caché en localStorage + **backup/restauración por JSON** (`torneo_backup_*.json`, y backups rotativos en Firebase). El código tiene **protección anti-pérdida** (`saveData`/`fixArrays`: nunca guarda menos equipos que el máximo conocido `fbMaxTeams`). ADMIN_PIN hardcodeado (`1007`). ⚠️ **Revisar las reglas de Firebase** (mismo patrón que Top Lomitos — verificar que no esté abierta a escritura pública).
 
 ## Estructura
 - `index.html` → la app (lo principal a editar).
@@ -30,4 +30,4 @@ Repo: `github.com/hassanchaar-1007/torneo-mjjsxx`. Deploy estático en **Surge.s
 3. **CAMPAJOR** (carpeta hermana `C:\JORNADAS\campajor`): app del evento de campamento — cronograma sáb/dom, catálogo de 24 yincanas + 5 postas (con materiales/seguridad/video, sembrables desde los PDFs/programa de PF51), patrullas, carga de puntajes, ranking y premiaciones. Materiales fuente: `OneDrive\Desktop\PF51` y `OneDrive\Desktop\varios\PROGRAMA CAMPAJOR Borrador 1.docx`.
 
 ## Nota
-App estática autónoma, sin credenciales ni backend. Mantener el patrón de un solo `index.html`. Importante: si se toca el manejo de datos, no romper el backup/restore por JSON (es el respaldo del torneo).
+App de un solo `index.html` con **backend Firebase** (Realtime Database). Mantener el patrón de un solo archivo. Importante: si se toca el manejo de datos, **no romper la protección anti-pérdida ni el backup/restore por JSON** (es el respaldo del torneo). El nuevo dato `campeones[]` ya está integrado en `fixArrays`/`saveData`/backup.
