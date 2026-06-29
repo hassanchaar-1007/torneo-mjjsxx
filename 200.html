@@ -570,11 +570,13 @@ var firebaseConfig = {
 var fbReady = false;
 var db = null;
 var dbRef = null;
+var publicRef = null; // nodo PUBLICO (datos sin info personal, lectura publica)
 
 try {
   firebase.initializeApp(firebaseConfig);
   db = firebase.database();
-  dbRef = db.ref('torneo');
+  dbRef = db.ref('torneo');     // datos completos (privados, solo admin)
+  publicRef = db.ref('publico'); // datos seguros para mostrar al publico
   fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
@@ -657,8 +659,9 @@ function saveData(d, allowShrink) {
       }
     });
 
-    // Guardar datos principales
+    // Guardar datos principales (privado) + version publica (sin datos personales)
     dbRef.set(d).catch(function(err) { console.error('Firebase save error:', err); });
+    if (publicRef) publicRef.set(buildPublic(d)).catch(function(err) { console.error('Public save error:', err); });
   } else if (fbReady && dbRef && !fbSynced) {
     console.warn('Guardado local solamente — esperando sincronización con Firebase...');
   }
@@ -725,38 +728,56 @@ function restaurarBackup() {
   });
 }
 
-// Real-time sync: when Firebase data changes, update local
-if (fbReady && dbRef) {
-  dbRef.on('value', function(snapshot) {
-    var fbData = snapshot.val();
-    if (fbData) {
-      var fbFixed = fixArrays(fbData);
-      var fbTeamCount = fbFixed.teams.length;
-
-      // Actualizar máximo conocido
-      if (fbTeamCount > fbMaxTeams) fbMaxTeams = fbTeamCount;
-
-      // Protección: si Firebase tiene más equipos que local, usar Firebase
-      if (!fbSynced || fbTeamCount >= data.teams.length) {
-        data = fbFixed;
-        localStorage.setItem(STORE_KEY, JSON.stringify(data));
-        renderAll();
-      }
+// Version PUBLICA: copia de datos SIN info personal (telefono, comprobante, pin, fecha, nextPin)
+function buildPublic(d) {
+  return {
+    teams: (d.teams || []).map(function(t){ return { id:t.id, nombre:t.nombre, deporte:t.deporte, status:t.status, capitan:t.capitan, jugadores:t.jugadores || [] }; }),
+    fixture: d.fixture || {},
+    goleadores: d.goleadores || [],
+    campeones: d.campeones || []
+  };
+}
+function isFbAdmin() {
+  return fbReady && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email === ADMIN_EMAIL;
+}
+// Sync del nodo PRIVADO 'torneo' (datos completos; solo admin autenticado puede leerlo)
+function _torneoSnap(snapshot) {
+  var fbData = snapshot.val();
+  if (fbData) {
+    var fbFixed = fixArrays(fbData);
+    var fbTeamCount = fbFixed.teams.length;
+    if (fbTeamCount > fbMaxTeams) fbMaxTeams = fbTeamCount;
+    if (!fbSynced || fbTeamCount >= data.teams.length) {
+      data = fbFixed;
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      renderAll();
+    }
+    fbSynced = true;
+  } else {
+    if (data.teams.length > 0 && data.teams.length >= fbMaxTeams) {
+      fbSynced = true;
+      dbRef.set(data).catch(function(err) { console.error('Firebase restore error:', err); });
+      if (publicRef) publicRef.set(buildPublic(data)).catch(function(){});
+    } else if (data.teams.length > 0 && data.teams.length < fbMaxTeams) {
+      console.error('🛑 Firebase vacío pero datos locales (' + data.teams.length + ') < máximo conocido (' + fbMaxTeams + '). No se sube.');
       fbSynced = true;
     } else {
-      // Firebase vacío — verificar si tenemos datos locales sustanciales
-      if (data.teams.length > 0 && data.teams.length >= fbMaxTeams) {
-        fbSynced = true;
-        dbRef.set(data).catch(function(err) { console.error('Firebase restore error:', err); });
-      } else if (data.teams.length > 0 && data.teams.length < fbMaxTeams) {
-        // Tenemos datos locales pero menos que el máximo conocido — NO subir
-        console.error('🛑 Firebase vacío pero datos locales (' + data.teams.length + ') < máximo conocido (' + fbMaxTeams + '). No se sube.');
-        fbSynced = true;
-      } else {
-        fbSynced = true;
-      }
+      fbSynced = true;
     }
-  });
+  }
+}
+// Sync del nodo PUBLICO 'publico' (lectura para todos; datos sin info personal)
+function _publicoSnap(snapshot) {
+  var v = snapshot.val();
+  if (v) { data = fixArrays(v); try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch(e){} renderAll(); }
+}
+// Suscribe al nodo correcto segun si hay un admin autenticado
+function setupSync() {
+  if (!fbReady || !dbRef) return;
+  try { dbRef.off('value', _torneoSnap); } catch(e){}
+  try { if (publicRef) publicRef.off('value', _publicoSnap); } catch(e){}
+  if (isFbAdmin()) { dbRef.on('value', _torneoSnap); }
+  else if (publicRef) { publicRef.on('value', _publicoSnap); }
 }
 
 function renderAll() {
@@ -769,6 +790,7 @@ function renderAll() {
 
 var data = loadData();
 var currentUser = null;
+setupSync(); // suscribe al nodo publico/privado segun corresponda
 
 // NAV
 function showPage(name) {
@@ -835,6 +857,7 @@ if (fbReady && typeof firebase !== 'undefined' && firebase.auth) {
     } else if (currentUser && currentUser.type === 'admin') {
       currentUser = null;
     }
+    try { setupSync(); } catch(e){}   // re-suscribe al nodo correcto (privado si admin, publico si no)
     try { updateUserBadge(); renderAll(); } catch(e){}
   });
 }
