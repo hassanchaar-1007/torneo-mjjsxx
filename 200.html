@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Torneo de Integración 2026 — M.J.J.S.XX.</title>
+<title>JORNADAS — Movimiento M.J.J.S.XX.</title>
 <link rel="manifest" href="manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Torneo 2026">
+<meta name="apple-mobile-web-app-title" content="JORNADAS">
 <meta name="theme-color" content="#0a0f28">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -663,13 +663,15 @@ var firebaseConfig = {
 var fbReady = false;
 var db = null;
 var dbRef = null;
-var publicRef = null; // nodo PUBLICO (datos sin info personal, lectura publica)
+var publicRef = null; // nodo PUBLICO del torneo (datos sin info personal, lectura publica)
+var campajorRef = null; // nodo CAMPAJOR (patrullas/puntajes, sin PII: lectura publica)
 
 try {
   firebase.initializeApp(firebaseConfig);
   db = firebase.database();
-  dbRef = db.ref('torneo');     // datos completos (privados, solo admin)
-  publicRef = db.ref('publico'); // datos seguros para mostrar al publico
+  dbRef = db.ref('torneo');       // datos completos del torneo (privados, solo admin)
+  publicRef = db.ref('publico');  // datos seguros del torneo (lectura publica)
+  campajorRef = db.ref('campajor'); // datos de campajor (sin PII, lectura publica)
   fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
@@ -1990,8 +1992,25 @@ var JUEGOS_CJ = [
   {n:24,nombre:'Disparando (quemados circular)',exp:'Un tirador con pelota blanda al centro; al golpear, la persona se suma al tiro.',mat:'Pelota de espuma, círculo marcado',seg:''}
 ];
 function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ if(!d.patrullas)d.patrullas=[]; if(!d.puntajes)d.puntajes=[]; return d; } }catch(e){} return {patrullas:[],puntajes:[]}; }
-function saveCj(d){ try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){} }
+function saveCj(d){
+  try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
+  if (fbReady && campajorRef && isFbAdmin()) { campajorRef.set(d).catch(function(err){ console.error('Campajor save error:', err); }); }
+}
 var dataCj = loadCj();
+// Sync en vivo del nodo campajor (lectura publica: todos ven el ranking actualizado)
+function setupCampajorSync(){
+  if (!fbReady || !campajorRef) return;
+  campajorRef.on('value', function(snap){
+    var v = snap.val();
+    if (v) {
+      if (!v.patrullas) v.patrullas = [];
+      if (!v.puntajes) v.puntajes = [];
+      dataCj = v;
+      try { localStorage.setItem(STORE_KEY_CJ, JSON.stringify(dataCj)); } catch(e){}
+      try { renderPatrullasCj(); renderRankingCj(); } catch(e){}
+    }
+  });
+}
 
 function showCj(name){
   var pages=document.querySelectorAll('.page');
@@ -2178,6 +2197,7 @@ function verComprobanteById(teamId) {
 resetInscripcionForm();
 updateUserBadge();
 renderJornadasLanding(); // portada del movimiento (arranca acá)
+setupCampajorSync();     // sync en vivo del evento campajor
 
 // SERVICE WORKER
 if ('serviceWorker' in navigator) {

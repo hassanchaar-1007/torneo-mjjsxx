@@ -1,7 +1,7 @@
 {
-  "name": "Torneo de Integración 2026 — M.J.J.S.XX.",
-  "short_name": "Torneo 2026",
-  "description": "Torneo de Integración de Jornadas M.J.J.S.XX. 2026",
+  "name": "JORNADAS — Movimiento M.J.J.S.XX.",
+  "short_name": "JORNADAS",
+  "description": "Plataforma de eventos del movimiento M.J.J.S.XX. (Torneo, CAMPAJOR y más)",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0f28",
