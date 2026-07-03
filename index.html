@@ -1941,6 +1941,7 @@ function removeCampeon(anio) {
 
 // ═══════════════════ EVENTO CAMPAJOR ═══════════════════
 var STORE_KEY_CJ = 'campajor_mjjsxx';
+var fbMaxPatrullasCj = 0; // proteccion anti-perdida: nunca guardar menos patrullas que el maximo conocido
 var CRONO_SAB_CJ = [
   ['06:30–11:00','Recepción y Postas (acreditación, banderines)'],
   ['11:00–13:00','Subcampos: montar lugares + almuerzo'],
@@ -2006,9 +2007,25 @@ function normCj(d){
   return d;
 }
 function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ return normCj(d); } }catch(e){} return {patrullas:[],puntajes:[]}; }
-function saveCj(d){
+function saveCj(d, allowShrink){
   try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
-  if (fbReady && campajorRef && isFbAdmin()) { campajorRef.set(d).catch(function(err){ console.error('Campajor save error:', err); }); }
+  if (fbReady && campajorRef && isFbAdmin()) {
+    var count = (d.patrullas||[]).length;
+    // 🛡️ Anti-perdida: no sobrescribir con MENOS patrullas que el maximo conocido (salvo borrado intencional)
+    if (!allowShrink && count < fbMaxPatrullasCj && fbMaxPatrullasCj > 0) {
+      console.error('🛑 CAMPAJOR bloqueado: intento de guardar ' + count + ' patrullas (max conocido ' + fbMaxPatrullasCj + ').');
+      return;
+    }
+    if (count > fbMaxPatrullasCj) fbMaxPatrullasCj = count;
+    // Backup automatico rotativo (ultimos 10)
+    try {
+      db.ref('campajor_backups').push().set({ data: d, fecha: new Date().toISOString(), patrullas: count }).catch(function(){});
+      db.ref('campajor_backups').orderByKey().once('value', function(snap){
+        var v = snap.val(); if(v){ var ks = Object.keys(v).sort(); while(ks.length > 10){ db.ref('campajor_backups/' + ks.shift()).remove(); } }
+      });
+    } catch(e){}
+    campajorRef.set(d).catch(function(err){ console.error('Campajor save error:', err); });
+  }
 }
 var dataCj = loadCj();
 // Sync en vivo del nodo campajor (lectura publica: todos ven el ranking actualizado)
@@ -2018,6 +2035,7 @@ function setupCampajorSync(){
     var v = snap.val();
     if (v) {
       dataCj = normCj(v);
+      if (dataCj.patrullas.length > fbMaxPatrullasCj) fbMaxPatrullasCj = dataCj.patrullas.length;
       try { localStorage.setItem(STORE_KEY_CJ, JSON.stringify(dataCj)); } catch(e){}
       try { renderPatrullasCj(); renderRankingCj(); } catch(e){}
     }
@@ -2102,7 +2120,7 @@ function renderRankingCj(){
   }).join('');
 }
 function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push({nombre:n, integrantes:[]}); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
-function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); dataCj.patrullas.splice(i,1); saveCj(dataCj); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
+function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!confirm('¿Eliminar la patrulla "'+((p&&p.nombre)||'')+'" y sus integrantes? Esto no se puede deshacer.'))return; dataCj.patrullas.splice(i,1); saveCj(dataCj, true); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
 function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
 function setJefeCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes[j]!==undefined){ var nom=p.integrantes[j]; p.jefe=(p.jefe===nom)?'':nom; saveCj(dataCj); renderPatrullasCj(); toast(p.jefe?('👑 Jefe: '+nom):'Jefe quitado'); } }
