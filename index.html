@@ -1000,6 +1000,7 @@ if (fbReady && typeof firebase !== 'undefined' && firebase.auth) {
     }
     try { setupSync(); } catch(e){}   // re-suscribe al nodo correcto (privado si admin, publico si no)
     try { updateUserBadge(); renderAll(); } catch(e){}
+    try { renderPatrullasCj(); renderRankingCj(); } catch(e){}  // refrescar campajor (mostrar/ocultar formularios de admin)
   });
 }
 
