@@ -1997,9 +1997,10 @@ function normCj(d){
   if(!d.patrullas) d.patrullas=[];
   if(!d.puntajes) d.puntajes=[];
   d.patrullas = d.patrullas.map(function(p){
-    if(typeof p === 'string') return { nombre:p, integrantes:[] };       // compat: nombres viejos
-    if(!p) return { nombre:'', integrantes:[] };
+    if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[] };  // compat: nombres viejos
+    if(!p) return { nombre:'', jefe:'', integrantes:[] };
     if(!Array.isArray(p.integrantes)) p.integrantes = [];
+    if(p.jefe===undefined) p.jefe = '';
     return p;
   });
   return d;
@@ -2067,11 +2068,18 @@ function renderPatrullasCj(){
   if(dataCj.patrullas.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Aún no hay patrullas cargadas</p>'; return; }
   l.innerHTML = dataCj.patrullas.map(function(p,i){
     var integ = (p.integrantes||[]).map(function(m,j){
-      return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'+esc(m)+(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removeIntegranteCj('+i+','+j+')">×</span>':'')+'</span>';
+      var esJefe = (p.jefe && p.jefe===m);
+      return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid '+(esJefe?'var(--gold)':'var(--w30)')+';border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'
+        +(esJefe?'👑 ':'')+esc(m)
+        +(isAdmin()?' <span title="'+(esJefe?'Quitar jefe':'Hacer jefe')+'" style="cursor:pointer;opacity:.7;" onclick="setJefeCj('+i+','+j+')">👑</span>':'')
+        +(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removeIntegranteCj('+i+','+j+')">×</span>':'')
+        +'</span>';
     }).join('');
     return '<div class="card">'
       + '<div style="display:flex;align-items:center;gap:10px;">'
-      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)+' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
+      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)
+      +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
+      +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
       +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
       + '</div>'
       + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
@@ -2096,7 +2104,8 @@ function renderRankingCj(){
 function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push({nombre:n, integrantes:[]}); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
 function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); dataCj.patrullas.splice(i,1); saveCj(dataCj); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
-function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); if(dataCj.patrullas[i]&&dataCj.patrullas[i].integrantes){ dataCj.patrullas[i].integrantes.splice(j,1); saveCj(dataCj); renderPatrullasCj(); } }
+function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
+function setJefeCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes[j]!==undefined){ var nom=p.integrantes[j]; p.jefe=(p.jefe===nom)?'':nom; saveCj(dataCj); renderPatrullasCj(); toast(p.jefe?('👑 Jefe: '+nom):'Jefe quitado'); } }
 function addPuntajeCj(){ if(!isAdmin())return; var p=document.getElementById('cj-pt-patrulla').value, j=document.getElementById('cj-pt-juego').value.trim(), pts=parseInt(document.getElementById('cj-pt-puntos').value)||0; if(!p){toast('Elegí una patrulla');return;} dataCj=loadCj(); dataCj.puntajes.push({patrulla:p,juego:j,puntos:pts}); saveCj(dataCj); document.getElementById('cj-pt-juego').value=''; document.getElementById('cj-pt-puntos').value=''; renderRankingCj(); toast('Puntaje cargado (+'+pts+')'); }
 
 // UTILS
