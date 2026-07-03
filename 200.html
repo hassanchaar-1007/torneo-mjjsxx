@@ -194,10 +194,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 <!-- NAV -->
 <div class="top-bar">
-  <div class="logo-mini">
+  <div class="logo-mini" onclick="volverAJornadas()" style="cursor:pointer;" title="Portada JORNADAS">
 <img class="cross-mini" src="logo.png" alt="M.J.J.S.XX." width="26" height="26">
   </div>
-  <div class="nav-tabs" id="navTabs">
+  <div class="nav-tabs" id="navTabs" style="display:none;">
+    <button onclick="volverAJornadas()" style="opacity:.85;">← Eventos</button>
     <button class="active" onclick="showPage('inicio')">Inicio</button>
     <button onclick="showPage('inscripcion')">Inscripción</button>
     <button onclick="showPage('equipos')">Equipos</button>
@@ -288,8 +289,33 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
+<!-- ═══ PORTADA DEL MOVIMIENTO (JORNADAS) ═══ -->
+<div class="page active" id="page-jornadas">
+  <div class="section-page">
+    <div style="text-align:center;padding:22px 10px 14px;">
+      <img src="logo.png" alt="" width="64" height="64" style="opacity:.95;">
+      <h1 style="font-size:30px;font-weight:900;letter-spacing:3px;margin-top:8px;color:var(--white);">JORNADAS</h1>
+      <p style="color:var(--w50);font-size:14px;margin-top:4px;">Movimiento M.J.J.S.XX. · Plataforma de eventos</p>
+    </div>
+    <div style="font-size:12px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin:6px 4px 10px;">Elegí un evento</div>
+    <div id="eventos-list"></div>
+  </div>
+</div>
+
+<!-- ═══ CAMPAJOR (placeholder — se integra en el próximo paso) ═══ -->
+<div class="page" id="page-campajor-home">
+  <div class="section-page">
+    <div class="section-title">🏕️ CAMPAJOR</div>
+    <div class="card" style="text-align:center;">
+      <p style="font-size:15px;margin-bottom:8px;">Campamento del movimiento — postas, yincanas, patrullas y ranking.</p>
+      <p style="color:var(--w50);font-size:13px;">🚧 Este evento se está integrando a la plataforma en el próximo paso. ¡Muy pronto!</p>
+      <button class="btn btn-secondary btn-sm" style="margin-top:12px;" onclick="volverAJornadas()">← Volver a eventos</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ PAGE: INICIO ═══ -->
-<div class="page active" id="page-inicio">
+<div class="page" id="page-inicio">
   <div class="hero">
     <div class="label-sm">LLEGA EL</div>
     <div class="title-main">TORNEO DE<br><span class="title-accent">INTEGRACIÓN</span></div>
@@ -582,6 +608,15 @@ try {
 
 var ADMIN_PIN = '1007';
 var ADMIN_EMAIL = 'hassan.chaar@gmail.com'; // escritura en Firebase solo para este email (ver reglas RTDB)
+
+// ===== REGISTRO DE EVENTOS (plataforma multi-evento del movimiento) =====
+// Para sumar un evento nuevo: agregá un objeto aquí. tipo define qué secciones muestra.
+var EVENTOS = [
+  { id:'torneo',   nombre:'Torneo de Integración', anio:'2026', tipo:'deportivo',  emoji:'🏆', desc:'Fútbol masculino/femenino, vóley y pádel', activo:true },
+  { id:'campajor', nombre:'CAMPAJOR',              anio:'2026', tipo:'campamento', emoji:'🏕️', desc:'Campamento: postas, yincanas, fogón y ranking de patrullas', activo:true }
+];
+var currentEvento = null; // null = estás en la portada del movimiento (JORNADAS)
+function getEvento(id){ for(var i=0;i<EVENTOS.length;i++){ if(EVENTOS[i].id===id) return EVENTOS[i]; } return null; }
 var STORE_KEY = 'torneo_mjjsxx_2026';
 var DEFAULT_DATA = { teams: [], fixture: {}, goleadores: [], nextPin: 1, campeones: [{ anio: 2026, campeon: 'J48' }] };
 var fbSynced = false; // protección: no guardar a Firebase hasta sincronizar
@@ -791,6 +826,42 @@ function renderAll() {
 var data = loadData();
 var currentUser = null;
 setupSync(); // suscribe al nodo publico/privado segun corresponda
+
+// ===== JORNADAS: portada del movimiento + selector de eventos =====
+function renderJornadasLanding() {
+  var el = document.getElementById('eventos-list');
+  if (!el) return;
+  el.innerHTML = EVENTOS.filter(function(e){ return e.activo; }).map(function(ev){
+    return '<div class="card" style="cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px;" onclick="abrirEvento(\'' + ev.id + '\')">'
+      + '<div style="font-size:34px;">' + ev.emoji + '</div>'
+      + '<div style="flex:1;"><div style="font-size:18px;font-weight:800;color:var(--white);">' + esc(ev.nombre) + ' <span style="color:var(--w50);font-size:14px;font-weight:600;">' + esc(ev.anio || '') + '</span></div>'
+      + '<div style="font-size:13px;color:var(--w50);margin-top:2px;">' + esc(ev.desc || '') + '</div></div>'
+      + '<div style="color:var(--neon);font-size:24px;">›</div>'
+      + '</div>';
+  }).join('');
+}
+function volverAJornadas() {
+  currentEvento = null;
+  var pages = document.querySelectorAll('.page');
+  for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+  document.getElementById('page-jornadas').classList.add('active');
+  document.getElementById('navTabs').style.display = 'none';
+  renderJornadasLanding();
+  window.scrollTo(0, 0);
+}
+function abrirEvento(id) {
+  currentEvento = id;
+  if (id === 'torneo') {
+    document.getElementById('navTabs').style.display = 'flex';
+    showPage('inicio');
+  } else if (id === 'campajor') {
+    document.getElementById('navTabs').style.display = 'none';
+    var pages = document.querySelectorAll('.page');
+    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+    document.getElementById('page-campajor-home').classList.add('active');
+  }
+  window.scrollTo(0, 0);
+}
 
 // NAV
 function showPage(name) {
@@ -1918,6 +1989,7 @@ function verComprobanteById(teamId) {
 // INIT
 resetInscripcionForm();
 updateUserBadge();
+renderJornadasLanding(); // portada del movimiento (arranca acá)
 
 // SERVICE WORKER
 if ('serviceWorker' in navigator) {
