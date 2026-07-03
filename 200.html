@@ -1992,7 +1992,19 @@ var JUEGOS_CJ = [
   {n:23,nombre:'Coger anillas (recepción con bordón)',exp:'Lanzador tira 8 anillas variadas; receptor "pesca" con el bordón.',mat:'Anillas, bordón, zona de 5 m',seg:''},
   {n:24,nombre:'Disparando (quemados circular)',exp:'Un tirador con pelota blanda al centro; al golpear, la persona se suma al tiro.',mat:'Pelota de espuma, círculo marcado',seg:''}
 ];
-function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ if(!d.patrullas)d.patrullas=[]; if(!d.puntajes)d.puntajes=[]; return d; } }catch(e){} return {patrullas:[],puntajes:[]}; }
+function normCj(d){
+  if(!d) d={};
+  if(!d.patrullas) d.patrullas=[];
+  if(!d.puntajes) d.puntajes=[];
+  d.patrullas = d.patrullas.map(function(p){
+    if(typeof p === 'string') return { nombre:p, integrantes:[] };       // compat: nombres viejos
+    if(!p) return { nombre:'', integrantes:[] };
+    if(!Array.isArray(p.integrantes)) p.integrantes = [];
+    return p;
+  });
+  return d;
+}
+function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ return normCj(d); } }catch(e){} return {patrullas:[],puntajes:[]}; }
 function saveCj(d){
   try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
   if (fbReady && campajorRef && isFbAdmin()) { campajorRef.set(d).catch(function(err){ console.error('Campajor save error:', err); }); }
@@ -2004,9 +2016,7 @@ function setupCampajorSync(){
   campajorRef.on('value', function(snap){
     var v = snap.val();
     if (v) {
-      if (!v.patrullas) v.patrullas = [];
-      if (!v.puntajes) v.puntajes = [];
-      dataCj = v;
+      dataCj = normCj(v);
       try { localStorage.setItem(STORE_KEY_CJ, JSON.stringify(dataCj)); } catch(e){}
       try { renderPatrullasCj(); renderRankingCj(); } catch(e){}
     }
@@ -2051,18 +2061,29 @@ function renderJuegosCj(){
 }
 function renderPatrullasCj(){
   dataCj=loadCj();
-  document.getElementById('cj-patrullas-form').style.display = isAdmin()?'block':'none';
+  var f=document.getElementById('cj-patrullas-form'); if(f) f.style.display = isAdmin()?'block':'none';
   var l=document.getElementById('cj-patrullas-list');
+  if(!l) return;
   if(dataCj.patrullas.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Aún no hay patrullas cargadas</p>'; return; }
   l.innerHTML = dataCj.patrullas.map(function(p,i){
-    return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:12px 14px;"><div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p)+'</div>'+(isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')+'</div>';
+    var integ = (p.integrantes||[]).map(function(m,j){
+      return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'+esc(m)+(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removeIntegranteCj('+i+','+j+')">×</span>':'')+'</span>';
+    }).join('');
+    return '<div class="card">'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)+' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
+      +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
+      + '</div>'
+      + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
+      + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-integ-'+i+'" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')addIntegranteCj('+i+')" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="addIntegranteCj('+i+')">+ Integrante</button></div>':'')
+      + '</div>';
   }).join('');
 }
 function renderRankingCj(){
   dataCj=loadCj();
-  document.getElementById('cj-puntaje-form').style.display = isAdmin()?'block':'none';
-  var sel=document.getElementById('cj-pt-patrulla'); if(sel) sel.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p)+'</option>';}).join('');
-  var totals={}; dataCj.patrullas.forEach(function(p){ totals[p]=0; });
+  var pf=document.getElementById('cj-puntaje-form'); if(pf) pf.style.display = isAdmin()?'block':'none';
+  var sel=document.getElementById('cj-pt-patrulla'); if(sel) sel.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p.nombre)+'</option>';}).join('');
+  var totals={}; dataCj.patrullas.forEach(function(p){ totals[p.nombre]=0; });
   dataCj.puntajes.forEach(function(x){ if(totals[x.patrulla]===undefined) totals[x.patrulla]=0; totals[x.patrulla]+=Number(x.puntos)||0; });
   var arr=Object.keys(totals).map(function(k){return {nombre:k,pts:totals[k]};}).sort(function(a,b){return b.pts-a.pts;});
   var l=document.getElementById('cj-ranking-list');
@@ -2072,8 +2093,10 @@ function renderRankingCj(){
     return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+esc(r.nombre)+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
   }).join('');
 }
-function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push(n); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
+function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push({nombre:n, integrantes:[]}); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
 function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); dataCj.patrullas.splice(i,1); saveCj(dataCj); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
+function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
+function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); if(dataCj.patrullas[i]&&dataCj.patrullas[i].integrantes){ dataCj.patrullas[i].integrantes.splice(j,1); saveCj(dataCj); renderPatrullasCj(); } }
 function addPuntajeCj(){ if(!isAdmin())return; var p=document.getElementById('cj-pt-patrulla').value, j=document.getElementById('cj-pt-juego').value.trim(), pts=parseInt(document.getElementById('cj-pt-puntos').value)||0; if(!p){toast('Elegí una patrulla');return;} dataCj=loadCj(); dataCj.puntajes.push({patrulla:p,juego:j,puntos:pts}); saveCj(dataCj); document.getElementById('cj-pt-juego').value=''; document.getElementById('cj-pt-puntos').value=''; renderRankingCj(); toast('Puntaje cargado (+'+pts+')'); }
 
 // UTILS
