@@ -9,6 +9,9 @@ torneo_backup_*.json
 # ===== Node (futuro) =====
 node_modules/
 
+# ===== Build de deploy (Cloudflare Pages) =====
+dist/
+
 # ===== Sistema =====
 desktop.ini
 Thumbs.db
