@@ -207,6 +207,15 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button onclick="showPage('campeones')">🏆 Campeones</button>
     <button onclick="showPage('reglamento')">Reglamento</button>
   </div>
+  <div class="nav-tabs" id="navTabsCampajor" style="display:none;">
+    <button onclick="volverAJornadas()" style="opacity:.85;">← Eventos</button>
+    <button data-cj="inicio" class="active" onclick="showCj('inicio')">Inicio</button>
+    <button data-cj="cronograma" onclick="showCj('cronograma')">Cronograma</button>
+    <button data-cj="postas" onclick="showCj('postas')">Postas</button>
+    <button data-cj="yincanas" onclick="showCj('yincanas')">Yincanas</button>
+    <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
+    <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
+  </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
 </div>
 
@@ -302,15 +311,73 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
-<!-- ═══ CAMPAJOR (placeholder — se integra en el próximo paso) ═══ -->
-<div class="page" id="page-campajor-home">
+<!-- ═══ EVENTO CAMPAJOR: PÁGINAS ═══ -->
+<div class="page" id="page-cj-inicio">
   <div class="section-page">
-    <div class="section-title">🏕️ CAMPAJOR</div>
-    <div class="card" style="text-align:center;">
-      <p style="font-size:15px;margin-bottom:8px;">Campamento del movimiento — postas, yincanas, patrullas y ranking.</p>
-      <p style="color:var(--w50);font-size:13px;">🚧 Este evento se está integrando a la plataforma en el próximo paso. ¡Muy pronto!</p>
-      <button class="btn btn-secondary btn-sm" style="margin-top:12px;" onclick="volverAJornadas()">← Volver a eventos</button>
+    <div style="text-align:center;padding:20px 10px 8px;">
+      <div style="font-size:46px;">🏕️</div>
+      <h1 style="font-size:28px;font-weight:900;letter-spacing:2px;color:var(--neon);margin-top:6px;">CAMPAJOR</h1>
+      <p style="color:var(--w50);font-size:14px;margin-top:4px;">Campamento de integración · M.J.J.S.XX.</p>
+      <div style="margin-top:12px;">
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 11 y Dom 12/10</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Yincanas</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔥 Fogón</span>
+      </div>
     </div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
+      <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 yincanas</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-cj-cronograma">
+  <div class="section-page">
+    <div class="section-title">📅 Cronograma</div>
+    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Sábado 11/10</div><div id="cj-crono-sab"></div></div>
+    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Domingo 12/10</div><div id="cj-crono-dom"></div></div>
+  </div>
+</div>
+
+<div class="page" id="page-cj-postas">
+  <div class="section-page">
+    <div class="section-title">🎪 Postas de recepción</div>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">5 postas para el arranque del sábado.</p>
+    <div id="cj-postas-list"></div>
+  </div>
+</div>
+
+<div class="page" id="page-cj-yincanas">
+  <div class="section-page">
+    <div class="section-title">🎯 Yincanas (24)</div>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad.</p>
+    <div id="cj-yincanas-list"></div>
+  </div>
+</div>
+
+<div class="page" id="page-cj-patrullas">
+  <div class="section-page">
+    <div class="section-title">🚩 Patrullas</div>
+    <div class="card" id="cj-patrullas-form" style="display:none;">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Agregar patrulla</div>
+      <div class="form-group"><label>Nombre</label><input id="cj-pat-nombre" placeholder="Nombre de la patrulla"></div>
+      <button class="btn btn-primary btn-sm" onclick="addPatrullaCj()">+ Agregar</button>
+    </div>
+    <div id="cj-patrullas-list"></div>
+  </div>
+</div>
+
+<div class="page" id="page-cj-ranking">
+  <div class="section-page">
+    <div class="section-title">🏆 Ranking</div>
+    <div class="card" id="cj-puntaje-form" style="display:none;">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Cargar puntaje</div>
+      <div class="form-group"><label>Patrulla</label><select id="cj-pt-patrulla"></select></div>
+      <div class="form-group"><label>Juego / Posta</label><input id="cj-pt-juego" placeholder="Ej: Colas, Pasa Agua..."></div>
+      <div class="form-group"><label>Puntos</label><input id="cj-pt-puntos" type="number" placeholder="0"></div>
+      <button class="btn btn-primary btn-sm" onclick="addPuntajeCj()">Sumar puntaje</button>
+    </div>
+    <div id="cj-ranking-list"></div>
   </div>
 </div>
 
@@ -846,6 +913,7 @@ function volverAJornadas() {
   for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
   document.getElementById('page-jornadas').classList.add('active');
   document.getElementById('navTabs').style.display = 'none';
+  document.getElementById('navTabsCampajor').style.display = 'none';
   renderJornadasLanding();
   window.scrollTo(0, 0);
 }
@@ -853,12 +921,12 @@ function abrirEvento(id) {
   currentEvento = id;
   if (id === 'torneo') {
     document.getElementById('navTabs').style.display = 'flex';
+    document.getElementById('navTabsCampajor').style.display = 'none';
     showPage('inicio');
   } else if (id === 'campajor') {
     document.getElementById('navTabs').style.display = 'none';
-    var pages = document.querySelectorAll('.page');
-    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
-    document.getElementById('page-campajor-home').classList.add('active');
+    document.getElementById('navTabsCampajor').style.display = 'flex';
+    showCj('inicio');
   }
   window.scrollTo(0, 0);
 }
@@ -1867,6 +1935,126 @@ function removeCampeon(anio) {
   data = loadData(); data.campeones = (data.campeones || []).filter(function(x){ return Number(x.anio) !== Number(anio); });
   saveData(data); renderCampeones(); toast('Eliminado');
 }
+
+// ═══════════════════ EVENTO CAMPAJOR ═══════════════════
+var STORE_KEY_CJ = 'campajor_mjjsxx';
+var CRONO_SAB_CJ = [
+  ['06:30–11:00','Recepción y Postas (acreditación, banderines)'],
+  ['11:00–13:00','Subcampos: montar lugares + almuerzo'],
+  ['13:00–13:45','Gritos de subcampo (energía y creatividad)'],
+  ['13:45–14:30','Apertura oficial (patrullas y jefes)'],
+  ['14:30–17:30','Yincanas (24 juegos)'],
+  ['17:30–19:30','Cena + preparación de números artísticos'],
+  ['20:00–23:00','Fogón (canciones, danzas, representaciones)'],
+  ['23:00–05:00','Libre y descanso']
+];
+var CRONO_DOM_CJ = [
+  ['05:00–06:30','Baño, aseo y ejercicio matinal'],
+  ['06:30–08:00','Santa Misa'],
+  ['08:00–08:30','Desayuno'],
+  ['09:00–11:00','Competencia de obstáculos'],
+  ['11:00–14:00','Almuerzo + levantar campamento'],
+  ['14:00–15:30','Clausura, premiaciones y agradecimientos']
+];
+var POSTAS_CJ = [
+  {n:1,nombre:'Palo Borracho',resp:'Sofía, Teto y Calixto',mat:'Palo de escoba 1m, pelota o conos',exp:'Girar 10 vueltas con la cabeza en el palo y llevar la pelota a 5–10 m.',vid:'https://www.youtube.com/watch?v=Nnx1lY-fGyc'},
+  {n:2,nombre:'Rondana con asiento',resp:'Hugo V., Adrián',mat:'Rondana, 3m de piola, silbato, madera para asiento',exp:'Por turno se sientan y el equipo los estira hasta cierta altura; tocan silbato. 10 veces.',vid:''},
+  {n:3,nombre:'La Lagartija',resp:'Conrado y Mariano',mat:'20 estacas, 10m de cinta elástica, martillo',exp:'Armar una red con estacas y cinta; pasar por debajo ida y vuelta (se puede con barro).',vid:'https://www.youtube.com/watch?v=t4CFPCfMZP0'},
+  {n:4,nombre:'Pasa agua',resp:'Isidro, Cubilla y Milena',mat:'10 jarras de 1–2 L, balde de 20 L',exp:'Sentados uno detrás de otro sin mirarse, pasar agua de jarra en jarra hasta llenar una de 2 L.',vid:'https://www.youtube.com/watch?v=sbsOsnVl7RA'},
+  {n:5,nombre:'Pasa huevo / pelota con cuchara',resp:'Thalía y Rocío',mat:'10 cucharas y 10 pelotas o una cartela de huevos',exp:'Pasar la pelota o el huevo de cuchara en cuchara; prever 5 pasadas.',vid:'https://www.youtube.com/watch?v=EKnSZj6qVlE'}
+];
+var JUEGOS_CJ = [
+  {n:1,nombre:'Colas (rápido)',exp:'Quitar el pañuelo ("cola") del rival. 3 vs 3 en área marcada.',mat:'Pañuelos, conos',seg:'Nada de agarres, solo quitar la cola.'},
+  {n:2,nombre:'Agarrar el pañuelo (duelos)',exp:'1 vs 1; tomar el pañuelo del centro y volver a la línea sin ser tocado.',mat:'Pañuelo, dos líneas',seg:''},
+  {n:3,nombre:'Asalto a la bandera (mini)',exp:'Dos bases a 20–30 m; tomar la bandera del rival. Rondas de 5 min.',mat:'Dos banderas o pañuelos',seg:''},
+  {n:4,nombre:'Dejando caer la bomba (micro)',exp:'"Plantar" un palito con cinta en la base rival y volver. Defensores quitan "vidas".',mat:'Palitos marcados con cinta',seg:''},
+  {n:5,nombre:'¿Dónde está el silbato?',exp:'Participantes vendados avanzan por sonido hasta tocar al "silbato".',mat:'Vendas, silbato',seg:'Área limpia.'},
+  {n:6,nombre:'Vista rápida',exp:'Bandeja con 12 objetos se muestra 10 s; anotar los que recuerdan.',mat:'Bandeja y objetos, planillas',seg:''},
+  {n:7,nombre:'Cara manchada',exp:'Replicar a distancia un patrón de puntos visto 5 s.',mat:'Cartulina con puntos y fichas',seg:''},
+  {n:8,nombre:'Puntos de la brújula',exp:'Estrella con 8 marcas; al nombrar 2 rumbos, los jugadores cambian de lugar.',mat:'Tiza / conos',seg:''},
+  {n:9,nombre:'Encontrando los sitios (foto-check)',exp:'Tarjeta con descripción/foto cercana; hallar y volver con la palabra clave.',mat:'Tarjetas plastificadas, marcadores',seg:''},
+  {n:10,nombre:'Leyendo el mapa (mini-orientación)',exp:'Mapa simple del subcampo con 3 checks; sellar los 3 en orden correcto.',mat:'Croquis A5, sellos o marcadores',seg:''},
+  {n:11,nombre:'Lanzamiento de anillas al bordón',exp:'10 lanzamientos por equipo; encestar la anilla en el bordón a 3–4 m.',mat:'Anillas de cuerda, bordón',seg:''},
+  {n:12,nombre:'Golpea el cubo',exp:'Defensor sobre cubo con "bate" acolchado; el resto golpea el cubo con pelota de goma.',mat:'Cubo/banquito, pelota blanda, bate acolchado',seg:'Zona acolchada.'},
+  {n:13,nombre:'Soplar la pelota',exp:'Dos equipos soplan una pelota de ping-pong por la mesa hasta la meta.',mat:'Mesa, pelota liviana, cinta de meta',seg:''},
+  {n:14,nombre:'Baloncesto scout',exp:'Aro a 2–2,5 m; 5 tiros por participante, suma de aciertos.',mat:'Aro o canasto, pelota',seg:''},
+  {n:15,nombre:'Pásala (entre las piernas)',exp:'Fila de 5; pasar pelota entre piernas; el último corre al frente.',mat:'Pelotas',seg:''},
+  {n:16,nombre:'Carrera de bordones (relevos)',exp:'Dos filas a 20 m; llevar el bordón y devolverlo en posta.',mat:'Dos bordones',seg:''},
+  {n:17,nombre:'Carrera de obstáculos mini',exp:'Saltos bajos, gateo bajo cinta, zig-zag. Cronometrado.',mat:'Cuerdas, estacas/conos, cinta',seg:''},
+  {n:18,nombre:'Pateando el taburete (círculo)',exp:'Todos de manos dadas alrededor del taburete; hacer que otro lo toque.',mat:'Banquito, círculo marcado',seg:'Control de fuerza, sin jalones.'},
+  {n:19,nombre:'Coge el sombrero (duelos cruzados)',exp:'1 vs 1; tomar sombrero del piso con la izquierda y escapar sin toque en la espalda.',mat:'Sombrero o pañuelo',seg:''},
+  {n:20,nombre:'Chútala y corre (claro)',exp:'Un "buscador" chuta el balón fuera del claro; mientras lo recuperan, toca rivales.',mat:'Balón, círculo marcado',seg:''},
+  {n:21,nombre:'Equilibrando el tablón',exp:'Caminar 10 m sosteniendo un tablón en equilibrio sobre la palma.',mat:'Tablón liviano (1,2–1,5 m)',seg:''},
+  {n:22,nombre:'Pelea de gallos (versión segura)',exp:'En cuclillas, brazos bajo rodillas; empujar con hombros hasta que el rival toque el suelo.',mat:'Colchonetas',seg:'Sobre colchonetas.'},
+  {n:23,nombre:'Coger anillas (recepción con bordón)',exp:'Lanzador tira 8 anillas variadas; receptor "pesca" con el bordón.',mat:'Anillas, bordón, zona de 5 m',seg:''},
+  {n:24,nombre:'Disparando (quemados circular)',exp:'Un tirador con pelota blanda al centro; al golpear, la persona se suma al tiro.',mat:'Pelota de espuma, círculo marcado',seg:''}
+];
+function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ if(!d.patrullas)d.patrullas=[]; if(!d.puntajes)d.puntajes=[]; return d; } }catch(e){} return {patrullas:[],puntajes:[]}; }
+function saveCj(d){ try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){} }
+var dataCj = loadCj();
+
+function showCj(name){
+  var pages=document.querySelectorAll('.page');
+  for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
+  document.getElementById('page-cj-'+name).classList.add('active');
+  var btns=document.querySelectorAll('#navTabsCampajor button[data-cj]');
+  for(var j=0;j<btns.length;j++) btns[j].classList.toggle('active', btns[j].getAttribute('data-cj')===name);
+  if(name==='cronograma') renderCronoCj();
+  if(name==='postas') renderPostasCj();
+  if(name==='yincanas') renderJuegosCj();
+  if(name==='patrullas') renderPatrullasCj();
+  if(name==='ranking') renderRankingCj();
+  window.scrollTo(0,0);
+}
+function renderCronoCj(){
+  document.getElementById('cj-crono-sab').innerHTML = CRONO_SAB_CJ.map(function(r){ return '<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--w20,rgba(255,255,255,.1));"><div style="color:var(--neon);font-weight:800;font-size:13px;min-width:96px;">'+r[0]+'</div><div style="flex:1;font-size:14px;">'+esc(r[1])+'</div></div>'; }).join('');
+  document.getElementById('cj-crono-dom').innerHTML = CRONO_DOM_CJ.map(function(r){ return '<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--w20,rgba(255,255,255,.1));"><div style="color:var(--neon);font-weight:800;font-size:13px;min-width:96px;">'+r[0]+'</div><div style="flex:1;font-size:14px;">'+esc(r[1])+'</div></div>'; }).join('');
+}
+function renderPostasCj(){
+  document.getElementById('cj-postas-list').innerHTML = POSTAS_CJ.map(function(p){
+    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">P'+p.n+'</span>'+esc(p.nombre)+'</h3>'
+      +'<div style="font-size:14px;">'+esc(p.exp)+'</div>'
+      +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(p.mat)+'</div>'
+      +'<div style="font-size:12px;color:var(--w50);margin-top:3px;">👥 '+esc(p.resp)+'</div>'
+      +(p.vid?'<div style="font-size:12.5px;margin-top:6px;">▶️ <a href="'+p.vid+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver video</a></div>':'')
+      +'</div>';
+  }).join('');
+}
+function renderJuegosCj(){
+  document.getElementById('cj-yincanas-list').innerHTML = JUEGOS_CJ.map(function(g){
+    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">'+g.n+'</span>'+esc(g.nombre)+'</h3>'
+      +'<div style="font-size:14px;">'+esc(g.exp)+'</div>'
+      +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(g.mat)+'</div>'
+      +(g.seg?'<div style="font-size:12px;color:var(--w50);margin-top:3px;">⚠️ '+esc(g.seg)+'</div>':'')
+      +'</div>';
+  }).join('');
+}
+function renderPatrullasCj(){
+  dataCj=loadCj();
+  document.getElementById('cj-patrullas-form').style.display = isAdmin()?'block':'none';
+  var l=document.getElementById('cj-patrullas-list');
+  if(dataCj.patrullas.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Aún no hay patrullas cargadas</p>'; return; }
+  l.innerHTML = dataCj.patrullas.map(function(p,i){
+    return '<div class="card" style="display:flex;align-items:center;gap:10px;padding:12px 14px;"><div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p)+'</div>'+(isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')+'</div>';
+  }).join('');
+}
+function renderRankingCj(){
+  dataCj=loadCj();
+  document.getElementById('cj-puntaje-form').style.display = isAdmin()?'block':'none';
+  var sel=document.getElementById('cj-pt-patrulla'); if(sel) sel.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p)+'</option>';}).join('');
+  var totals={}; dataCj.patrullas.forEach(function(p){ totals[p]=0; });
+  dataCj.puntajes.forEach(function(x){ if(totals[x.patrulla]===undefined) totals[x.patrulla]=0; totals[x.patrulla]+=Number(x.puntos)||0; });
+  var arr=Object.keys(totals).map(function(k){return {nombre:k,pts:totals[k]};}).sort(function(a,b){return b.pts-a.pts;});
+  var l=document.getElementById('cj-ranking-list');
+  if(arr.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Cargá patrullas y puntajes para ver el ranking</p>'; return; }
+  l.innerHTML = arr.map(function(r,i){
+    var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+esc(r.nombre)+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
+  }).join('');
+}
+function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push(n); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
+function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); dataCj.patrullas.splice(i,1); saveCj(dataCj); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
+function addPuntajeCj(){ if(!isAdmin())return; var p=document.getElementById('cj-pt-patrulla').value, j=document.getElementById('cj-pt-juego').value.trim(), pts=parseInt(document.getElementById('cj-pt-puntos').value)||0; if(!p){toast('Elegí una patrulla');return;} dataCj=loadCj(); dataCj.puntajes.push({patrulla:p,juego:j,puntos:pts}); saveCj(dataCj); document.getElementById('cj-pt-juego').value=''; document.getElementById('cj-pt-puntos').value=''; renderRankingCj(); toast('Puntaje cargado (+'+pts+')'); }
 
 // UTILS
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
