@@ -305,9 +305,22 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <img src="logo.png" alt="" width="64" height="64" style="opacity:.95;">
       <h1 style="font-size:30px;font-weight:900;letter-spacing:3px;margin-top:8px;color:var(--white);">JORNADAS</h1>
       <p style="color:var(--w50);font-size:14px;margin-top:4px;">Movimiento M.J.J.S.XX. · Plataforma de eventos</p>
+      <div id="fraseJornadas" style="min-height:48px;display:flex;align-items:center;justify-content:center;margin-top:12px;padding:0 10px;font-size:16px;font-weight:800;color:var(--neon);transition:opacity .6s;opacity:1;"></div>
+      <div style="margin-top:8px;">
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:3px;font-size:13px;font-weight:700;">✝️ Fe</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:3px;font-size:13px;font-weight:700;">🔥 Aventura</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:3px;font-size:13px;font-weight:700;">🤝 Integración</span>
+      </div>
     </div>
-    <div style="font-size:12px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin:6px 4px 10px;">Elegí un evento</div>
+    <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🏕️ CAMPAJOR 2026 · Sáb 11 y Dom 12/10</div>
+      <div style="font-size:20px;font-weight:900;color:var(--white);margin-top:8px;">¿Listos para la aventura?</div>
+      <div style="font-size:13px;color:var(--w50);margin-top:4px;">Dos días de postas, yincanas, fogón y fe compartida.</div>
+      <button class="cta-inscripcion" style="margin-top:16px;font-size:16px;padding:12px 32px;" onclick="abrirEvento('campajor')">🏕️ ¡INSCRIBÍ TU PATRULLA!</button>
+    </div>
+    <div style="font-size:12px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin:14px 4px 10px;">Elegí un evento</div>
     <div id="eventos-list"></div>
+    <p style="text-align:center;color:var(--w30);font-size:11px;margin-top:22px;letter-spacing:1px;">¡ T E &nbsp; E S P E R A M O S !</p>
   </div>
 </div>
 
@@ -897,6 +910,33 @@ var currentUser = null;
 setupSync(); // suscribe al nodo publico/privado segun corresponda
 
 // ===== JORNADAS: portada del movimiento + selector de eventos =====
+// Frases motivacionales de la portada (rotan con fundido)
+var FRASES_JORNADAS = [
+  '🏕️ ¡Inscribí tu patrulla y viví el CAMPAJOR!',
+  '✝️ La fe se vive en comunidad',
+  '🔥 Aventura que deja huella',
+  '🤝 Integración: acá nadie se queda afuera',
+  '🌄 Movimiento de Jornadas: un camino de encuentro',
+  '🙌 Servir, compartir, celebrar',
+  '🏆 Dejalo todo en la cancha',
+  '⭐ J48 · 2026 — esta historia la escribimos juntos'
+];
+var fraseJornadasIdx = 0, fraseJornadasTimer = null;
+function startFrasesJornadas() {
+  var el = document.getElementById('fraseJornadas');
+  if (!el || fraseJornadasTimer) return;
+  el.textContent = FRASES_JORNADAS[0];
+  fraseJornadasTimer = setInterval(function () {
+    var el2 = document.getElementById('fraseJornadas');
+    if (!el2) return;
+    el2.style.opacity = 0;
+    setTimeout(function () {
+      fraseJornadasIdx = (fraseJornadasIdx + 1) % FRASES_JORNADAS.length;
+      el2.textContent = FRASES_JORNADAS[fraseJornadasIdx];
+      el2.style.opacity = 1;
+    }, 600);
+  }, 4200);
+}
 function renderJornadasLanding() {
   var el = document.getElementById('eventos-list');
   if (!el) return;
@@ -2248,6 +2288,7 @@ function verComprobanteById(teamId) {
 resetInscripcionForm();
 updateUserBadge();
 renderJornadasLanding(); // portada del movimiento (arranca acá)
+startFrasesJornadas();   // frases motivacionales rotativas de la portada
 setupCampajorSync();     // sync en vivo del evento campajor
 
 // SERVICE WORKER
