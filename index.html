@@ -312,12 +312,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:3px;font-size:13px;font-weight:700;">🤝 Integración</span>
       </div>
     </div>
-    <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
-      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🏕️ CAMPAJOR 2026 · Sáb 11 y Dom 12/10</div>
-      <div style="font-size:20px;font-weight:900;color:var(--white);margin-top:8px;">¿Listos para la aventura?</div>
-      <div style="font-size:13px;color:var(--w50);margin-top:4px;">Dos días de postas, yincanas, fogón y fe compartida.</div>
-      <button class="cta-inscripcion" style="margin-top:16px;font-size:16px;padding:12px 32px;" onclick="abrirEvento('campajor')">🏕️ ¡INSCRIBÍ TU PATRULLA!</button>
-    </div>
     <div style="font-size:12px;color:var(--w50);text-transform:uppercase;letter-spacing:1px;margin:14px 4px 10px;">Elegí un evento</div>
     <div id="eventos-list"></div>
     <p style="text-align:center;color:var(--w30);font-size:11px;margin-top:22px;letter-spacing:1px;">¡ T E &nbsp; E S P E R A M O S !</p>
@@ -340,6 +334,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
       <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 yincanas</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
+    </div>
+    <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
+      <div style="font-size:20px;font-weight:900;color:var(--white);">¿Listos para la aventura?</div>
+      <div style="font-size:13px;color:var(--w50);margin-top:4px;">Fe, barro, fogón y amistad: sumate con tu patrulla.</div>
+      <button class="cta-inscripcion" style="margin-top:14px;font-size:16px;padding:12px 32px;" onclick="showCj('patrullas')">🚩 ¡INSCRIBÍ TU PATRULLA!</button>
     </div>
   </div>
 </div>
@@ -912,7 +911,7 @@ setupSync(); // suscribe al nodo publico/privado segun corresponda
 // ===== JORNADAS: portada del movimiento + selector de eventos =====
 // Frases motivacionales de la portada (rotan con fundido)
 var FRASES_JORNADAS = [
-  '🏕️ ¡Inscribí tu patrulla y viví el CAMPAJOR!',
+  '🌟 Viví la experiencia JORNADAS',
   '✝️ La fe se vive en comunidad',
   '🔥 Aventura que deja huella',
   '🤝 Integración: acá nadie se queda afuera',
