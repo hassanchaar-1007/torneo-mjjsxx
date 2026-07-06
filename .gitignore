@@ -11,6 +11,7 @@ node_modules/
 
 # ===== Build de deploy (Cloudflare Pages) =====
 dist/
+.wrangler/
 
 # ===== Sistema =====
 desktop.ini
