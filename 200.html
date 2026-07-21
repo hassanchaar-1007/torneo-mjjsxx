@@ -427,7 +427,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-yincanas">
   <div class="section-page">
     <div class="section-title">🎯 Yincanas (24)</div>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad.</p>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad. Cada yincana <strong style="color:var(--gold);">trabaja una virtud</strong>: las 3 teologales (🕊️ Fe, ⚓ Esperanza, ❤️‍🔥 Caridad) y las 4 cardinales (🦉 Prudencia, ⚖️ Justicia, 🦁 Fortaleza, 🌿 Templanza).</p>
     <div id="cj-yincanas-list"></div>
   </div>
 </div>
@@ -456,7 +456,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div class="form-group"><label>Puntos</label><input id="cj-pt-puntos" type="number" placeholder="0"></div>
       <button class="btn btn-primary btn-sm" onclick="addPuntajeCj()">Sumar puntaje</button>
     </div>
+    <div class="card" id="cj-premio-form" style="display:none;">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🏅 Otorgar Virtud del Jornadista</div>
+      <div class="form-group"><label>Virtud</label><select id="cj-pr-virtud"></select></div>
+      <div class="form-group"><label>Patrulla</label><select id="cj-pr-patrulla"></select></div>
+      <div class="form-group"><label>Motivo</label><input id="cj-pr-motivo" placeholder="Ej: ayudaron a otra patrulla en la yincana 12"></div>
+      <button class="btn btn-primary btn-sm" onclick="addPremioCj()">Otorgar 🏅</button>
+    </div>
+    <div id="cj-subcampos-copa"></div>
     <div id="cj-ranking-list"></div>
+    <div id="cj-premios-list"></div>
   </div>
 </div>
 
@@ -2099,22 +2108,23 @@ function removeCampeon(anio) {
 var STORE_KEY_CJ = 'campajor_mjjsxx';
 var fbMaxPatrullasCj = 0; // proteccion anti-perdida: nunca guardar menos patrullas que el maximo conocido
 var CRONO_SAB_CJ = [
-  ['06:30–11:00','Recepción y Postas (acreditación, banderines)'],
-  ['11:00–13:00','Subcampos: montar lugares + almuerzo'],
-  ['13:00–13:45','Gritos de subcampo (energía y creatividad)'],
-  ['13:45–14:30','Apertura oficial (patrullas y jefes)'],
-  ['14:30–17:30','Yincanas (24 juegos)'],
+  ['06:30–11:00','Recepción y Postas (acreditación, banderines) — cada posta vive un tipo de oración'],
+  ['11:00–13:00','Subcampos FE, ESPERANZA y CARIDAD: montar lugares + almuerzo'],
+  ['13:00–13:45','Gritos de subcampo (cada grito celebra su virtud)'],
+  ['13:45–14:30','Apertura oficial (patrullas y jefes) · Oración inicial: "la oración es el oxígeno del alma"'],
+  ['14:30–17:30','Yincanas (24 juegos) — cada una trabaja una virtud'],
   ['17:30–19:30','Cena + preparación de números artísticos'],
-  ['20:00–23:00','Fogón (canciones, danzas, representaciones)'],
+  ['20:00–23:00','Fogón (canciones, danzas, representaciones) · Cierre con los frutos: Escucha, Silencio y Diálogo'],
   ['23:00–05:00','Libre y descanso']
 ];
 var CRONO_DOM_CJ = [
-  ['05:00–06:30','Baño, aseo y ejercicio matinal'],
-  ['06:30–08:00','Santa Misa'],
+  ['05:00–06:00','Baño, aseo y ejercicio matinal'],
+  ['06:00–06:30','Santo Rosario (el Rosario tiene objetivo 📿)'],
+  ['06:30–08:00','Santa Misa: "Pedid y se les dará" 🙌'],
   ['08:00–08:30','Desayuno'],
   ['09:00–11:00','Competencia de obstáculos'],
   ['11:00–14:00','Almuerzo + levantar campamento'],
-  ['14:00–15:30','Clausura, premiaciones y agradecimientos']
+  ['14:00–15:30','Clausura: ranking, premios "Virtud del Jornadista" 🏅 y agradecimientos']
 ];
 // Cada posta encarna un tipo de oración (charla "Virtudes del Jornadista", convivencia jul/2026)
 var POSTAS_CJ = [
@@ -2150,15 +2160,44 @@ var JUEGOS_CJ = [
   {n:23,nombre:'Coger anillas (recepción con bordón)',exp:'Lanzador tira 8 anillas variadas; receptor "pesca" con el bordón.',mat:'Anillas, bordón, zona de 5 m',seg:''},
   {n:24,nombre:'Disparando (quemados circular)',exp:'Un tirador con pelota blanda al centro; al golpear, la persona se suma al tiro.',mat:'Pelota de espuma, círculo marcado',seg:''}
 ];
+// ===== VIRTUDES DEL JORNADISTA (3 teologales + 4 cardinales) =====
+var VIRTUDES_CJ = {
+  'Fe':        {icon:'🕊️', color:'#00e676'},
+  'Esperanza': {icon:'⚓',  color:'#4dd0e1'},
+  'Caridad':   {icon:'❤️‍🔥', color:'#ff6b6b'},
+  'Prudencia': {icon:'🦉', color:'#ffc828'},
+  'Justicia':  {icon:'⚖️', color:'#7ab8ff'},
+  'Fortaleza': {icon:'🦁', color:'#ff9f43'},
+  'Templanza': {icon:'🌿', color:'#b78bff'}
+};
+// Qué virtud trabaja cada yincana
+var VIRTUD_X_JUEGO = {
+  1:'Prudencia',  2:'Fortaleza', 3:'Justicia',  4:'Fortaleza', 5:'Fe',        6:'Prudencia',
+  7:'Prudencia',  8:'Justicia',  9:'Fe',        10:'Prudencia',11:'Esperanza',12:'Fortaleza',
+  13:'Caridad',   14:'Esperanza',15:'Caridad',  16:'Caridad',  17:'Esperanza',18:'Templanza',
+  19:'Justicia',  20:'Esperanza',21:'Templanza',22:'Fortaleza',23:'Fe',       24:'Fortaleza'
+};
+JUEGOS_CJ.forEach(function(g){ g.vir = VIRTUD_X_JUEGO[g.n] || ''; });
+// Subcampos = las 3 virtudes teologales
+var SUBCAMPOS_CJ = ['FE','ESPERANZA','CARIDAD'];
+function subcampoBadgeCj(sc){
+  if(!sc) return '';
+  var m={FE:'🕊️',ESPERANZA:'⚓',CARIDAD:'❤️‍🔥'}, c={FE:'#00e676',ESPERANZA:'#4dd0e1',CARIDAD:'#ff6b6b'};
+  if(!m[sc]) return '';
+  return '<span style="border:1px solid '+c[sc]+';color:'+c[sc]+';border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:6px;white-space:nowrap;">'+m[sc]+' '+sc+'</span>';
+}
 function normCj(d){
   if(!d) d={};
   if(!d.patrullas) d.patrullas=[];
   if(!d.puntajes) d.puntajes=[];
+  if(!d.premios) d.premios=[];
+  if(!Array.isArray(d.premios)){ var pk=Object.keys(d.premios); d.premios=pk.map(function(k){return d.premios[k];}).filter(function(x){return !!x;}); }
   d.patrullas = d.patrullas.map(function(p){
-    if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[] };  // compat: nombres viejos
-    if(!p) return { nombre:'', jefe:'', integrantes:[] };
+    if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[], subcampo:'' };  // compat: nombres viejos
+    if(!p) return { nombre:'', jefe:'', integrantes:[], subcampo:'' };
     if(!Array.isArray(p.integrantes)) p.integrantes = [];
     if(p.jefe===undefined) p.jefe = '';
+    if(p.subcampo===undefined) p.subcampo = '';
     return p;
   });
   return d;
@@ -2231,7 +2270,9 @@ function renderPostasCj(){
 }
 function renderJuegosCj(){
   document.getElementById('cj-yincanas-list').innerHTML = JUEGOS_CJ.map(function(g){
-    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">'+g.n+'</span>'+esc(g.nombre)+'</h3>'
+    var v = g.vir && VIRTUDES_CJ[g.vir];
+    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">'+g.n+'</span>'+esc(g.nombre)
+      +(v?' <span style="border:1px solid '+v.color+';color:'+v.color+';border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:4px;white-space:nowrap;">'+v.icon+' '+esc(g.vir)+'</span>':'')+'</h3>'
       +'<div style="font-size:14px;">'+esc(g.exp)+'</div>'
       +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(g.mat)+'</div>'
       +(g.seg?'<div style="font-size:12px;color:var(--w50);margin-top:3px;">⚠️ '+esc(g.seg)+'</div>':'')
@@ -2255,14 +2296,22 @@ function renderPatrullasCj(){
         +(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removeIntegranteCj('+i+','+j+')">×</span>':'')
         +'</span>';
     }).join('');
+    var scSel = '';
+    if(isAdmin()){
+      scSel = '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><span style="font-size:12px;color:var(--w50);">Subcampo:</span><select onchange="setSubcampoCj('+i+',this.value)" style="padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:12.5px;">'
+        + '<option value=""'+(p.subcampo?'':' selected')+'>— sin asignar —</option>'
+        + SUBCAMPOS_CJ.map(function(sc){ return '<option value="'+sc+'"'+(p.subcampo===sc?' selected':'')+'>'+sc+'</option>'; }).join('')
+        + '</select></div>';
+    }
     return '<div class="card">'
       + '<div style="display:flex;align-items:center;gap:10px;">'
-      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)
+      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
       +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
       +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
       +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
       + '</div>'
       + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
+      + scSel
       + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-integ-'+i+'" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')addIntegranteCj('+i+')" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="addIntegranteCj('+i+')">+ Integrante</button></div>':'')
       + '</div>';
   }).join('');
@@ -2270,17 +2319,69 @@ function renderPatrullasCj(){
 function renderRankingCj(){
   dataCj=loadCj();
   var pf=document.getElementById('cj-puntaje-form'); if(pf) pf.style.display = isAdmin()?'block':'none';
+  var prf=document.getElementById('cj-premio-form'); if(prf) prf.style.display = isAdmin()?'block':'none';
   var sel=document.getElementById('cj-pt-patrulla'); if(sel) sel.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p.nombre)+'</option>';}).join('');
+  var selPr=document.getElementById('cj-pr-patrulla'); if(selPr) selPr.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p.nombre)+'</option>';}).join('');
+  var selVi=document.getElementById('cj-pr-virtud'); if(selVi) selVi.innerHTML = Object.keys(VIRTUDES_CJ).map(function(v){return '<option>'+v+'</option>';}).join('');
   var totals={}; dataCj.patrullas.forEach(function(p){ totals[p.nombre]=0; });
   dataCj.puntajes.forEach(function(x){ if(totals[x.patrulla]===undefined) totals[x.patrulla]=0; totals[x.patrulla]+=Number(x.puntos)||0; });
+  // Copa de Subcampos: suma de puntos de las patrullas de cada virtud teologal
+  var copa=document.getElementById('cj-subcampos-copa');
+  if(copa){
+    var scTot={}, scCount={}, hayAsignados=false;
+    dataCj.patrullas.forEach(function(p){
+      if(p.subcampo){ hayAsignados=true; if(!scTot[p.subcampo]){scTot[p.subcampo]=0;scCount[p.subcampo]=0;} scTot[p.subcampo]+=totals[p.nombre]||0; scCount[p.subcampo]++; }
+    });
+    if(hayAsignados){
+      var scArr=SUBCAMPOS_CJ.filter(function(sc){return scCount[sc];}).map(function(sc){return {sc:sc,pts:scTot[sc],n:scCount[sc]};}).sort(function(a,b){return b.pts-a.pts;});
+      copa.innerHTML='<div class="card" style="border:1px solid var(--gold-dim);"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✝️ Copa de Subcampos (virtudes teologales)</div>'
+        + scArr.map(function(r,i){
+            return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;'+(i?'border-top:1px solid var(--w20,rgba(255,255,255,.1));':'')+'">'
+              +'<div style="font-size:18px;width:30px;text-align:center;">'+(i===0?'🏆':(i+1)+'.')+'</div>'
+              +'<div style="flex:1;font-weight:800;">'+subcampoBadgeCj(r.sc)+' <span style="color:var(--w50);font-size:12px;font-weight:600;">('+r.n+' patrullas)</span></div>'
+              +'<div style="color:var(--gold);font-weight:900;font-size:17px;">'+r.pts+'</div></div>';
+          }).join('')+'</div>';
+    } else { copa.innerHTML=''; }
+  }
   var arr=Object.keys(totals).map(function(k){return {nombre:k,pts:totals[k]};}).sort(function(a,b){return b.pts-a.pts;});
   var l=document.getElementById('cj-ranking-list');
-  if(arr.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Cargá patrullas y puntajes para ver el ranking</p>'; return; }
-  l.innerHTML = arr.map(function(r,i){
-    var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-    return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+esc(r.nombre)+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
-  }).join('');
+  if(arr.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Cargá patrullas y puntajes para ver el ranking</p>'; }
+  else {
+    var scDePatrulla={}; dataCj.patrullas.forEach(function(p){ scDePatrulla[p.nombre]=p.subcampo||''; });
+    l.innerHTML = arr.map(function(r,i){
+      var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+      return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+esc(r.nombre)+subcampoBadgeCj(scDePatrulla[r.nombre])+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
+    }).join('');
+  }
+  // Premios "Virtud del Jornadista"
+  var pl=document.getElementById('cj-premios-list');
+  if(pl){
+    var premios=dataCj.premios||[];
+    if(premios.length===0){ pl.innerHTML=''; }
+    else {
+      pl.innerHTML='<div class="card" style="border-left:3px solid var(--gold);"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🏅 Virtud del Jornadista</div>'
+        + premios.map(function(pr,idx){
+            var v=VIRTUDES_CJ[pr.virtud]||{icon:'🏅',color:'var(--gold)'};
+            return '<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;'+(idx?'border-top:1px solid var(--w20,rgba(255,255,255,.1));':'')+'">'
+              +'<div style="font-size:20px;">'+v.icon+'</div>'
+              +'<div style="flex:1;"><span style="color:'+v.color+';font-weight:800;">'+esc(pr.virtud)+'</span> · <strong>🚩 '+esc(pr.patrulla)+'</strong>'
+              +(pr.motivo?'<div style="font-size:12.5px;color:var(--w80);margin-top:2px;font-style:italic;">'+esc(pr.motivo)+'</div>':'')+'</div>'
+              +(isAdmin()?'<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removePremioCj('+idx+')">×</span>':'')
+              +'</div>';
+          }).join('')+'</div>';
+    }
+  }
 }
+function setSubcampoCj(i,v){ if(!isAdmin())return; dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].subcampo=v; saveCj(dataCj); renderPatrullasCj(); renderRankingCj(); toast(v?('Subcampo: '+v):'Subcampo quitado'); } }
+function addPremioCj(){
+  if(!isAdmin())return;
+  var v=document.getElementById('cj-pr-virtud').value, p=document.getElementById('cj-pr-patrulla').value, m=document.getElementById('cj-pr-motivo').value.trim();
+  if(!p){toast('Cargá patrullas primero');return;}
+  dataCj=loadCj(); dataCj.premios.push({virtud:v,patrulla:p,motivo:m}); saveCj(dataCj);
+  document.getElementById('cj-pr-motivo').value='';
+  renderRankingCj(); toast('🏅 '+v+' otorgada a '+p);
+}
+function removePremioCj(idx){ if(!isAdmin())return; dataCj=loadCj(); dataCj.premios.splice(idx,1); saveCj(dataCj); renderRankingCj(); toast('Premio quitado'); }
 function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push({nombre:n, integrantes:[]}); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
 function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!confirm('¿Eliminar la patrulla "'+((p&&p.nombre)||'')+'" y sus integrantes? Esto no se puede deshacer.'))return; dataCj.patrullas.splice(i,1); saveCj(dataCj, true); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
@@ -2443,7 +2544,7 @@ function aprobarInscripcionCj(pin){
     dataCj=loadCj();
     var idx=-1;
     for(var i=0;i<dataCj.patrullas.length;i++){ if(dataCj.patrullas[i].nombre===r.nombre){idx=i;break;} }
-    var pat={ nombre:r.nombre, jefe:r.jefe||'', integrantes:ints };
+    var pat={ nombre:r.nombre, jefe:r.jefe||'', integrantes:ints, subcampo: idx>=0 ? (dataCj.patrullas[idx].subcampo||'') : '' };
     if(idx>=0) dataCj.patrullas[idx]=pat; else dataCj.patrullas.push(pat);
     saveCj(dataCj);
     inscCjRef.child(pin).update({estado:'aprobada'});
