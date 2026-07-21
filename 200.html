@@ -210,6 +210,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   <div class="nav-tabs" id="navTabsCampajor" style="display:none;">
     <button onclick="volverAJornadas()" style="opacity:.85;">← Eventos</button>
     <button data-cj="inicio" class="active" onclick="showCj('inicio')">Inicio</button>
+    <button data-cj="inscripcion" onclick="showCj('inscripcion')">Inscripción</button>
     <button data-cj="cronograma" onclick="showCj('cronograma')">Cronograma</button>
     <button data-cj="postas" onclick="showCj('postas')">Postas</button>
     <button data-cj="yincanas" onclick="showCj('yincanas')">Yincanas</button>
@@ -223,8 +224,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="modal-overlay" id="loginModal">
   <div class="modal">
     <h2>Iniciar Sesión</h2>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:10px;">👤 Equipos: ingresá tu PIN.</p>
-    <input type="number" id="pinInput" placeholder="PIN de equipo" inputmode="numeric">
+    <p style="color:var(--w50);font-size:13px;margin-bottom:10px;">👤 Equipos y patrullas: ingresá tu PIN.</p>
+    <input type="number" id="pinInput" placeholder="PIN de equipo o patrulla" inputmode="numeric">
     <div class="btn-row" style="margin-top:8px;">
       <button class="btn btn-secondary" onclick="closeLogin()">Cancelar</button>
       <button class="btn btn-primary" onclick="doLogin()">Entrar</button>
@@ -330,15 +331,79 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Yincanas</span>
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔥 Fogón</span>
       </div>
+      <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
       <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 yincanas</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
     </div>
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">✝️ Nuestra esencia · Virtudes del Jornadista</div>
+      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">Las virtudes son <i>hábitos buenos que nos ayudan a parecernos más a Jesús</i>. Este CAMPAJOR se vive alrededor de las <b>3 virtudes teologales</b> — cada subcampo lleva el nombre de una:</p>
+      <div style="margin-top:10px;">
+        <div style="background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:15px;">🕊️ FE</div>
+          <div style="font-size:12.5px;color:var(--w80);margin-top:2px;">Creer en Dios y en lo que Él nos reveló, aunque no lo veamos.</div>
+          <div style="font-size:12px;color:var(--gold);margin-top:3px;font-style:italic;">"La fe es la certeza de lo que se espera" — Heb 11,1</div>
+        </div>
+        <div style="background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:15px;">⚓ ESPERANZA</div>
+          <div style="font-size:12.5px;color:var(--w80);margin-top:2px;">Confiar en que Dios cumple sus promesas: aunque todo salga mal, Él no falla.</div>
+          <div style="font-size:12px;color:var(--gold);margin-top:3px;font-style:italic;">"En esperanza fuimos salvados" — Rom 8,24</div>
+        </div>
+        <div style="background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:12px;padding:10px 12px;">
+          <div style="font-weight:900;font-size:15px;">❤️‍🔥 CARIDAD</div>
+          <div style="font-size:12.5px;color:var(--w80);margin-top:2px;">Querer el bien del otro como Dios lo quiere. La más importante de todas.</div>
+          <div style="font-size:12px;color:var(--gold);margin-top:3px;font-style:italic;">"El mayor de ellos es el amor" — 1 Cor 13,13</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🙏 La oración: el oxígeno del alma</div>
+      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">"Es el alma que respira la presencia de Dios." Los <b>5 tipos de oración</b> guían nuestras <b>5 postas</b> de recepción:</p>
+      <div style="margin-top:8px;">
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">1️⃣ Adoración</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">2️⃣ Confesión</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">3️⃣ Acción de Gracias</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">4️⃣ Intercesión</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">5️⃣ Petición</span>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:var(--w80);">Frutos de la oración: <b>👂 Escucha</b> · <b>🤫 Silencio</b> · <b>💬 Diálogo</b> — los tres momentos de nuestro fogón.</p>
+    </div>
     <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
       <div style="font-size:20px;font-weight:900;color:var(--white);">¿Listos para la aventura?</div>
       <div style="font-size:13px;color:var(--w50);margin-top:4px;">Fe, barro, fogón y amistad: sumate con tu patrulla.</div>
-      <button class="cta-inscripcion" style="margin-top:14px;font-size:16px;padding:12px 32px;" onclick="showCj('patrullas')">🚩 ¡INSCRIBÍ TU PATRULLA!</button>
+      <button class="cta-inscripcion" style="margin-top:14px;font-size:16px;padding:12px 32px;" onclick="showCj('inscripcion')">🚩 ¡INSCRIBÍ TU PATRULLA!</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CAMPAJOR: INSCRIPCIÓN DE PATRULLA (pública) ═══ -->
+<div class="page" id="page-cj-inscripcion">
+  <div class="section-page">
+    <div class="section-title">📋 Inscripción de Patrulla</div>
+    <div class="card" id="cj-insc-form-card">
+      <p style="color:var(--w50);font-size:13px;margin-bottom:16px;">Completá los datos para inscribir a tu patrulla. Al finalizar vas a recibir un <strong style="color:var(--gold)">PIN</strong> para entrar desde cualquier celular, editar tu patrulla y acompañar el CAMPAJOR.</p>
+      <div class="form-group"><label>Nombre de la patrulla</label><input type="text" id="cj-insc-nombre" placeholder="Ej: Los Halcones"></div>
+      <div class="form-group"><label>Jefe / responsable</label><input type="text" id="cj-insc-jefe" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>Celular de contacto</label><input type="tel" id="cj-insc-celular" placeholder="0991 123456"></div>
+      <div class="form-group"><label>Correo (opcional)</label><input type="email" id="cj-insc-correo" placeholder="correo@ejemplo.com"></div>
+      <div class="form-group"><label>Integrantes</label><div id="cj-insc-integrantes"></div>
+        <button class="btn btn-secondary btn-sm" onclick="addIntegranteRowCj()" style="margin-top:8px;">+ Agregar integrante</button>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="submitInscripcionCj()" style="margin-top:16px;font-size:16px;padding:14px;">INSCRIBIR PATRULLA</button>
+    </div>
+    <div class="card" id="cj-insc-success" style="display:none;text-align:center;">
+      <div style="font-size:48px;margin-bottom:10px;">🎉</div>
+      <h3 style="justify-content:center;">¡Patrulla Inscrita!</h3>
+      <p style="color:var(--w50);margin:10px 0;">Tu patrulla quedó registrada. El staff la va a confirmar y aparecerá en la lista oficial.</p>
+      <div style="background:var(--navy);border:2px solid var(--gold);border-radius:16px;padding:20px;margin:16px 0;">
+        <div style="font-size:12px;color:var(--teal);text-transform:uppercase;letter-spacing:2px;">Tu PIN de acceso</div>
+        <div id="cj-insc-pin" style="font-size:48px;font-weight:900;color:var(--gold);margin:8px 0;"></div>
+        <div style="font-size:12px;color:var(--w50);">Guardá este número: con él entrás desde cualquier celular (botón "Entrar") para editar tu patrulla y seguir el campamento</div>
+      </div>
+      <div id="cj-insc-details" style="text-align:left;font-size:13px;color:var(--w80);margin-top:12px;"></div>
+      <button class="btn btn-primary" onclick="showCj('patrullas')" style="margin-top:16px;">Ver patrullas</button>
     </div>
   </div>
 </div>
@@ -354,7 +419,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-postas">
   <div class="section-page">
     <div class="section-title">🎪 Postas de recepción</div>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">5 postas para el arranque del sábado.</p>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">5 postas para el arranque del sábado — cada una encarna un <strong style="color:var(--gold);">tipo de oración</strong>: la patrulla lo vive jugando.</p>
     <div id="cj-postas-list"></div>
   </div>
 </div>
@@ -370,6 +435,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-patrullas">
   <div class="section-page">
     <div class="section-title">🚩 Patrullas</div>
+    <div id="cj-mi-patrulla"></div>
+    <div id="cj-inscripciones-admin"></div>
     <div class="card" id="cj-patrullas-form" style="display:none;">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Agregar patrulla</div>
       <div class="form-group"><label>Nombre</label><input id="cj-pat-nombre" placeholder="Nombre de la patrulla"></div>
@@ -677,6 +744,7 @@ var db = null;
 var dbRef = null;
 var publicRef = null; // nodo PUBLICO del torneo (datos sin info personal, lectura publica)
 var campajorRef = null; // nodo CAMPAJOR (patrullas/puntajes, sin PII: lectura publica)
+var inscCjRef = null;   // nodo campajor_inscripciones (PII protegida: cada registro solo se lee/edita conociendo su PIN; listado solo admin)
 
 try {
   firebase.initializeApp(firebaseConfig);
@@ -684,6 +752,7 @@ try {
   dbRef = db.ref('torneo');       // datos completos del torneo (privados, solo admin)
   publicRef = db.ref('publico');  // datos seguros del torneo (lectura publica)
   campajorRef = db.ref('campajor'); // datos de campajor (sin PII, lectura publica)
+  inscCjRef = db.ref('campajor_inscripciones'); // inscripciones de patrullas (crear: cualquiera; leer/editar: solo con el PIN exacto)
   fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
@@ -936,6 +1005,34 @@ function startFrasesJornadas() {
     }, 600);
   }, 4200);
 }
+// Frases espirituales del CAMPAJOR (charla "Virtudes del Jornadista" + tipos de oración)
+var FRASES_CAMPAJOR = [
+  '🙏 Oren sin cesar — 1 Tes 5,17',
+  '🌬️ La oración es el oxígeno del alma',
+  '🕊️ Fe: la certeza de lo que se espera — Heb 11,1',
+  '⚓ Esperanza: aunque todo salga mal, Dios no falla — Rom 8,24',
+  '❤️‍🔥 El mayor de todos es el amor — 1 Cor 13,13',
+  '🌄 Dios revela su presencia en la naturaleza',
+  '🤲 Pedid y se les dará — Mt 7,7',
+  '✨ Jesús, Maestro de la oración',
+  '👂 Escucha · 🤫 Silencio · 💬 Diálogo — frutos de la oración'
+];
+var fraseCampajorIdx = 0, fraseCampajorTimer = null;
+function startFrasesCampajor() {
+  var el = document.getElementById('fraseCampajor');
+  if (!el || fraseCampajorTimer) return;
+  el.textContent = FRASES_CAMPAJOR[0];
+  fraseCampajorTimer = setInterval(function () {
+    var el2 = document.getElementById('fraseCampajor');
+    if (!el2) return;
+    el2.style.opacity = 0;
+    setTimeout(function () {
+      fraseCampajorIdx = (fraseCampajorIdx + 1) % FRASES_CAMPAJOR.length;
+      el2.textContent = FRASES_CAMPAJOR[fraseCampajorIdx];
+      el2.style.opacity = 1;
+    }, 600);
+  }, 4200);
+}
 function renderJornadasLanding() {
   var el = document.getElementById('eventos-list');
   if (!el) return;
@@ -991,7 +1088,8 @@ function showPage(name) {
 function openLogin() {
   if (currentUser) {
     if (currentUser.type === 'admin' && fbReady && firebase.auth) { try { firebase.auth().signOut(); } catch(e){} }
-    currentUser = null; updateUserBadge(); toast('Sesión cerrada'); renderAll(); return;
+    if (currentUser.type === 'patrulla') { try { localStorage.removeItem('cj_patrulla_pin'); } catch(e){} }
+    currentUser = null; updateUserBadge(); toast('Sesión cerrada'); renderAll(); try { renderPatrullasCj(); } catch(e){} return;
   }
   document.getElementById('loginModal').classList.add('show');
   document.getElementById('pinInput').value = '';
@@ -1011,6 +1109,24 @@ function doLogin() {
   }
   if (team) {
     currentUser = { type: 'team', team: team }; closeLogin(); updateUserBadge(); toast('Bienvenido, ' + team.nombre); renderAll(); return;
+  }
+  // Si no es PIN de equipo, probar como PIN de patrulla CAMPAJOR (en Firebase)
+  if (fbReady && inscCjRef) {
+    var errEl = document.getElementById('loginError');
+    errEl.textContent = 'Verificando...';
+    inscCjRef.child(pin).once('value', function(snap){
+      var v = snap.val();
+      if (v) {
+        v.integrantes = normIntegrantesCj(v.integrantes);
+        currentUser = { type: 'patrulla', pin: pin, patrulla: v };
+        try { localStorage.setItem('cj_patrulla_pin', pin); } catch(e){}
+        closeLogin(); updateUserBadge(); toast('Bienvenida, patrulla ' + v.nombre + ' 🚩');
+        try { renderPatrullasCj(); } catch(e){}
+      } else {
+        errEl.textContent = 'PIN incorrecto';
+      }
+    }, function(){ document.getElementById('loginError').textContent = 'PIN incorrecto'; });
+    return;
   }
   document.getElementById('loginError').textContent = 'PIN incorrecto';
 }
@@ -1047,6 +1163,7 @@ function updateUserBadge() {
   var b = document.getElementById('userBadge');
   if (!currentUser) { b.textContent = 'Entrar'; b.style.borderColor = 'var(--neon-dim)'; b.style.color = 'var(--neon)'; }
   else if (currentUser.type === 'admin') { b.textContent = '🔑 Admin'; b.style.borderColor = 'var(--gold)'; b.style.color = 'var(--gold)'; }
+  else if (currentUser.type === 'patrulla') { b.textContent = '🚩 ' + currentUser.patrulla.nombre; b.style.borderColor = 'var(--neon)'; b.style.color = 'var(--neon)'; }
   else { b.textContent = '👤 ' + currentUser.team.nombre; b.style.borderColor = 'var(--teal)'; b.style.color = 'var(--teal)'; }
 }
 function isAdmin() { return currentUser && currentUser.type === 'admin'; }
@@ -1999,12 +2116,13 @@ var CRONO_DOM_CJ = [
   ['11:00–14:00','Almuerzo + levantar campamento'],
   ['14:00–15:30','Clausura, premiaciones y agradecimientos']
 ];
+// Cada posta encarna un tipo de oración (charla "Virtudes del Jornadista", convivencia jul/2026)
 var POSTAS_CJ = [
-  {n:1,nombre:'Palo Borracho',resp:'Sofía, Teto y Calixto',mat:'Palo de escoba 1m, pelota o conos',exp:'Girar 10 vueltas con la cabeza en el palo y llevar la pelota a 5–10 m.',vid:'https://www.youtube.com/watch?v=Nnx1lY-fGyc'},
-  {n:2,nombre:'Rondana con asiento',resp:'Hugo V., Adrián',mat:'Rondana, 3m de piola, silbato, madera para asiento',exp:'Por turno se sientan y el equipo los estira hasta cierta altura; tocan silbato. 10 veces.',vid:''},
-  {n:3,nombre:'La Lagartija',resp:'Conrado y Mariano',mat:'20 estacas, 10m de cinta elástica, martillo',exp:'Armar una red con estacas y cinta; pasar por debajo ida y vuelta (se puede con barro).',vid:'https://www.youtube.com/watch?v=t4CFPCfMZP0'},
-  {n:4,nombre:'Pasa agua',resp:'Isidro, Cubilla y Milena',mat:'10 jarras de 1–2 L, balde de 20 L',exp:'Sentados uno detrás de otro sin mirarse, pasar agua de jarra en jarra hasta llenar una de 2 L.',vid:'https://www.youtube.com/watch?v=sbsOsnVl7RA'},
-  {n:5,nombre:'Pasa huevo / pelota con cuchara',resp:'Thalía y Rocío',mat:'10 cucharas y 10 pelotas o una cartela de huevos',exp:'Pasar la pelota o el huevo de cuchara en cuchara; prever 5 pasadas.',vid:'https://www.youtube.com/watch?v=EKnSZj6qVlE'}
+  {n:1,nombre:'Palo Borracho',resp:'Sofía, Teto y Calixto',mat:'Palo de escoba 1m, pelota o conos',exp:'Girar 10 vueltas con la cabeza en el palo y llevar la pelota a 5–10 m.',vid:'https://www.youtube.com/watch?v=Nnx1lY-fGyc',ora:'Adoración',consigna:'Antes de jugar: reconocemos la grandeza de Dios en la naturaleza que nos rodea.'},
+  {n:2,nombre:'Rondana con asiento',resp:'Hugo V., Adrián',mat:'Rondana, 3m de piola, silbato, madera para asiento',exp:'Por turno se sientan y el equipo los estira hasta cierta altura; tocan silbato. 10 veces.',vid:'',ora:'Confesión',consigna:'Reconocemos lo que no hicimos bien y arrancamos livianos.'},
+  {n:3,nombre:'La Lagartija',resp:'Conrado y Mariano',mat:'20 estacas, 10m de cinta elástica, martillo',exp:'Armar una red con estacas y cinta; pasar por debajo ida y vuelta (se puede con barro).',vid:'https://www.youtube.com/watch?v=t4CFPCfMZP0',ora:'Acción de Gracias',consigna:'Gracias por la patrulla, por el juego y por estar acá.'},
+  {n:4,nombre:'Pasa agua',resp:'Isidro, Cubilla y Milena',mat:'10 jarras de 1–2 L, balde de 20 L',exp:'Sentados uno detrás de otro sin mirarse, pasar agua de jarra en jarra hasta llenar una de 2 L.',vid:'https://www.youtube.com/watch?v=sbsOsnVl7RA',ora:'Intercesión',consigna:'Jugamos por otro: cada patrulla nombra a alguien por quien ofrece la posta.'},
+  {n:5,nombre:'Pasa huevo / pelota con cuchara',resp:'Thalía y Rocío',mat:'10 cucharas y 10 pelotas o una cartela de huevos',exp:'Pasar la pelota o el huevo de cuchara en cuchara; prever 5 pasadas.',vid:'https://www.youtube.com/watch?v=EKnSZj6qVlE',ora:'Petición',consigna:'Pedid y se les dará: pedimos fuerza y unión para todo el campamento.'}
 ];
 var JUEGOS_CJ = [
   {n:1,nombre:'Colas (rápido)',exp:'Quitar el pañuelo ("cola") del rival. 3 vs 3 en área marcada.',mat:'Pañuelos, conos',seg:'Nada de agarres, solo quitar la cola.'},
@@ -2087,6 +2205,7 @@ function showCj(name){
   document.getElementById('page-cj-'+name).classList.add('active');
   var btns=document.querySelectorAll('#navTabsCampajor button[data-cj]');
   for(var j=0;j<btns.length;j++) btns[j].classList.toggle('active', btns[j].getAttribute('data-cj')===name);
+  if(name==='inscripcion') resetInscripcionCjForm();
   if(name==='cronograma') renderCronoCj();
   if(name==='postas') renderPostasCj();
   if(name==='yincanas') renderJuegosCj();
@@ -2100,7 +2219,9 @@ function renderCronoCj(){
 }
 function renderPostasCj(){
   document.getElementById('cj-postas-list').innerHTML = POSTAS_CJ.map(function(p){
-    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">P'+p.n+'</span>'+esc(p.nombre)+'</h3>'
+    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">P'+p.n+'</span>'+esc(p.nombre)
+      +(p.ora?' <span style="background:rgba(255,200,40,.12);border:1px solid var(--gold-dim);color:var(--gold);font-size:11px;font-weight:800;border-radius:12px;padding:2px 9px;margin-left:4px;white-space:nowrap;">🙏 '+esc(p.ora)+'</span>':'')+'</h3>'
+      +(p.consigna?'<div style="font-size:12.5px;color:var(--gold);margin-bottom:6px;font-style:italic;">'+esc(p.consigna)+'</div>':'')
       +'<div style="font-size:14px;">'+esc(p.exp)+'</div>'
       +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(p.mat)+'</div>'
       +'<div style="font-size:12px;color:var(--w50);margin-top:3px;">👥 '+esc(p.resp)+'</div>'
@@ -2119,6 +2240,8 @@ function renderJuegosCj(){
 }
 function renderPatrullasCj(){
   dataCj=loadCj();
+  try { renderMiPatrullaCj(); } catch(e){}
+  try { renderInscripcionesAdminCj(); } catch(e){}
   var f=document.getElementById('cj-patrullas-form'); if(f) f.style.display = isAdmin()?'block':'none';
   var l=document.getElementById('cj-patrullas-list');
   if(!l) return;
@@ -2164,6 +2287,190 @@ function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementByI
 function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
 function setJefeCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes[j]!==undefined){ var nom=p.integrantes[j]; p.jefe=(p.jefe===nom)?'':nom; saveCj(dataCj); renderPatrullasCj(); toast(p.jefe?('👑 Jefe: '+nom):'Jefe quitado'); } }
 function addPuntajeCj(){ if(!isAdmin())return; var p=document.getElementById('cj-pt-patrulla').value, j=document.getElementById('cj-pt-juego').value.trim(), pts=parseInt(document.getElementById('cj-pt-puntos').value)||0; if(!p){toast('Elegí una patrulla');return;} dataCj=loadCj(); dataCj.puntajes.push({patrulla:p,juego:j,puntos:pts}); saveCj(dataCj); document.getElementById('cj-pt-juego').value=''; document.getElementById('cj-pt-puntos').value=''; renderRankingCj(); toast('Puntaje cargado (+'+pts+')'); }
+
+// ===== CAMPAJOR: INSCRIPCIÓN PÚBLICA DE PATRULLAS =====
+// Modelo: cada inscripción vive en campajor_inscripciones/<PIN>. El PIN (6 dígitos al azar)
+// funciona como llave: quien lo conoce puede leer/editar SU patrulla; nadie puede listar las
+// demás (el listado completo es solo del admin). Así el celular/correo no queda público.
+function normIntegrantesCj(v){
+  if(!v) return [];
+  if(Array.isArray(v)) return v.filter(function(x){return !!x;});
+  return Object.keys(v).map(function(k){return v[k];}).filter(function(x){return !!x;});
+}
+function addIntegranteRowCj(val){
+  var c=document.getElementById('cj-insc-integrantes'); if(!c) return;
+  var row=document.createElement('div');
+  row.className='cj-integ-row';
+  row.style.cssText='display:flex;gap:6px;margin-top:6px;';
+  row.innerHTML='<input type="text" placeholder="Nombre y apellido" style="flex:1;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;">'
+    +'<button class="btn btn-danger btn-sm" onclick="this.parentNode.remove()">×</button>';
+  c.appendChild(row);
+  if(typeof val==='string') row.querySelector('input').value=val;
+}
+function resetInscripcionCjForm(){
+  var f=document.getElementById('cj-insc-form-card'), s=document.getElementById('cj-insc-success');
+  if(!f) return;
+  f.style.display='block'; if(s) s.style.display='none';
+  ['cj-insc-nombre','cj-insc-jefe','cj-insc-celular','cj-insc-correo'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  var c=document.getElementById('cj-insc-integrantes'); if(c){ c.innerHTML=''; addIntegranteRowCj(); addIntegranteRowCj(); }
+}
+var _inscCjEnviando=false;
+function submitInscripcionCj(){
+  var nombre=document.getElementById('cj-insc-nombre').value.trim();
+  var jefe=document.getElementById('cj-insc-jefe').value.trim();
+  var celular=document.getElementById('cj-insc-celular').value.trim();
+  var correo=document.getElementById('cj-insc-correo').value.trim();
+  if(!nombre){toast('Poné el nombre de la patrulla');return;}
+  if(!jefe){toast('Poné el nombre del jefe o responsable');return;}
+  if(!celular){toast('Poné un celular de contacto');return;}
+  var integrantes=[];
+  var rows=document.querySelectorAll('#cj-insc-integrantes input');
+  for(var i=0;i<rows.length;i++){ var n=rows[i].value.trim(); if(n) integrantes.push(n); }
+  if(!fbReady||!inscCjRef){toast('Sin conexión — probá de nuevo en un rato');return;}
+  if(_inscCjEnviando) return;
+  _inscCjEnviando=true;
+  toast('Inscribiendo patrulla...');
+  (function intentar(n){
+    if(n>=8){ _inscCjEnviando=false; toast('No se pudo generar el PIN, probá de nuevo'); return; }
+    var pin=String(Math.floor(100000+Math.random()*900000));
+    inscCjRef.child(pin).once('value', function(snap){
+      if(snap.exists()) return intentar(n+1); // PIN ocupado, sortear otro
+      var reg={ pin:pin, nombre:nombre, jefe:jefe, celular:celular, correo:correo||'', integrantes:integrantes, estado:'pendiente', fecha:new Date().toISOString() };
+      inscCjRef.child(pin).set(reg).then(function(){
+        _inscCjEnviando=false;
+        currentUser={ type:'patrulla', pin:pin, patrulla:reg };
+        try{ localStorage.setItem('cj_patrulla_pin', pin); }catch(e){}
+        updateUserBadge();
+        document.getElementById('cj-insc-form-card').style.display='none';
+        document.getElementById('cj-insc-success').style.display='block';
+        document.getElementById('cj-insc-pin').textContent=pin;
+        document.getElementById('cj-insc-details').innerHTML='<strong>'+esc(nombre)+'</strong><br>Jefe: '+esc(jefe)+'<br>Integrantes: '+integrantes.length;
+        window.scrollTo(0,0);
+        toast('¡Patrulla inscrita! 🚩');
+      }).catch(function(){ _inscCjEnviando=false; toast('Error al guardar — revisá tu conexión'); });
+    }, function(){ _inscCjEnviando=false; toast('Error de conexión'); });
+  })(0);
+}
+// "Mi patrulla": tarjeta editable para la patrulla logueada (pestaña Patrullas)
+function renderMiPatrullaCj(){
+  var c=document.getElementById('cj-mi-patrulla'); if(!c) return;
+  if(!currentUser||currentUser.type!=='patrulla'){ c.innerHTML=''; return; }
+  var p=currentUser.patrulla;
+  var estado = p.estado==='aprobada'
+    ? '<span style="background:rgba(0,230,118,.12);border:1px solid var(--neon-dim);color:var(--neon);border-radius:12px;padding:2px 10px;font-size:11.5px;font-weight:700;">✔ Confirmada</span>'
+    : '<span style="background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);color:var(--gold);border-radius:12px;padding:2px 10px;font-size:11.5px;font-weight:700;">⏳ Pendiente de confirmación</span>';
+  var integ=(p.integrantes||[]).map(function(m,j){
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'+esc(m)
+      +' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarIntegranteMiPatrulla('+j+')">×</span></span>';
+  }).join('');
+  c.innerHTML='<div class="card" style="border:1px solid var(--neon-dim);">'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div style="font-weight:800;font-size:15px;flex:1;">🚩 Mi patrulla</div>'+estado+'</div>'
+    +'<div class="form-group" style="margin-top:10px;"><label>Nombre</label><input type="text" id="cj-mi-nombre"></div>'
+    +'<div class="form-group"><label>Jefe / responsable</label><input type="text" id="cj-mi-jefe"></div>'
+    +'<div class="form-group"><label>Celular</label><input type="tel" id="cj-mi-celular"></div>'
+    +'<div class="form-group"><label>Correo</label><input type="email" id="cj-mi-correo"></div>'
+    +'<div style="font-size:12px;color:var(--w50);margin-bottom:4px;">Integrantes ('+(p.integrantes?p.integrantes.length:0)+')</div>'
+    +'<div>'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
+    +'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-mi-nuevo-integ" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')agregarIntegranteMiPatrulla()" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarIntegranteMiPatrulla()">+ Integrante</button></div>'
+    +'<button class="btn btn-primary btn-block" onclick="guardarMiPatrulla()" style="margin-top:12px;">💾 Guardar cambios</button>'
+    +'</div>';
+  document.getElementById('cj-mi-nombre').value=p.nombre||'';
+  document.getElementById('cj-mi-jefe').value=p.jefe||'';
+  document.getElementById('cj-mi-celular').value=p.celular||'';
+  document.getElementById('cj-mi-correo').value=p.correo||'';
+}
+function _persistirMiPatrulla(msgOk){
+  if(!currentUser||currentUser.type!=='patrulla'||!fbReady||!inscCjRef) return;
+  var p=currentUser.patrulla;
+  if(p.estado==='aprobada') p.estado='editada'; // el staff ve que hubo cambios después de confirmar
+  inscCjRef.child(currentUser.pin).set(p).then(function(){ if(msgOk) toast(msgOk); renderMiPatrullaCj(); })
+    .catch(function(){ toast('Error al guardar — revisá tu conexión'); });
+}
+function guardarMiPatrulla(){
+  if(!currentUser||currentUser.type!=='patrulla') return;
+  var nombre=document.getElementById('cj-mi-nombre').value.trim();
+  var jefe=document.getElementById('cj-mi-jefe').value.trim();
+  var celular=document.getElementById('cj-mi-celular').value.trim();
+  if(!nombre){toast('El nombre no puede quedar vacío');return;}
+  if(!jefe){toast('El jefe no puede quedar vacío');return;}
+  if(!celular){toast('El celular no puede quedar vacío');return;}
+  var p=currentUser.patrulla;
+  p.nombre=nombre; p.jefe=jefe; p.celular=celular;
+  p.correo=document.getElementById('cj-mi-correo').value.trim();
+  _persistirMiPatrulla('Cambios guardados ✅');
+  updateUserBadge();
+}
+function agregarIntegranteMiPatrulla(){
+  var el=document.getElementById('cj-mi-nuevo-integ'); var n=el?el.value.trim():'';
+  if(!n){toast('Poné un nombre');return;}
+  if(!currentUser.patrulla.integrantes) currentUser.patrulla.integrantes=[];
+  currentUser.patrulla.integrantes.push(n);
+  _persistirMiPatrulla('Integrante agregado');
+}
+function quitarIntegranteMiPatrulla(j){
+  var ints=currentUser.patrulla.integrantes||[];
+  ints.splice(j,1);
+  _persistirMiPatrulla('Integrante quitado');
+}
+// Admin: bandeja de inscripciones online (listado solo visible para el admin)
+function renderInscripcionesAdminCj(){
+  var c=document.getElementById('cj-inscripciones-admin'); if(!c) return;
+  if(!isAdmin()||!fbReady||!inscCjRef){ c.innerHTML=''; return; }
+  inscCjRef.once('value', function(snap){
+    var v=snap.val();
+    if(!v){ c.innerHTML='<div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">📥 Inscripciones online</div><p style="color:var(--w50);font-size:13px;margin-top:6px;">Todavía no llegó ninguna.</p></div>'; return; }
+    var keys=Object.keys(v).sort(function(a,b){ return (v[a].fecha||'')<(v[b].fecha||'')?1:-1; });
+    c.innerHTML='<div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📥 Inscripciones online ('+keys.length+')</div>'
+      +keys.map(function(k){
+        var r=v[k]; var ints=normIntegrantesCj(r.integrantes);
+        var chip = r.estado==='aprobada' ? '<span style="color:var(--neon);font-size:11.5px;font-weight:700;">✔ aprobada</span>'
+          : r.estado==='editada' ? '<span style="color:var(--gold);font-size:11.5px;font-weight:700;">✏️ editada tras aprobar</span>'
+          : '<span style="color:var(--gold);font-size:11.5px;font-weight:700;">⏳ pendiente</span>';
+        return '<div style="border-top:1px solid var(--w20,rgba(255,255,255,.1));padding:10px 0;">'
+          +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="flex:1;">🚩 '+esc(r.nombre)+'</strong>'+chip+'</div>'
+          +'<div style="font-size:12.5px;color:var(--w80);margin-top:4px;">👑 '+esc(r.jefe||'-')+' · 📱 '+esc(r.celular||'-')+(r.correo?' · ✉️ '+esc(r.correo):'')+'</div>'
+          +'<div style="font-size:12px;color:var(--w50);margin-top:2px;">PIN: <strong style="color:var(--gold);">'+esc(k)+'</strong> · Integrantes: '+ints.length+(ints.length?' — '+esc(ints.join(', ')):'')+'</div>'
+          +'<div style="display:flex;gap:6px;margin-top:8px;"><button class="btn btn-primary btn-sm" onclick="aprobarInscripcionCj(\''+esc(k)+'\')">✔ Aprobar</button><button class="btn btn-danger btn-sm" onclick="rechazarInscripcionCj(\''+esc(k)+'\')">× Eliminar</button></div>'
+          +'</div>';
+      }).join('')+'</div>';
+  });
+}
+function aprobarInscripcionCj(pin){
+  if(!isAdmin())return;
+  inscCjRef.child(pin).once('value', function(snap){
+    var r=snap.val(); if(!r){toast('Inscripción no encontrada');return;}
+    var ints=normIntegrantesCj(r.integrantes);
+    dataCj=loadCj();
+    var idx=-1;
+    for(var i=0;i<dataCj.patrullas.length;i++){ if(dataCj.patrullas[i].nombre===r.nombre){idx=i;break;} }
+    var pat={ nombre:r.nombre, jefe:r.jefe||'', integrantes:ints };
+    if(idx>=0) dataCj.patrullas[idx]=pat; else dataCj.patrullas.push(pat);
+    saveCj(dataCj);
+    inscCjRef.child(pin).update({estado:'aprobada'});
+    renderPatrullasCj(); renderRankingCj();
+    toast('Patrulla aprobada ✔');
+  });
+}
+function rechazarInscripcionCj(pin){
+  if(!isAdmin())return;
+  if(!confirm('¿Eliminar esta inscripción? La patrulla perderá su PIN de acceso.'))return;
+  inscCjRef.child(pin).remove().then(function(){ renderInscripcionesAdminCj(); toast('Inscripción eliminada'); });
+}
+// Restaura la sesión de patrulla guardada en este dispositivo
+(function(){
+  if(!fbReady||!inscCjRef) return;
+  var pin=null; try{ pin=localStorage.getItem('cj_patrulla_pin'); }catch(e){}
+  if(!pin) return;
+  inscCjRef.child(pin).once('value', function(snap){
+    var v=snap.val();
+    if(v&&!currentUser){
+      v.integrantes=normIntegrantesCj(v.integrantes);
+      currentUser={type:'patrulla', pin:pin, patrulla:v};
+      updateUserBadge();
+      try{ renderPatrullasCj(); }catch(e){}
+    } else if(!v){ try{ localStorage.removeItem('cj_patrulla_pin'); }catch(e){} }
+  });
+})();
 
 // UTILS
 function esc(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
@@ -2288,6 +2595,7 @@ resetInscripcionForm();
 updateUserBadge();
 renderJornadasLanding(); // portada del movimiento (arranca acá)
 startFrasesJornadas();   // frases motivacionales rotativas de la portada
+startFrasesCampajor();   // frases espirituales rotativas del inicio de CAMPAJOR
 setupCampajorSync();     // sync en vivo del evento campajor
 
 // SERVICE WORKER
