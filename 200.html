@@ -238,6 +238,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="btn-row" style="margin-top:8px;">
       <button class="btn btn-primary" onclick="doAdminLogin()">Entrar como staff</button>
     </div>
+    <div style="margin-top:10px;"><span onclick="resetAdminPass()" style="color:var(--w50);font-size:12px;text-decoration:underline;cursor:pointer;">¿Olvidaste la contraseña? Enviar correo de restablecimiento</span></div>
   </div>
 </div>
 
@@ -1141,6 +1142,18 @@ function doLogin() {
   document.getElementById('loginError').textContent = 'PIN incorrecto';
 }
 
+function resetAdminPass() {
+  var email = (document.getElementById('adminEmail').value || '').trim() || ADMIN_EMAIL;
+  var errEl = document.getElementById('loginError');
+  if (!fbReady || typeof firebase === 'undefined' || !firebase.auth) { errEl.textContent = 'Sin conexión a Firebase'; return; }
+  errEl.textContent = 'Enviando correo...';
+  firebase.auth().sendPasswordResetEmail(email).then(function(){
+    errEl.textContent = '';
+    toast('📧 Correo enviado a ' + email + ' — revisá tu bandeja (y spam)');
+  }).catch(function(e){
+    errEl.textContent = (e && e.code === 'auth/user-not-found') ? 'Ese usuario no existe en Firebase Auth' : 'No se pudo enviar el correo';
+  });
+}
 function doAdminLogin() {
   var email = (document.getElementById('adminEmail').value || '').trim();
   var pass = document.getElementById('adminPass').value || '';
