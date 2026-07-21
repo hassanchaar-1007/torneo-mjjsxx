@@ -330,7 +330,17 @@ pestaña Dominios autorizados → "Agregar un dominio". Deben estar: `localhost`
    cuenta de Claude que tenga plan (hoy: la de acte-sa).
 6. Este CLAUDE.md viaja en el repo → Claude Code recupera todo el contexto al abrir la carpeta.
 
-### 9.7 Restaurar datos si algo se pierde
+### 9.7 Nueva edición / cambiar el año (2027, 2028, …)
+El año de cada evento vive en el **registro `EVENTOS`** de `index.html`
+(`{ id:'torneo', anio:'2026', ... }`). Cambiar `anio` ahí actualiza automáticamente
+la portada del movimiento Y el año grande en la cabecera del evento (ids `anio-torneo`
+y `anio-campajor`). Además, por edición hay que revisar a mano: fechas concretas
+(chips del inicio de CAMPAJOR, cronograma), precios/alias del torneo, y al cerrar un
+torneo cargar el campeón en el Salón de Campeones. Ojo: `STORE_KEY` del torneo es
+`torneo_mjjsxx_2026` — evaluar si se archiva/renueva el nodo de datos al arrancar
+una edición nueva (backup antes).
+
+### 9.8 Restaurar datos si algo se pierde
 - En la app como admin: botón de restaurar (usa `backups` rotativos, elige el de más equipos).
 - Backups descargables: `descargarBackup()` genera `torneo_backup_YYYY-MM-DD.json` (gitignored).
 - Último recurso: nodo `backup` (legacy) o exportar JSON desde la consola RTDB (pestaña Datos → ⋮ → Exportar).

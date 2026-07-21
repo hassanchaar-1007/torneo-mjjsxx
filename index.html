@@ -325,6 +325,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div style="text-align:center;padding:20px 10px 8px;">
       <div style="font-size:46px;">🏕️</div>
       <h1 style="font-size:28px;font-weight:900;letter-spacing:2px;color:var(--neon);margin-top:6px;">CAMPAJOR</h1>
+      <div class="year" id="anio-campajor" style="font-size:38px;margin:2px 0 4px;">2026</div>
       <p style="color:var(--w50);font-size:14px;margin-top:4px;">Campamento de integración · M.J.J.S.XX.</p>
       <div style="margin-top:12px;">
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 11 y Dom 12/10</span>
@@ -474,7 +475,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   <div class="hero">
     <div class="label-sm">LLEGA EL</div>
     <div class="title-main">TORNEO DE<br><span class="title-accent">INTEGRACIÓN</span></div>
-    <div class="year">2026</div>
+    <div class="year" id="anio-torneo">2026</div>
 <img class="cross-logo" src="logo.png" alt="M.J.J.S.XX." width="90" height="90" style="border-radius:50%;">
     <div class="hero-sep"></div>
     <div class="sports-band">
@@ -2697,6 +2698,13 @@ updateUserBadge();
 renderJornadasLanding(); // portada del movimiento (arranca acá)
 startFrasesJornadas();   // frases motivacionales rotativas de la portada
 startFrasesCampajor();   // frases espirituales rotativas del inicio de CAMPAJOR
+// El año de cada evento vive en el registro EVENTOS (campo anio):
+// cambiarlo ahí actualiza la portada del movimiento Y la cabecera del evento.
+(function(){
+  var t = getEvento('torneo'), c = getEvento('campajor');
+  var et = document.getElementById('anio-torneo');   if (et && t && t.anio) et.textContent = t.anio;
+  var ec = document.getElementById('anio-campajor'); if (ec && c && c.anio) ec.textContent = c.anio;
+})();
 setupCampajorSync();     // sync en vivo del evento campajor
 
 // SERVICE WORKER
