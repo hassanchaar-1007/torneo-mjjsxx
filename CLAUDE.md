@@ -384,6 +384,14 @@ una edición nueva (backup antes).
 
 ### CAMPAJOR 2026 (próximo)
 - **Sábado 11 y domingo 12 de octubre de 2026**
+- **Lema (elegido por el plantel: el Tesoro y la búsqueda)**: «En busca del Tesoro» —
+  Buscalo, cuidalo, compartilo: el Tesoro está dentro. (Lema del movimiento: "El Tesoro está
+  dentro", Mt 13,45-46 + 2 Cor 4,7.)
+- **4 subcampos = elementos de la búsqueda, con colores oficiales y virtud custodiada**:
+  LA PERLA=BLANCO 🦪 (Fe) · LA SENDA=VERDE 🗺️ (Esperanza) · LA ANTORCHA=ROJO 🔥 (Caridad) ·
+  LA RED=AZUL 🎣 (Sabiduría, Jn 21,6) · plantel de integración=AMARILLO 💛 (el color del Tesoro).
+  (En el código: `SUBCAMPOS_CJ` + `subcampoBadgeCj`; el admin asigna subcampo por patrulla;
+  Copa de Subcampos en el ranking. Las virtudes siguen siendo la esencia: charla, yincanas, premios.)
 - Estructura: 5 postas de recepción → 24 yincanas con puntaje → gritos de subcampo, apertura,
   fogón con números artísticos, misa, competencia de obstáculos, clausura con premiaciones.
 - Todo el catálogo (cronograma sáb/dom, postas, yincanas con materiales/seguridad) está
