@@ -387,11 +387,16 @@ una edición nueva (backup antes).
 - **Lema (elegido por el plantel: el Tesoro y la búsqueda)**: «En busca del Tesoro» —
   Buscalo, cuidalo, compartilo: el Tesoro está dentro. (Lema del movimiento: "El Tesoro está
   dentro", Mt 13,45-46 + 2 Cor 4,7.)
-- **4 subcampos = elementos de la búsqueda, con colores oficiales y virtud custodiada**:
-  LA PERLA=BLANCO 🦪 (Fe) · LA SENDA=VERDE 🗺️ (Esperanza) · LA ANTORCHA=ROJO 🔥 (Caridad) ·
-  LA RED=AZUL 🎣 (Sabiduría, Jn 21,6) · plantel de integración=AMARILLO 💛 (el color del Tesoro).
-  (En el código: `SUBCAMPOS_CJ` + `subcampoBadgeCj`; el admin asigna subcampo por patrulla;
-  Copa de Subcampos en el ranking. Las virtudes siguen siendo la esencia: charla, yincanas, premios.)
+- **4 subcampos = apóstoles que buscaron el Tesoro**, cada uno con 5 capas
+  (santo · elemento de la búsqueda · color oficial · virtud · elemento de la tierra):
+  · **SANTO TOMÁS** = La Perla · BLANCO · Fe · 🌬️ aire (Jn 20,28; Jn 3,8)
+  · **SANTIAGO** = La Senda · VERDE · Esperanza · 🌱 tierra (el peregrino; Mt 13,44)
+  · **SAN JUAN** = La Antorcha · ROJO · Caridad · 🔥 fuego (Jn 20,8; Lc 24,32)
+  · **SAN PEDRO** = La Red · AZUL · Sabiduría · 💧 agua (Jn 21,6-7; Jn 4,14)
+  · plantel de integración = AMARILLO 💛 (el color del Tesoro).
+  (En el código: `SUBCAMPOS_CJ` + `subcampoBadgeCj` + alias de compat en `normCj` para nombres
+  viejos; el admin asigna subcampo por patrulla; Copa de Subcampos en el ranking. Las virtudes
+  siguen siendo la esencia: charla, yincanas, premios.)
 - Estructura: 5 postas de recepción → 24 yincanas con puntaje → gritos de subcampo, apertura,
   fogón con números artísticos, misa, competencia de obstáculos, clausura con premiaciones.
 - Todo el catálogo (cronograma sáb/dom, postas, yincanas con materiales/seguridad) está
