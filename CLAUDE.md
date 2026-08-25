@@ -24,7 +24,7 @@ Eventos actuales:
 | Evento | Tipo | Estado | Qué tiene |
 |---|---|---|---|
 | 🏆 **Torneo de Integración 2026** | Deportivo | Ya se jugó (14/06/2026) | Equipos, inscripción con PIN, fixture (grupos + eliminatorias), resultados, goleadores, Salón de Campeones |
-| 🏕️ **CAMPAJOR 2026** | Campamento | Próximo: **sáb 11 y dom 12 de octubre 2026** | Cronograma, 5 postas, 24 yincanas, patrullas (integrantes + jefe 👑), puntajes, ranking, **inscripción online de patrullas con PIN** |
+| 🏕️ **CAMPAJOR 2026** | Campamento | Próximo: **sáb 11 y dom 12 de octubre 2026** | Lema «En busca del Tesoro», 4 subcampos-apóstoles, esencia espiritual (virtudes + oración), cronograma, 5 postas=tipos de oración, 24 yincanas con virtudes, patrullas (integrantes + jefe 👑), puntajes, ranking + Copa de Subcampos, premios "Virtud del Jornadista", **inscripción online de patrullas con PIN** |
 
 - Sitio en vivo: **https://jornadas-cop.pages.dev**
 - Identidad visual: paleta **navy** (#0a0f28) + **verde neón** (#00e676) + **dorado** (#ffc828). Logo: cruz del movimiento (`logo.png`).
@@ -79,10 +79,36 @@ Eventos actuales:
   movimiento queda neutral entre eventos — decisión del usuario: "que no quede flotando torneo").
 - **Sistema de inscripción online de patrullas** (código completo, ver sección 7):
   formulario público, PIN de 6 dígitos, "Mi patrulla" editable, bandeja admin con aprobación.
-  - 🔴 **BLOQUEADO AL CIERRE DE LA SESIÓN**: falta publicar la regla `campajor_inscripciones`
-    en Firebase (ver sección 6). Sin ella, el guardado da `PERMISSION_DENIED`.
-    **El código NO se deployó a producción todavía** (deployar sin la regla rompería la UX).
 - Inventario de la carpeta **PF51** (CAMPAJOR 2025) — ver sección 12.
+- Se escribió la **biblia v2** (este documento) para portabilidad total del proyecto.
+
+### Etapa 5 — Sesión del 12/07/2026 en adelante (identidad espiritual completa + todo EN VIVO)
+- **La regla `campajor_inscripciones` fue publicada por el usuario** en la consola → prueba
+  punta a punta OK (inscribir → PIN → login desde cero → editar → aprobar/eliminar como admin)
+  → **deploy a producción**: la inscripción online quedó EN VIVO.
+- El admin **recuperó su contraseña de staff**: se agregó el botón "¿Olvidaste la contraseña?"
+  en el login (envía el mail de restablecimiento de Firebase Auth). OJO: la contraseña de staff
+  es propia de la app (Firebase Auth), NO es la del Gmail.
+- **Año centralizado**: el año de cada evento sale del registro `EVENTOS` y se muestra grande
+  en la cabecera de cada evento (runbook 9.7).
+- **Esencia espiritual del CAMPAJOR** (de la convivencia del 12/07/2026, charla "Virtudes del
+  Jornadista" + lema del movimiento "El Tesoro está dentro"): sección de virtudes con citas,
+  "La oración: el oxígeno del alma" (5 tipos de oración ↔ 5 postas), frases espirituales
+  rotativas, yincanas etiquetadas con las 7 virtudes, cronograma espiritual (Rosario, misa
+  "Pedid y se les dará", fogón con frutos Escucha-Silencio-Diálogo), premios "Virtud del
+  Jornadista", sección del lema con el camino del Tesoro (5 momentos + oración del plantel).
+- **Borrador del plantel** cargado en la app: propuesta de 5 propósitos del "Domingo sabio"
+  y 8 pistas de la búsqueda del tesoro (⚠️ sacar las pistas de la página pública cuando sean
+  definitivas — spoiler del juego).
+- **Evolución del lema y los subcampos** (iteración con el plantel):
+  1. Propuesta inicial: "Custodios del Tesoro" → 2. giro a virtudes: "Virtudes del Jornadista"
+  → 3. pedido de 4 subcampos (se sumó SABIDURÍA a las 3 teologales) → 4. colores oficiales:
+  rojo/blanco/azul/verde + plantel amarillo → 5. el plantel prefirió "el Tesoro y la búsqueda"
+  → subcampos-elementos (Perla/Senda/Antorcha/Red) → 6. giro final: **nombres de apóstoles
+  buscadores + elementos de la tierra** (ver sección 11). Lema final: **«En busca del Tesoro»**.
+- Commits clave: `e667414` esencia · `900df63` lema Tesoro · `57a3bd1` borrador · `3523fad`
+  lema+subcampos búsqueda · `3ef0030` apóstoles+elementos · sw llegó a **v3.9**.
+- La patrulla de prueba fue eliminada por el admin desde su bandeja (flujo admin verificado).
 
 ---
 
@@ -143,14 +169,15 @@ C:\JORNADAS\
 - **Páginas** (divs `.page`, se activan con clase `active`):
   - `#page-jornadas` → portada del movimiento (frases rotativas `#fraseJornadas`, chips de valores, "Elegí un evento" `#eventos-list`).
   - Torneo: `#page-inicio` (hero con precios, sanciones, cantina, transferencias, CTA), `#page-inscripcion`, `#page-equipos`, `#page-fixture`, `#page-goleadores`, `#page-campeones`, `#page-reglamento`.
-  - CAMPAJOR: `#page-cj-inicio` (hero + "Qué incluye" + banner CTA inscripción), `#page-cj-inscripcion` (NUEVO: formulario público + tarjeta de éxito con PIN), `#page-cj-cronograma`, `#page-cj-postas`, `#page-cj-yincanas`, `#page-cj-patrullas` (con `#cj-mi-patrulla` y `#cj-inscripciones-admin`), `#page-cj-ranking`.
+  - CAMPAJOR: `#page-cj-inicio` (hero con año + lema + frase rotativa `#fraseCampajor` → tarjeta Lema/camino del Tesoro → "Qué incluye" → Esencia/virtudes → Los 4 subcampos → Oración → Borrador del plantel → banner CTA inscripción), `#page-cj-inscripcion` (formulario público + tarjeta de éxito con PIN), `#page-cj-cronograma`, `#page-cj-postas`, `#page-cj-yincanas`, `#page-cj-patrullas` (con `#cj-mi-patrulla` y `#cj-inscripciones-admin`), `#page-cj-ranking` (con `#cj-premio-form`, `#cj-subcampos-copa` y `#cj-premios-list`).
 - **JS** (una sola etiqueta script al final). Funciones clave por área:
   - Init Firebase: config del proyecto, `db`, `dbRef`('torneo'), `publicRef`('publico'), `campajorRef`('campajor'), `inscCjRef`('campajor_inscripciones'), `fbReady`.
   - Registro de eventos: `EVENTOS`, `abrirEvento(id)`, `volverAJornadas()`, `renderJornadasLanding()`, `FRASES_JORNADAS` + `startFrasesJornadas()`.
   - Datos torneo: `loadData()/saveData(d,allowShrink)`, `fixArrays()`, `buildPublic(d)`, `_torneoSnap/_publicoSnap/setupSync()`, `descargarBackup()/restaurarBackup()`.
-  - Auth: `openLogin()/doLogin()/doAdminLogin()`, `onAuthStateChanged`, `isFbAdmin()` (email en Firebase Auth), `isAdmin()` (currentUser en la app), `updateUserBadge()`.
+  - Auth: `openLogin()/doLogin()/doAdminLogin()/resetAdminPass()` (mail de restablecimiento), `onAuthStateChanged`, `isFbAdmin()` (email en Firebase Auth), `isAdmin()` (currentUser en la app), `updateUserBadge()`.
   - Torneo: `submitInscripcion()`, `renderEquipos()`, fixture/sorteo (`generateFixture()` etc.), goleadores, campeones.
-  - CAMPAJOR base: `CRONO_SAB_CJ/CRONO_DOM_CJ/POSTAS_CJ/JUEGOS_CJ` (contenido hardcodeado), `normCj()/loadCj()/saveCj(d,allowShrink)`, `setupCampajorSync()`, `showCj(name)`, `renderCronoCj/renderPostasCj/renderJuegosCj/renderPatrullasCj/renderRankingCj`, CRUD admin de patrullas/puntajes.
+  - CAMPAJOR base: `CRONO_SAB_CJ/CRONO_DOM_CJ/POSTAS_CJ/JUEGOS_CJ` (contenido hardcodeado; postas con `ora`/`consigna` = tipo de oración, juegos con `vir` = virtud), `normCj()/loadCj()/saveCj(d,allowShrink)`, `setupCampajorSync()`, `showCj(name)`, `renderCronoCj/renderPostasCj/renderJuegosCj/renderPatrullasCj/renderRankingCj`, CRUD admin de patrullas/puntajes.
+  - CAMPAJOR identidad: `FRASES_CAMPAJOR` + `startFrasesCampajor()` (frases espirituales), `VIRTUDES_CJ` (7 virtudes con ícono/color, usadas en yincanas y premios), `VIRTUD_X_JUEGO` (mapa juego→virtud), `SUBCAMPOS_CJ` + `subcampoBadgeCj()` (apóstoles con color) + `setSubcampoCj()`, premios: `addPremioCj()/removePremioCj()`; el año: IIFE que llena `#anio-torneo`/`#anio-campajor` desde `EVENTOS`.
   - CAMPAJOR inscripción (NUEVO): `normIntegrantesCj()`, `addIntegranteRowCj()`, `resetInscripcionCjForm()`, `submitInscripcionCj()`, `renderMiPatrullaCj()/_persistirMiPatrulla()/guardarMiPatrulla()/agregarIntegranteMiPatrulla()/quitarIntegranteMiPatrulla()`, `renderInscripcionesAdminCj()/aprobarInscripcionCj()/rechazarInscripcionCj()`, IIFE de restauración de sesión (`localStorage cj_patrulla_pin`).
   - Utils: `esc()`, `toast()`, `renderAll()`.
   - Service worker: registro + aviso de versión nueva.
@@ -177,7 +204,10 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 { teams: [{id, pin, nombre, capitan, telefono, deporte, jugadores:[{nombre,numero}], status, fecha, comprobante}],
   fixture: {...}, goleadores: [...], nextPin: N, campeones: [{anio, campeon}] }
 // dataCj (campajor):
-{ patrullas: [{nombre, jefe, integrantes:[str]}], puntajes: [{patrulla, juego, puntos}] }
+{ patrullas: [{nombre, jefe, integrantes:[str], subcampo:'SANTO TOMÁS'|'SANTIAGO'|'SAN JUAN'|'SAN PEDRO'|''}],
+  puntajes: [{patrulla, juego, puntos}],
+  premios: [{virtud, patrulla, motivo}] }  // premios "Virtud del Jornadista"
+// (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
 ```
@@ -222,9 +252,11 @@ Publicarlas en: Firebase console → Realtime Database → Reglas →
   `firebase.database().ref('campajor_inscripciones/999999').once('value', s=>console.log('ok', s.exists()), e=>console.log('DENEGADA', e.code))`
   → debe dar `ok false` (no `PERMISSION_DENIED`).
 
-🔴 **ESTADO AL CIERRE DE LA ÚLTIMA SESIÓN:** esta regla (`campajor_inscripciones`) estaba
-**pendiente de publicar** — la prueba desde el preview dio `PERMISSION_DENIED`. Hasta
-publicarla, la inscripción online NO funciona y el código nuevo NO debe deployarse.
+✅ **Estas reglas están PUBLICADAS y verificadas** (el usuario las pegó el 12/07/2026 aprox.;
+la prueba de lectura por PIN da `ok false`). La inscripción online funciona en producción.
+⚠️ Quirk del SDK v8: `once()` rechaza además la promesa que devuelve aunque le pases el
+callback de error — atajar con `var pr=ref.once(...); if(pr&&pr.catch) pr.catch(function(){});`
+(ya aplicado en `renderInscripcionesAdminCj`).
 
 ---
 
@@ -397,11 +429,39 @@ una edición nueva (backup antes).
   (En el código: `SUBCAMPOS_CJ` + `subcampoBadgeCj` + alias de compat en `normCj` para nombres
   viejos; el admin asigna subcampo por patrulla; Copa de Subcampos en el ranking. Las virtudes
   siguen siendo la esencia: charla, yincanas, premios.)
+- **Esencia espiritual** (charla "Virtudes del Jornadista", convivencia 12/07/2026): virtudes =
+  hábitos buenos para parecernos más a Jesús. En la app: tarjeta de las 4 virtudes con citas
+  (Fe Heb 11,1 · Esperanza Rom 8,24 · Caridad 1 Cor 13,13 · Sabiduría 1 Re 3,9), "La oración:
+  el oxígeno del alma" con los 5 tipos de oración y los frutos (Escucha·Silencio·Diálogo).
+- **Las 5 postas encarnan los 5 tipos de oración** (badge + consigna en cada tarjeta):
+  P1 Adoración · P2 Confesión · P3 Acción de Gracias · P4 Intercesión · P5 Petición.
+- **Las 24 yincanas trabajan las 7 virtudes** (chip de color por juego, mapa `VIRTUD_X_JUEGO`):
+  Fe(3) · Esperanza(4) · Caridad(3) · Prudencia(4) · Justicia(3) · Fortaleza(5) · Templanza(2).
+- **El camino del Tesoro** (notas del grupo, 12/07): 1) Buscar a Dios (tesoro escondido, pistas
+  y senda en Santa Catalina) 2) La perla preciosa (la fe) 3) La sabiduría de Salomón 4) Domingo
+  sabio (5 propósitos) 5) Echar la red (apostolado) + oración del plantel.
+- **Cronograma espiritual**: oración inicial en la apertura, Santo Rosario dom 06:00, misa
+  "Pedid y se les dará", fogón con frutos, clausura con premios "Virtud del Jornadista".
+- **Borrador del plantel en la app** (propuestas de Claude para trabajar): 5 propósitos del
+  Domingo sabio (orar cada día / misa y comunidad / la Palabra / servir / echar la red) y
+  8 pistas de la senda (cita + acertijo; final: cofre con una perla por jornadista).
+  ⚠️ **Cuando las pistas sean definitivas, SACARLAS de la página pública** (spoiler).
 - Estructura: 5 postas de recepción → 24 yincanas con puntaje → gritos de subcampo, apertura,
   fogón con números artísticos, misa, competencia de obstáculos, clausura con premiaciones.
 - Todo el catálogo (cronograma sáb/dom, postas, yincanas con materiales/seguridad) está
   hardcodeado en `index.html` (`CRONO_SAB_CJ`, `CRONO_DOM_CJ`, `POSTAS_CJ`, `JUEGOS_CJ`).
 - Coordinación edición anterior (2025): Laura Duarte y Hugo Villalba.
+
+### Fuentes bíblicas del lema (para explicar "de dónde sacamos")
+- **Mateo 13** es la fuente madre: **13,44** tesoro escondido en el campo · **13,45-46** el
+  comerciante que BUSCA la perla de gran valor · **13,47-48** la red echada al mar.
+- **El Tesoro es Cristo y lo llevamos dentro**: 2 Cor 4,7 (vasijas de barro) · Col 2,3 (en
+  Cristo están escondidos todos los tesoros) · Mt 6,21 (donde está tu tesoro, tu corazón).
+- **El mandato de buscar**: Mt 7,7 (busquen y encontrarán) · Jer 29,13 · Sal 105,3-4 ·
+  Prov 2,4-5 (buscar la sabiduría COMO un tesoro escondido — puente con Salomón).
+- **Dato para la apertura**: el Evangelio de Juan abre con "¿Qué buscan?" (Jn 1,38) y tras la
+  resurrección pregunta "¿A quién buscás?" (Jn 20,15). Los Reyes Magos (Mt 2) fueron la
+  primera búsqueda del tesoro con pistas del NT.
 
 ---
 
@@ -425,30 +485,36 @@ una edición nueva (backup antes).
 
 ---
 
-## 13. Estado actual y pendientes
+## 13. Estado actual y pendientes (al cierre de la sesión del 12/07/2026)
 
-### ✅ Ex-bloqueante, RESUELTO
-- [x] Regla `campajor_inscripciones` publicada por el usuario (julio 2026) y verificada.
-- [x] Prueba punta a punta OK: inscripción real de prueba (patrulla "PRUEBA (borrar)",
-      PIN 426511) → login por PIN desde cero → edición de integrantes persistida.
-      ⚠️ **Queda esa inscripción de prueba en Firebase**: el admin debe eliminarla desde
-      la bandeja "📥 Inscripciones online" (pestaña Patrullas) — sirve de paso como
-      prueba del botón "× Eliminar".
-- [x] **Deploy a producción hecho** (sw v3.3): inscripción online + esencia espiritual
-      (virtudes en yincanas, subcampos, copa, cronograma espiritual, premios) EN VIVO
-      y verificado en https://jornadas-cop.pages.dev.
+### ✅ TODO EN VIVO en https://jornadas-cop.pages.dev (sw v3.9)
+- [x] Reglas RTDB completas publicadas y verificadas (incluida `campajor_inscripciones`).
+- [x] **Inscripción online de patrullas** operativa de punta a punta (probada con inscripción
+      real → PIN → login desde otro "dispositivo" → edición → aprobación/eliminación admin).
+      La patrulla de prueba ya fue eliminada por el admin.
+- [x] **Login de staff operativo** (el admin restableció su contraseña con el botón
+      "¿Olvidaste la contraseña?" del login).
+- [x] **Identidad completa del CAMPAJOR 2026**: lema «En busca del Tesoro», 4 subcampos-apóstoles
+      con 5 capas, esencia (virtudes + oración), postas=tipos de oración, yincanas con virtudes,
+      cronograma espiritual, Copa de Subcampos, premios "Virtud del Jornadista", borrador del
+      plantel (propósitos + pistas).
+- [x] Año centralizado en `EVENTOS` (listo para 2027) · botón reset de contraseña ·
+      portada del movimiento neutral con frases motivacionales.
 
 ### 🟡 Pendientes abiertos
+- [ ] **Sacar las 8 pistas de la búsqueda de la página pública cuando sean definitivas**
+      (hoy son borrador visible; spoiler del juego si quedan).
+- [ ] El plantel debe validar/ajustar: lema final (variantes en el borrador), los 5 propósitos,
+      las pistas, y los gritos de subcampo.
+- [ ] **Músicas de jornadas con virtudes**: el usuario las va a pasar → integrarlas en la esencia.
 - [ ] Confirmar si `jornadasapp.com` (en Authorized domains) es del usuario; si no, quitarlo.
 - [ ] Archivar `C:\JORNADAS\campajor` (app vieja redundante).
 - [ ] Cargar campeones de años anteriores en el Salón de Campeones.
 - [ ] (Opcional) Backup diario automático a archivo local (tarea programada estilo Top Lomitos).
-- [ ] (Idea) Completar el catálogo de yincanas con los juegos de PF51 que faltan (con links de video) y/o sección "Ediciones anteriores".
-
-### ✅ Hecho (para no repetir)
-- Reglas RTDB con 6 nodos publicadas (julio 2026) · dominio `jornadas-cop.pages.dev` autorizado ·
-  portada motivacional + CTA dentro de CAMPAJOR (deployado) · sistema de inscripción de
-  patrullas CODEADO y probado en local (falta regla + deploy) · `.wrangler/` fuera del repo.
+- [ ] (Idea) Completar el catálogo de yincanas con los juegos de PF51 que faltan (con links de
+      video) y/o sección "Ediciones anteriores".
+- [ ] (Idea a futuro) Asignación de subcampo desde la inscripción, panel de patrulla con su
+      puntaje propio, y modo "pantalla grande" del ranking para la clausura.
 
 ---
 
