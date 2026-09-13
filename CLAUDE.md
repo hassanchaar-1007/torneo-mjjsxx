@@ -110,6 +110,30 @@ Eventos actuales:
   lema+subcampos búsqueda · `3ef0030` apóstoles+elementos · sw llegó a **v3.9**.
 - La patrulla de prueba fue eliminada por el admin desde su bandeja (flujo admin verificado).
 
+### Etapa 6 — Sesión del 13/09/2026 (Hassan asume como Líder de Grupo + Reglamento CAMPAJOR)
+- **Hassan fue elegido Líder de Grupo del CAMPAJOR** (Jefe de Campo / Responsable de
+  Campamento): gestión, puntuación y desarrollo de todas las actividades, con responsabilidad
+  civil y de seguridad durante el campamento al aire libre. El plantel está escribiendo por
+  primera vez los manuales de rol de cada jefe (antes no existían por escrito); este documento
+  es la referencia oficial que se va a ir completando con los demás roles (Jefe de Subcampo,
+  Jefe de Patrulla, etc. — pendiente de Richard y el jefe Rolando).
+- **Confirmado el lugar del CAMPAJOR 2026**: Reserva Natural Tati Yupi (Itaipu), Hernandarias.
+  Reserva previa obligatoria (Centro de Recepción de Visitas / 061 599 8040), cédula al
+  ingresar, ingreso sujeto al clima. Normas: cero alcohol, sin armas/explosivos, sin mascotas,
+  no basura, no dañar flora/fauna, respetar el silencio, permanecer en los senderos. Base legal:
+  Decreto N° 7442/2017 (Plan de Manejo de la reserva) — el usuario compartió el PDF del decreto,
+  pero es un escaneo sin capa de texto (sin OCR disponible en esta sesión no se pudo extraer el
+  articulado exacto); las normas cargadas salen del resumen que pasó el propio usuario.
+- **Nueva pestaña "📜 Reglamento" en CAMPAJOR** (`#page-cj-reglamento`, después de Ranking):
+  sede y normas de la reserva, método de Jornadas (Ver·Juzgar·Actuar·Revisar·Celebrar — se
+  celebra en la misa), Ley del Jornadista (10 artículos, valores Lealtad/Abnegación/Pureza), y
+  el **Manual del Líder de Grupo** (seguridad y bienestar, gestión logística, coordinación
+  pedagógica, resolución de conflictos) en tarjeta de borrador (`border-dashed`, mismo patrón
+  que "Borrador del plantel") para seguir editando. Contenido público, hardcodeado en
+  `index.html` (sin nodo Firebase nuevo). sw subió a **v3.10**.
+- Se creó `C:\JORNADAS\torneo\.claude\launch.json` (antes solo existía en `C:\JORNADAS\.claude\`;
+  al abrir la sesión directo en `torneo\` el preview lo busca ahí también).
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -502,6 +526,11 @@ una edición nueva (backup antes).
       portada del movimiento neutral con frases motivacionales.
 
 ### 🟡 Pendientes abiertos
+- [ ] **Manual de roles**: agregar a la pestaña Reglamento las funciones de los demás jefes
+      (Jefe de Subcampo, Jefe de Patrulla — Richard, jefe Rolando) a medida que las escriban.
+- [ ] Extraer el articulado exacto del Decreto N° 7442/2017 si hace falta citarlo textual (el
+      PDF que pasó el usuario es un escaneo sin texto — se necesitaría OCR o una copia con capa
+      de texto).
 - [ ] **Sacar las 8 pistas de la búsqueda de la página pública cuando sean definitivas**
       (hoy son borrador visible; spoiler del juego si quedan).
 - [ ] El plantel debe validar/ajustar: lema final (variantes en el borrador), los 5 propósitos,
