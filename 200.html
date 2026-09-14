@@ -213,7 +213,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="inscripcion" onclick="showCj('inscripcion')">Inscripción</button>
     <button data-cj="cronograma" onclick="showCj('cronograma')">Cronograma</button>
     <button data-cj="postas" onclick="showCj('postas')">Postas</button>
-    <button data-cj="yincanas" onclick="showCj('yincanas')">Yincanas</button>
+    <button data-cj="yincanas" onclick="showCj('yincanas')">Juegos</button>
     <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
     <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
@@ -334,7 +334,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="color:var(--w50);font-size:14px;margin-top:4px;">Campamento de integración · M.J.J.S.XX.</p>
       <div style="margin-top:12px;">
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 11 y Dom 12/10</span>
-        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Yincanas</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Juegos</span>
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔥 Fogón</span>
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
@@ -384,7 +384,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
-      <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 yincanas</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
+      <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 juegos</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--gold);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">✝️ Nuestra esencia · Virtudes del Jornadista</div>
@@ -507,8 +507,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 <div class="page" id="page-cj-yincanas">
   <div class="section-page">
-    <div class="section-title">🎯 Yincanas (24)</div>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad. Cada yincana <strong style="color:var(--gold);">trabaja una virtud</strong>: las 3 teologales (🕊️ Fe, ⚓ Esperanza, ❤️‍🔥 Caridad) y las 4 cardinales (🦉 Prudencia, ⚖️ Justicia, 🦁 Fortaleza, 🌿 Templanza).</p>
+    <div class="section-title">🎯 Juegos (24)</div>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad. Cada juego <strong style="color:var(--gold);">trabaja una virtud</strong>: las 3 teologales (🕊️ Fe, ⚓ Esperanza, ❤️‍🔥 Caridad) y las 4 cardinales (🦉 Prudencia, ⚖️ Justicia, 🦁 Fortaleza, 🌿 Templanza).</p>
     <div id="cj-yincanas-list"></div>
   </div>
 </div>
@@ -541,7 +541,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🏅 Otorgar Virtud del Jornadista</div>
       <div class="form-group"><label>Virtud</label><select id="cj-pr-virtud"></select></div>
       <div class="form-group"><label>Patrulla</label><select id="cj-pr-patrulla"></select></div>
-      <div class="form-group"><label>Motivo</label><input id="cj-pr-motivo" placeholder="Ej: ayudaron a otra patrulla en la yincana 12"></div>
+      <div class="form-group"><label>Motivo</label><input id="cj-pr-motivo" placeholder="Ej: ayudaron a otra patrulla en el juego 12"></div>
       <button class="btn btn-primary btn-sm" onclick="addPremioCj()">Otorgar 🏅</button>
     </div>
     <div id="cj-subcampos-copa"></div>
@@ -584,7 +584,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="margin-top:10px;">
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">👁️</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Ver</b> — observar la realidad tal cual es, sin apuro.</div></div>
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">⚖️</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Juzgar</b> — analizar esa realidad a la luz del Evangelio.</div></div>
-        <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🙌</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Actuar</b> — pasar a la acción concreta: las yincanas, postas y dinámicas del campamento.</div></div>
+        <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🙌</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Actuar</b> — pasar a la acción concreta: los juegos, postas y dinámicas del campamento.</div></div>
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🔁</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Revisar</b> — las reuniones diarias de evaluación del plantel ajustan el programa según el ritmo de los jornadistas.</div></div>
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🎉</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Celebrar</b> — se vive en la <b>misa</b>: ahí celebramos como comunidad el encuentro con Jesús, el Tesoro que buscamos.</div></div>
       </div>
@@ -728,7 +728,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
     <div class="card" style="border:1px dashed var(--w30);">
       <div style="font-size:12px;color:var(--w80);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🎪 Jefe de Utilería de Juegos</div>
-      <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);font-style:italic;">Detrás de cada yincana hay una red bien tendida: prepara el terreno para que la aventura del Tesoro nunca se detenga por falta de un material.</p>
+      <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);font-style:italic;">Detrás de cada juego hay una red bien tendida: prepara el terreno para que la aventura del Tesoro nunca se detenga por falta de un material.</p>
       <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);">Gestiona, organiza y mantiene todo el material de las actividades recreativas y los grandes juegos, para que cada dinámica se desarrolle sin contratiempos.</p>
       <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:14px;">📦 Funciones principales</div>
       <div style="margin-top:6px;">
@@ -1048,7 +1048,7 @@ var ADMIN_EMAIL = 'hassan.chaar@gmail.com'; // escritura en Firebase solo para e
 // Para sumar un evento nuevo: agregá un objeto aquí. tipo define qué secciones muestra.
 var EVENTOS = [
   { id:'torneo',   nombre:'Torneo de Integración', anio:'2026', tipo:'deportivo',  emoji:'🏆', desc:'Fútbol masculino/femenino, vóley y pádel', activo:true },
-  { id:'campajor', nombre:'CAMPAJOR',              anio:'2026', tipo:'campamento', emoji:'🏕️', desc:'Campamento: postas, yincanas, fogón y ranking de patrullas', activo:true }
+  { id:'campajor', nombre:'CAMPAJOR',              anio:'2026', tipo:'campamento', emoji:'🏕️', desc:'Campamento: postas, juegos, fogón y ranking de patrullas', activo:true }
 ];
 var currentEvento = null; // null = estás en la portada del movimiento (JORNADAS)
 function getEvento(id){ for(var i=0;i<EVENTOS.length;i++){ if(EVENTOS[i].id===id) return EVENTOS[i]; } return null; }
@@ -2405,7 +2405,7 @@ var CRONO_SAB_CJ = [
   ['11:00–13:00','Subcampos Santo Tomás (Perla·blanco), Santiago (Senda·verde), San Juan (Antorcha·rojo) y San Pedro (Red·azul): montar lugares + almuerzo'],
   ['13:00–13:45','Gritos de subcampo (cada grito celebra su virtud)'],
   ['13:45–14:30','Apertura oficial (patrullas y jefes) · Oración inicial: "la oración es el oxígeno del alma"'],
-  ['14:30–17:30','Yincanas (24 juegos) — cada una trabaja una virtud'],
+  ['14:30–17:30','Juegos (24) — cada uno trabaja una virtud'],
   ['17:30–19:30','Cena + preparación de números artísticos'],
   ['20:00–23:00','Fogón (canciones, danzas, representaciones) · Cierre con los frutos: Escucha, Silencio y Diálogo'],
   ['23:00–05:00','Libre y descanso']
@@ -2464,7 +2464,7 @@ var VIRTUDES_CJ = {
   'Fortaleza': {icon:'🦁', color:'#ff9f43'},
   'Templanza': {icon:'🌿', color:'#b78bff'}
 };
-// Qué virtud trabaja cada yincana
+// Qué virtud trabaja cada juego
 var VIRTUD_X_JUEGO = {
   1:'Prudencia',  2:'Fortaleza', 3:'Justicia',  4:'Fortaleza', 5:'Fe',        6:'Prudencia',
   7:'Prudencia',  8:'Justicia',  9:'Fe',        10:'Prudencia',11:'Esperanza',12:'Fortaleza',
