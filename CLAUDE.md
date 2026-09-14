@@ -146,6 +146,9 @@ Eventos actuales:
   El .docx no tenía manual para Líder de Grupo (el de Hassan, que salió de otra conversación/
   audio) ni para "ayudantes" de cocina/espiritualidad/fogón como rol aparte — esos ayudantes
   quedan marcados "a cargar" hasta que el plantel los escriba.
+- **Se separó en 2 pestañas** dentro de CAMPAJOR: `#page-cj-reglamento` (📜 Reglamento — sede,
+  normas de la reserva, método de Jornadas, Ley del Jornadista) y `#page-cj-funciones`
+  (🗂️ Funciones — el manual de roles completo). Antes estaba todo junto en una sola pestaña.
 
 ---
 
