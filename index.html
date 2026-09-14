@@ -217,7 +217,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
     <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
-    <button data-cj="funciones" onclick="showCj('funciones')">🗂️ Funciones</button>
+    <button data-cj="funciones" id="navCjFunciones" onclick="showCj('funciones')" style="display:none;">🗂️ Funciones</button>
   </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
 </div>
@@ -1467,6 +1467,11 @@ function updateUserBadge() {
   else if (currentUser.type === 'admin') { b.textContent = '🔑 Admin'; b.style.borderColor = 'var(--gold)'; b.style.color = 'var(--gold)'; }
   else if (currentUser.type === 'patrulla') { b.textContent = '🚩 ' + currentUser.patrulla.nombre; b.style.borderColor = 'var(--neon)'; b.style.color = 'var(--neon)'; }
   else { b.textContent = '👤 ' + currentUser.team.nombre; b.style.borderColor = 'var(--teal)'; b.style.color = 'var(--teal)'; }
+  var fBtn = document.getElementById('navCjFunciones');
+  if (fBtn) {
+    fBtn.style.display = isAdmin() ? '' : 'none';
+    if (!isAdmin() && fBtn.classList.contains('active')) showCj('reglamento');
+  }
 }
 function isAdmin() { return currentUser && currentUser.type === 'admin'; }
 
@@ -2553,6 +2558,7 @@ function showCj(name){
   if(name==='yincanas') renderJuegosCj();
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
+  if(name==='funciones' && !isAdmin()){ showCj('reglamento'); return; }
   window.scrollTo(0,0);
 }
 function renderCronoCj(){
