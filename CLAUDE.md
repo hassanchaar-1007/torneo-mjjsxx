@@ -133,6 +133,19 @@ Eventos actuales:
   `index.html` (sin nodo Firebase nuevo). sw subió a **v3.10**.
 - Se creó `C:\JORNADAS\torneo\.claude\launch.json` (antes solo existía en `C:\JORNADAS\.claude\`;
   al abrir la sesión directo en `torneo\` el preview lo busca ahí también).
+- **Reglamento reescrito con tono espiritual** (a pedido del usuario: nada de sonar estricto/
+  administrativo — todo conectado a las virtudes, la búsqueda del Tesoro y el encuentro con
+  Jesús). La sede quedó sin la línea de "reserva previa" (el movimiento se encarga de esa
+  gestión); solo se pide cédula.
+- **Manuales reales de rol cargados** desde `C:\JORNADAS\campajor\FUNCIONES SERVICIOS.docx`
+  (documento del plantel, "CAMPAJOR Edic. XVI 2026"): Jefe de Subcampo, Jefe de Espiritualidad,
+  Jefe de Fogón (ahí llamado "Jefe Noche del Fogón") y Jefe de Cocina — con sus funciones reales,
+  reescritas en el mismo tono espiritual pero sin perder el contenido original. El documento trajo
+  además **2 roles nuevos que no estaban contemplados**: **Jefe de Limpieza General** y **Jefe de
+  Utilería de Juegos** — ya agregados a la pestaña Reglamento con sus funciones completas.
+  El .docx no tenía manual para Líder de Grupo (el de Hassan, que salió de otra conversación/
+  audio) ni para "ayudantes" de cocina/espiritualidad/fogón como rol aparte — esos ayudantes
+  quedan marcados "a cargar" hasta que el plantel los escriba.
 
 ---
 
@@ -526,8 +539,10 @@ una edición nueva (backup antes).
       portada del movimiento neutral con frases motivacionales.
 
 ### 🟡 Pendientes abiertos
-- [ ] **Manual de roles**: agregar a la pestaña Reglamento las funciones de los demás jefes
-      (Jefe de Subcampo, Jefe de Patrulla — Richard, jefe Rolando) a medida que las escriban.
+- [ ] **Manual de roles**: ya cargados Líder de Grupo, Jefe de Subcampo, Espiritualidad, Fogón,
+      Cocina, Limpieza General y Utilería de Juegos. Falta cargar los **ayudantes** de cocina/
+      espiritualidad/fogón (funciones propias, no solo "acompañan al jefe") y cualquier rol nuevo
+      que sume el plantel (ej. Richard, jefe Rolando si tienen roles distintos a los ya escritos).
 - [ ] Extraer el articulado exacto del Decreto N° 7442/2017 si hace falta citarlo textual (el
       PDF que pasó el usuario es un escaneo sin texto — se necesitaría OCR o una copia con capa
       de texto).
