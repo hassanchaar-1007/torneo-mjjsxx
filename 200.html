@@ -117,10 +117,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238c9bb4' stroke-width='2' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
 
 /* ═══ SECTION ═══ */
-.section-page { padding: 16px; max-width: 600px; margin: 0 auto; }
+.section-page { padding: 16px; max-width: 780px; margin: 0 auto; }
 .card { background: rgba(255,255,255,0.03); border: 1px solid var(--w30); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
 .card h3 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+#cj-postas-list .card, #cj-yincanas-list .card, #staffRolesGrid .card, #reglamentoTopGrid .card { margin-bottom: 0; }
 
 /* ═══ TEAMS ═══ */
 .team-row { display: block; padding: 0; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent; text-align: left; }
@@ -217,7 +218,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
     <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
-    <button data-cj="funciones" id="navCjFunciones" onclick="showCj('funciones')" style="display:none;">🗂️ Funciones</button>
+    <button data-cj="funciones" id="navCjFunciones" onclick="showCj('funciones')" style="display:none;">🗂️ Staff</button>
   </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
 </div>
@@ -356,33 +357,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <div style="display:flex;gap:10px;padding:9px 0 2px;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🙏</div><div style="flex:1;font-size:13px;line-height:1.5;font-style:italic;color:var(--gold);">Que Jesús nos ayude como plantel a formar este trabajo del CAMPAJOR.</div></div>
       </div>
     </div>
-    <div class="card" style="border:1px dashed var(--w30);">
-      <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">📝 Borrador del plantel · propuestas para trabajar juntos</div>
-      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:12px;">✨ Lema del CAMPAJOR (elegido por el plantel: el Tesoro y la búsqueda)</div>
-      <p style="font-size:13px;line-height:1.55;margin-top:4px;"><b>«En busca del Tesoro»</b> — <i>Buscalo, cuidalo, compartilo: el Tesoro está dentro.</i></p>
-      <p style="font-size:12px;color:var(--w50);margin-top:4px;">Variantes por si quieren afinar: <i>"En busca del Tesoro del Reino"</i> · <i>"Custodios del Tesoro"</i> · <i>"Una perla de gran valor"</i> (Mt 13,45).</p>
-      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:14px;">📜 Domingo sabio — 5 propósitos para cuidar la fe</div>
-      <div style="margin-top:6px;">
-        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">🙏</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Orar cada día</b> — un momento de oración personal por día, aunque sea corto: la perla se cuida rezando. <span style="color:var(--w50);font-size:11.5px;">"Oren sin cesar" (1 Tes 5,17)</span></div></div>
-        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">⛪</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Vivir la misa y la comunidad</b> — participar de la misa dominical y de los encuentros del movimiento: la fe se vive en comunidad. <span style="color:var(--w50);font-size:11.5px;">"Pedid y se les dará" (Mt 7,7)</span></div></div>
-        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">📖</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Escuchar la Palabra</b> — leer una cita del Evangelio por semana y guardarla como pista de la senda. <span style="color:var(--w50);font-size:11.5px;">"Lámpara es tu Palabra para mis pasos" (Sal 119,105)</span></div></div>
-        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">❤️‍🔥</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Servir como Jesús</b> — un gesto concreto de caridad por semana, en casa, el colegio o el barrio: la caridad es la mayor. <span style="color:var(--w50);font-size:11.5px;">(1 Cor 13,13)</span></div></div>
-        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">🎣</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Echar la red</b> — invitar a un amigo al movimiento o compartir la fe con alguien: extender el apostolado del Reino. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,47)</span></div></div>
-      </div>
-      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:14px;">🔎 Búsqueda del tesoro — pistas de la senda (adaptar al terreno de Santa Catalina)</div>
-      <p style="font-size:12px;color:var(--w50);margin-top:4px;">Cada pista lleva una cita + un acertijo del lugar. La senda termina en un cofre con <b>una perla para cada jornadista</b>: "El Tesoro está dentro".</p>
-      <div style="margin-top:6px;">
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">1.</b> <i>"El Reino de los cielos se parece a un tesoro escondido en el campo"</i> (Mt 13,44) — Arranca la senda: busquen donde las raíces son profundas y la sombra es grande.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">2.</b> <i>"Tu Palabra es lámpara para mis pasos"</i> (Sal 119,105) — Caminen hacia donde nace la luz cuando todo empieza.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">3.</b> <i>"El que beba del agua que yo le daré no tendrá sed jamás"</i> (Jn 4,14) — La próxima pista espera donde el agua vive.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">4.</b> <i>"El hombre sabio edificó su casa sobre roca"</i> (Mt 7,24) — Busquen la piedra firme que no se mueve.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">5.</b> <i>"Oren sin cesar"</i> (1 Tes 5,17) — Donde el campamento se arrodilla y el silencio habla, ahí sigue la senda.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">6.</b> <i>"El grano de mostaza es la más pequeña de las semillas, pero se hace árbol"</i> (Mt 13,31-32) — Encuentren lo pequeño que promete ser grande.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">7.</b> <i>"Echen la red a la derecha y encontrarán"</i> (Jn 21,6) — Vayan donde algo se tiende, se cuelga o se lanza.</div>
-        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--gold);">8. FINAL:</b> <i>"Donde está tu tesoro, ahí está tu corazón"</i> (Mt 6,21) — El Tesoro no está lejos: está donde todos son hermanos. Vuelvan al centro… y abran el cofre. 💎</div>
-      </div>
-      <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:8px;">Propuesta borrador — el plantel la revisa, cambia o completa. Cuando las pistas sean definitivas conviene sacarlas de esta página pública para no arruinar la sorpresa 😉</p>
-    </div>
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
       <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 juegos</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
@@ -516,18 +490,18 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 </div>
 
 <div class="page" id="page-cj-postas">
-  <div class="section-page">
+  <div class="section-page" style="max-width:1180px;">
     <div class="section-title">🎪 Postas de recepción</div>
     <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">5 postas para el arranque del sábado — cada una encarna un <strong style="color:var(--gold);">tipo de oración</strong>: la patrulla lo vive jugando.</p>
-    <div id="cj-postas-list"></div>
+    <div id="cj-postas-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start;"></div>
   </div>
 </div>
 
 <div class="page" id="page-cj-yincanas">
-  <div class="section-page">
+  <div class="section-page" style="max-width:1180px;">
     <div class="section-title">🎯 Juegos (24)</div>
     <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad. Cada juego <strong style="color:var(--gold);">trabaja una virtud</strong>: las 3 teologales (🕊️ Fe, ⚓ Esperanza, ❤️‍🔥 Caridad) y las 4 cardinales (🦉 Prudencia, ⚖️ Justicia, 🦁 Fortaleza, 🌿 Templanza).</p>
-    <div id="cj-yincanas-list"></div>
+    <div id="cj-yincanas-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start;"></div>
   </div>
 </div>
 
@@ -570,11 +544,13 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 <!-- ═══ CAMPAJOR: REGLAMENTO ═══ -->
 <div class="page" id="page-cj-reglamento">
-  <div class="section-page">
+  <div class="section-page" style="max-width:1020px;">
     <div class="section-title">📜 Reglamento del CAMPAJOR</div>
     <p style="color:var(--gold);font-size:13.5px;font-style:italic;line-height:1.5;margin-bottom:6px;">Así como cada patrulla sigue pistas para encontrar el Tesoro, este reglamento es el mapa que nos ayuda a cuidarnos, cuidar la Creación y vivir juntos el encuentro con Jesús. No son reglas frías: son parte del camino.</p>
     <p style="color:var(--w50);font-size:12.5px;margin-bottom:6px;">Documento vivo: se va completando a medida que el plantel define cada parte. Última actualización: sep/2026.</p>
-    <p style="text-align:center;margin-bottom:14px;"><span onclick="unlockFunciones()" style="color:var(--teal);font-size:12px;text-decoration:underline;cursor:pointer;">🔑 ¿Sos del equipo de formadores? Ver Manual de Funciones</span></p>
+    <p style="text-align:center;margin-bottom:14px;"><span onclick="unlockFunciones()" style="color:var(--teal);font-size:12px;text-decoration:underline;cursor:pointer;">🔑 ¿Sos del equipo de formadores? Ver Staff</span></p>
+
+    <div id="reglamentoTopGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start;">
 
     <div class="card" style="border-left:3px solid var(--gold);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏞️ Sede: Reserva Natural Tati Yupi</div>
@@ -607,6 +583,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🔁</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Revisar</b> — las reuniones diarias de evaluación del plantel ajustan el programa según el ritmo de los jornadistas.</div></div>
         <div style="display:flex;gap:10px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🎉</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Celebrar</b> — se vive en la <b>misa</b>: ahí celebramos como comunidad el encuentro con Jesús, el Tesoro que buscamos.</div></div>
       </div>
+    </div>
+
     </div>
 
     <div class="card" style="border-left:3px solid var(--gold);">
@@ -642,11 +620,39 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <!-- ═══ CAMPAJOR: MANUAL DE FUNCIONES ═══ -->
 <div class="page" id="page-cj-funciones">
   <div class="section-page" style="max-width:1180px;">
-    <div class="section-title">🗂️ Manual de Funciones</div>
+    <div class="section-title">🗂️ Staff · Manual de Funciones</div>
 
     <div class="card" style="border:1px dashed var(--w30);">
       <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">👑 Nuestro equipo · cada uno guarda una parte del Tesoro</div>
       <p style="font-size:13px;line-height:1.55;color:var(--w80);margin-top:8px;">Así como los 4 subcampos custodian su virtud, cada jefe del plantel custodia una parte del camino para que los jornadistas puedan vivir su encuentro con Jesús. Cada función de acá abajo tiene su propia virtud — la que mejor la describe. Esta es la primera vez que dejamos escritas estas funciones — se va completando entre todos, edición tras edición.</p>
+    </div>
+
+    <div class="card" style="border:1px dashed var(--danger,#ff5a5a);">
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🤫 Solo Staff · spoiler adentro</div>
+      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:12px;">✨ Lema del CAMPAJOR (elegido por el plantel: el Tesoro y la búsqueda)</div>
+      <p style="font-size:13px;line-height:1.55;margin-top:4px;"><b>«En busca del Tesoro»</b> — <i>Buscalo, cuidalo, compartilo: el Tesoro está dentro.</i></p>
+      <p style="font-size:12px;color:var(--w50);margin-top:4px;">Variantes por si quieren afinar: <i>"En busca del Tesoro del Reino"</i> · <i>"Custodios del Tesoro"</i> · <i>"Una perla de gran valor"</i> (Mt 13,45).</p>
+      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:14px;">📜 Domingo sabio — 5 propósitos para cuidar la fe</div>
+      <div style="margin-top:6px;">
+        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">🙏</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Orar cada día</b> — un momento de oración personal por día, aunque sea corto: la perla se cuida rezando. <span style="color:var(--w50);font-size:11.5px;">"Oren sin cesar" (1 Tes 5,17)</span></div></div>
+        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">⛪</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Vivir la misa y la comunidad</b> — participar de la misa dominical y de los encuentros del movimiento: la fe se vive en comunidad. <span style="color:var(--w50);font-size:11.5px;">"Pedid y se les dará" (Mt 7,7)</span></div></div>
+        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">📖</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Escuchar la Palabra</b> — leer una cita del Evangelio por semana y guardarla como pista de la senda. <span style="color:var(--w50);font-size:11.5px;">"Lámpara es tu Palabra para mis pasos" (Sal 119,105)</span></div></div>
+        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">❤️‍🔥</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Servir como Jesús</b> — un gesto concreto de caridad por semana, en casa, el colegio o el barrio: la caridad es la mayor. <span style="color:var(--w50);font-size:11.5px;">(1 Cor 13,13)</span></div></div>
+        <div style="display:flex;gap:10px;padding:6px 0;"><div style="font-size:16px;">🎣</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Echar la red</b> — invitar a un amigo al movimiento o compartir la fe con alguien: extender el apostolado del Reino. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,47)</span></div></div>
+      </div>
+      <div style="font-size:13px;color:var(--gold);font-weight:800;margin-top:14px;">🔎 Búsqueda del tesoro — pistas de la senda (adaptar al terreno de Santa Catalina)</div>
+      <p style="font-size:12px;color:var(--w50);margin-top:4px;">Cada pista lleva una cita + un acertijo del lugar. La senda termina en un cofre con <b>una perla para cada jornadista</b>: "El Tesoro está dentro".</p>
+      <div style="margin-top:6px;">
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">1.</b> <i>"El Reino de los cielos se parece a un tesoro escondido en el campo"</i> (Mt 13,44) — Arranca la senda: busquen donde las raíces son profundas y la sombra es grande.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">2.</b> <i>"Tu Palabra es lámpara para mis pasos"</i> (Sal 119,105) — Caminen hacia donde nace la luz cuando todo empieza.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">3.</b> <i>"El que beba del agua que yo le daré no tendrá sed jamás"</i> (Jn 4,14) — La próxima pista espera donde el agua vive.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">4.</b> <i>"El hombre sabio edificó su casa sobre roca"</i> (Mt 7,24) — Busquen la piedra firme que no se mueve.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">5.</b> <i>"Oren sin cesar"</i> (1 Tes 5,17) — Donde el campamento se arrodilla y el silencio habla, ahí sigue la senda.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">6.</b> <i>"El grano de mostaza es la más pequeña de las semillas, pero se hace árbol"</i> (Mt 13,31-32) — Encuentren lo pequeño que promete ser grande.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--neon);">7.</b> <i>"Echen la red a la derecha y encontrarán"</i> (Jn 21,6) — Vayan donde algo se tiende, se cuelga o se lanza.</div>
+        <div style="padding:6px 0;font-size:12.5px;line-height:1.5;"><b style="color:var(--gold);">8. FINAL:</b> <i>"Donde está tu tesoro, ahí está tu corazón"</i> (Mt 6,21) — El Tesoro no está lejos: está donde todos son hermanos. Vuelvan al centro… y abran el cofre. 💎</div>
+      </div>
+      <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:8px;">Propuesta borrador — el plantel la revisa, cambia o completa. Ojo: esto es spoiler puro, no lo compartan fuera del equipo 😉</p>
     </div>
 
     <div class="card" style="border-left:3px solid var(--gold);">
@@ -676,7 +682,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:10px;">Manual del Líder de Grupo — versión inicial. Se ajusta junto con el plantel a medida que se define el rol de cada jefe.</p>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start;">
+    <div id="staffRolesGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start;">
 
     <div class="card" style="border:1px dashed rgba(255,255,255,.5);">
       <div style="font-size:12px;color:#ffffff;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🦪🗺️🔥🎣 Jefe de Subcampo</div>
