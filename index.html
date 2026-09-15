@@ -121,7 +121,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .card { background: rgba(255,255,255,0.03); border: 1px solid var(--w30); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
 .card h3 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-#cj-postas-list .card, #cj-yincanas-list .card, #staffRolesGrid .card, #reglamentoTopGrid .card { margin-bottom: 0; }
+#cj-postas-list .card, #cj-yincanas-list .card, #staffRolesGrid .card, #reglamentoTopGrid .card, #orgGrid .card { margin-bottom: 0; }
 
 /* ═══ TEAMS ═══ */
 .team-row { display: block; padding: 0; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent; text-align: left; }
@@ -219,6 +219,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
     <button data-cj="funciones" id="navCjFunciones" onclick="showCj('funciones')" style="display:none;">🗂️ Staff</button>
+    <button data-cj="organizacion" id="navCjOrganizacion" onclick="showCj('organizacion')" style="display:none;">🏗️ Organización</button>
   </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
 </div>
@@ -789,6 +790,72 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
 
     <p style="text-align:center;color:var(--w30);font-size:11.5px;font-style:italic;margin-top:6px;">…y los que falten: cada rol que sume el plantel tiene su lugar acá.</p>
+  </div>
+</div>
+
+<!-- ═══ CAMPAJOR: ORGANIZACIÓN (solo Staff) ═══ -->
+<div class="page" id="page-cj-organizacion">
+  <div class="section-page" style="max-width:1020px;">
+    <div class="section-title">🏗️ Organización · Solo Staff</div>
+    <p style="color:var(--w50);font-size:12.5px;margin-bottom:14px;">Acá vamos armando el espíritu del año — todo lo que se charla en el grupo del plantel, organizado y entrelazado con las virtudes, el Tesoro y Jornadas. Se va sumando con cada reunión.</p>
+
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🔥 Consigna del año: «Jornadicemos el Campajor»</div>
+      <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);">Que el campamento no sea solo juegos y postas: que respire el espíritu entero del Movimiento. Esto pidió el plantel para esta edición:</p>
+      <div style="margin-top:8px;">
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">✨</div><div style="flex:1;font-size:13px;line-height:1.5;">Que vuelvan las sorpresas — vivir el momento, que vuelva la algarabía del jornadista.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🤝</div><div style="flex:1;font-size:13px;line-height:1.5;">Que no se pierda el espíritu jornadista: estirarnos como hermanos, sin importar el número de jornada.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🩹</div><div style="flex:1;font-size:13px;line-height:1.5;">Servir siempre como <b>palanca</b> para estirar al hermano de la cuneta — al que quedó atrás.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🔥</div><div style="flex:1;font-size:13px;line-height:1.5;">Encender, cuidar y proteger la llama del jornadista.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🎶</div><div style="flex:1;font-size:13px;line-height:1.5;">Que vuelvan los cantos de Jornadas — <i>"Al pecho llevo la Cruz"</i>, un emblema que hay que destacar siempre.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">😂</div><div style="flex:1;font-size:13px;line-height:1.5;">Y de paso, divertirnos todos juntos sanamente — olvidarnos de todo y reírnos a carcajadas.</div></div>
+      </div>
+      <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:10px;">Todos somos Jornadistas… pero la pregunta es: ¿vivimos como Jornadistas? <span style="border:1px solid #ff6b6b;color:#ff6b6b;border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;white-space:nowrap;margin-left:4px;">❤️‍🔥 Caridad</span> <span style="border:1px solid #00e676;color:#00e676;border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;white-space:nowrap;">⚓ Esperanza</span></p>
+    </div>
+
+    <div id="orgGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start;">
+
+    <div class="card" style="border-left:3px solid rgba(255,90,90,.7);">
+      <div style="font-size:12px;color:#ff6b6b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🔥 La llama del Jornadista <span style="font-size:10.5px;font-weight:800;border:1px solid #ff9f43;color:#ff9f43;border-radius:10px;padding:1px 8px;margin-left:4px;vertical-align:middle;">🦁 Fortaleza</span></div>
+      <p style="margin-top:10px;font-size:14px;font-style:italic;color:var(--w80);">"Que la llama nunca se apague. Y si se apagó… que se vuelva a prender."</p>
+      <p style="margin-top:8px;font-size:14px;font-style:italic;color:var(--w80);">"Yo quiero que esa luz que un día en mí prendió, jamás se esconda ni se apague su fulgor."</p>
+      <p style="margin-top:10px;font-size:13px;line-height:1.55;color:var(--w80);">Es la llama de <b>San Juan</b>, del fuego de la Antorcha, la misma Caridad que arde en el fogón <span style="color:var(--w50);font-size:11.5px;">(Lc 24,32)</span> — y también la Fortaleza de sostenerla encendida año tras año, aunque a veces se apague. <b>Jornadicemos el fogón</b>: que cada noche de fuego lleve este mensaje bien claro.</p>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">✝️ El Cuarto Día <span style="font-size:10.5px;font-weight:800;border:1px solid #ff9f43;color:#ff9f43;border-radius:10px;padding:1px 8px;margin-left:4px;vertical-align:middle;">🦁 Fortaleza</span></div>
+      <p style="margin-top:10px;font-size:13px;line-height:1.55;color:var(--w80);">El campamento dura un par de días — pero lo que de verdad importa es lo que viene después: el <b>Cuarto Día</b>, el resto de la vida vivida como jornadista. Por eso entre jornadistas se pregunta <i>"¿cómo va tu cuarto día?"</i> — no es una fecha, es toda una vida.</p>
+      <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);">Este año el plantel quiere recalcarlo fuerte: <b>tomar la cruz y perseverar en el Cuarto Día</b>, fortalecer la fe del jornadista para que sea alegre y jovial siempre, sin que haya discordia entre nosotros.</p>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--neon);">
+      <div style="font-size:12px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🎤 Charlas y testimonios</div>
+      <div style="margin-top:10px;">
+        <div style="font-size:13px;color:var(--w80);"><b>Richard</b> — el don de la palabra: dar la charla que lleve a los jornadistas a entender que todo lo que hacemos es para la gloria de Dios, de nuestro Flaco querido. Creer en los llamados, porque en realidad somos instrumentos suyos.</div>
+        <div style="font-size:13px;color:var(--w80);margin-top:10px;"><b>Rolando</b> — el don de mando y el testimonio de vida: animar a los jornadistas a aceptar el llamado, para que los más chicos no tengan miedo.</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🏅 Nuevo premio: "Mejor Espíritu Jornadista"</div>
+      <p style="margin-top:10px;font-size:13px;line-height:1.55;color:var(--w80);">Ya existe el premio "Mejor Espíritu Campajor". Este año se suma un nuevo galardón, pensado para los más veteranos:</p>
+      <p style="margin-top:8px;font-size:13px;line-height:1.55;color:var(--w80);">Premia la entrega, la perseverancia, la constancia y el amor del jornadista hacia el Movimiento — su llama que sigue encendida a pesar de los años, sirviendo de ejemplo a los demás, en especial a los nuevos jornadistas.</p>
+      <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:10px;">✍️ Falta definir cómo se entrega (¿por patrulla? ¿individual?) y si se carga desde el Ranking — se ajusta con el plantel.</p>
+    </div>
+
+    </div>
+
+    <div class="card" style="border:1px dashed var(--w30);">
+      <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">📖 Qué es JORNADAS (para el staff nuevo)</div>
+      <div style="margin-top:10px;">
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🕊️</div><div style="flex:1;font-size:13px;line-height:1.5;">Jornadas (M.J.J.S.XX.) organiza un retiro espiritual — <b>la Jornada</b> — una vez al año.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">1️⃣</div><div style="flex:1;font-size:13px;line-height:1.5;">Cada persona hace su Jornada <b>una sola vez en la vida</b>. Por eso: <i>una vez jornadista, siempre jornadista</i>.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🔢</div><div style="flex:1;font-size:13px;line-height:1.5;">Las Jornadas se numeran correlativamente. Este año se hace la <b>Jornada N° 52 (J52)</b>. Hassan, por ejemplo, es de la <b>J42</b>.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">🚩</div><div style="flex:1;font-size:13px;line-height:1.5;">Después de su Jornada, cada camada forma <b>patrullas</b> que se siguen reuniendo y participan juntas cada año en encuentros como el CAMPAJOR — sin importar en qué edición hicieron su Jornada, todos son hermanos jornadistas.</div></div>
+        <div style="display:flex;gap:10px;padding:5px 0;"><div style="font-size:15px;">👵</div><div style="flex:1;font-size:13px;line-height:1.5;">Hay patrullas veteranas muy tradicionales, como <b>las Caperucitas</b> y <b>los Loros</b> — ya señores y señoras, y siguen viniendo.</div></div>
+      </div>
+      <p style="font-size:13px;font-weight:700;color:var(--gold);margin-top:12px;text-align:center;">Por eso este año: Jornadicemos el Campajor. Que cada patrulla, cada juego, cada fogón, recuerde que somos parte de algo más grande que un fin de semana — somos Jornadistas para siempre. 🔥</p>
+    </div>
   </div>
 </div>
 
@@ -1525,10 +1592,15 @@ function updateUserBadge() {
   else if (currentUser.type === 'patrulla') { b.textContent = '🚩 ' + currentUser.patrulla.nombre; b.style.borderColor = 'var(--neon)'; b.style.color = 'var(--neon)'; }
   else { b.textContent = '👤 ' + currentUser.team.nombre; b.style.borderColor = 'var(--teal)'; b.style.color = 'var(--teal)'; }
   var fBtn = document.getElementById('navCjFunciones');
+  var oBtn = document.getElementById('navCjOrganizacion');
+  var puedeVerFunciones = isAdmin() || isViewerUnlocked();
   if (fBtn) {
-    var puedeVerFunciones = isAdmin() || isViewerUnlocked();
     fBtn.style.display = puedeVerFunciones ? '' : 'none';
     if (!puedeVerFunciones && fBtn.classList.contains('active')) showCj('reglamento');
+  }
+  if (oBtn) {
+    oBtn.style.display = puedeVerFunciones ? '' : 'none';
+    if (!puedeVerFunciones && oBtn.classList.contains('active')) showCj('reglamento');
   }
 }
 function isAdmin() { return currentUser && currentUser.type === 'admin'; }
@@ -2616,7 +2688,7 @@ function showCj(name){
   if(name==='yincanas') renderJuegosCj();
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
-  if(name==='funciones' && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
+  if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   window.scrollTo(0,0);
 }
 function renderCronoCj(){
