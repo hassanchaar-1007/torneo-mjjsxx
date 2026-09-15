@@ -150,6 +150,59 @@ Eventos actuales:
   normas de la reserva, método de Jornadas, Ley del Jornadista) y `#page-cj-funciones`
   (🗂️ Funciones — el manual de roles completo). Antes estaba todo junto en una sola pestaña.
 
+### Etapa 7 — Sesión del 14-15/09/2026 (tono espiritual a fondo + Staff + Organización)
+- **Reglamento y Funciones reescritos con foco en virtudes**: cada artículo de la Ley del
+  Jornadista tiene ahora un badge de virtud (las 7: Fe/Esperanza/Caridad/Prudencia/Justicia/
+  Fortaleza/Templanza, mismos íconos/colores que `VIRTUDES_CJ`) + una glosa tierna ligada al
+  Tesoro. Cada función del manual de roles también tiene su virtud (Líder de Grupo=Sabiduría,
+  Espiritualidad=Fe, Fogón=Caridad, Cocina=Templanza, Limpieza=Justicia, Utilería=Prudencia,
+  Subcampo=las 4 según apóstol).
+- **`#page-cj-funciones` renombrada a "🗂️ Staff"** (nav + título) — el usuario prefiere ese
+  nombre. El acceso sigue igual: admin, o código de solo-lectura `TESORO26` (ver sección 7).
+- **El "Borrador del plantel"** (lema en discusión, 5 propósitos, **8 pistas de la senda —
+  spoiler**) se sacó de la portada pública (`page-cj-inicio`) y se movió a Staff, marcado
+  "🤫 Solo Staff · spoiler adentro". Antes estaba visible a cualquiera.
+- **Layout más ancho en PC**: `.section-page` subió de 600px a 780px de max-width. Reglamento
+  (Sede+Método en 2 columnas, Ley abajo a lo ancho, contenedor a 1020px), Staff (grilla de
+  roles a 1180px) y Postas/Juegos (grillas de 2-3 columnas, contenedor a 1180px) ya no dejan
+  tanto espacio vacío a los costados en pantallas anchas. En mobile todo colapsa a 1 columna
+  solo, sin cambios. IDs para CSS: `#reglamentoTopGrid`, `#staffRolesGrid`, `#orgGrid`,
+  `#cj-postas-list`, `#cj-yincanas-list` (todos con `margin-bottom:0` en sus `.card` para no
+  duplicar el gap del grid).
+- **Nueva pestaña "🏗️ Organización" (`#page-cj-organizacion`)**, con el mismo candado que
+  Staff (admin o código `TESORO26`; toggle compartido en `updateUserBadge()` vía
+  `puedeVerFunciones`, guard en `showCj()` para `'funciones'` y `'organizacion'` juntos). Es
+  donde se va volcando lo que se charla en el grupo de WhatsApp del plantel ("Movimiento De
+  Jornadas"), organizado y ligado a virtudes/Tesoro/subcampos. Primera carga:
+  - **Consigna del año**: «Jornadicemos el Campajor» (que vuelvan las sorpresas, la algarabía,
+    los cantos de Jornadas —"Al pecho llevo la Cruz"—, servir como palanca al hermano de la
+    cuneta, cuidar la llama).
+  - **La llama del Jornadista** (Fortaleza + Caridad/San Juan): "que nunca se apague, y si se
+    apagó que se vuelva a prender" — ligado directo al fogón ("Jornadicemos el fogón").
+  - **El Cuarto Día** (Fortaleza): concepto central de Jornadas — no es una fecha, es TODA la
+    vida después del retiro, viviendo lo aprendido. Se pregunta "¿cómo va tu cuarto día?".
+  - Asignación de charlas: **Richard** (don de la palabra) y **Rolando** (don de mando).
+  - **Nuevo premio "Mejor Espíritu Jornadista"** (además del ya existente "Mejor Espíritu
+    Campajor") — pensado para veteranos, premia la llama que sigue encendida a pesar de los
+    años. Todavía **no está wireado al sistema de premios del Ranking** (que hoy solo tiene
+    "Virtud del Jornadista" por patrulla) — falta definir con el plantel si es individual o
+    por patrulla antes de programarlo.
+  - **Qué es Jornadas** (para staff nuevo): retiro espiritual anual, **se hace UNA sola vez en
+    la vida** ("una vez jornadista, siempre jornadista"), las ediciones se numeran corridas —
+    **esta es la J52**, Hassan es de la **J42** — después cada camada forma patrullas que
+    siguen participando juntas cada año sin importar la edición. Patrullas veteranas
+    tradicionales: **las Caperucitas** y **los Loros**.
+  - **"El Flaco"** confirmado como apodo cariñoso de **Jesús** (no un miembro del plantel) —
+    ya se usa así en "El camino del Tesoro" (nueva parada "El altar te espera": pistas llevan
+    al Altar Mayor armado por Espiritualidad, cada patrulla escribe una palanca — "¿Cómo
+    llegué al Campajor?" / "¿Qué espero encontrar?" — que se ofrenda en la Misa del domingo).
+- **Grito de Guerra** cargado en el Inicio de CAMPAJOR (texto del usuario, afinado en rima por
+  Claude: "Somos Jornadistas, sin miedo y sin temor... ¡CAM-PA-JOR! ¡CON EL SALVADOR!") +
+  mensaje de cierre del Líder de Grupo justo antes del CTA de inscripción.
+- **Pendiente sin resolver**: las imágenes "Tarjetas Rojas" (memes graciosos de infracciones
+  tipo tarjeta roja — "llegar sin tu Biblia", "dormirte en la prédica") quedaron **solo como
+  referencia**, el usuario pidió no subirlas todavía.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -549,8 +602,13 @@ una edición nueva (backup antes).
 - [ ] Extraer el articulado exacto del Decreto N° 7442/2017 si hace falta citarlo textual (el
       PDF que pasó el usuario es un escaneo sin texto — se necesitaría OCR o una copia con capa
       de texto).
-- [ ] **Sacar las 8 pistas de la búsqueda de la página pública cuando sean definitivas**
-      (hoy son borrador visible; spoiler del juego si quedan).
+- [x] **Sacar las 8 pistas de la página pública** — ya se movieron a Staff (13-14/09/2026),
+      quedan marcadas "spoiler adentro", solo staff/código `TESORO26` las ve.
+- [ ] **Premio "Mejor Espíritu Jornadista"**: falta definir con el plantel si es individual o
+      por patrulla, y programarlo en el sistema de premios del Ranking (hoy solo existe
+      "Virtud del Jornadista"). Ver Organización → Staff.
+- [ ] **Tarjetas Rojas** (memes graciosos de infracciones): el usuario compartió 3 imágenes de
+      referencia, pidió no subirlas todavía — retomar si pide armar esa sección.
 - [ ] El plantel debe validar/ajustar: lema final (variantes en el borrador), los 5 propósitos,
       las pistas, y los gritos de subcampo.
 - [ ] **Músicas de jornadas con virtudes**: el usuario las va a pasar → integrarlas en la esencia.
