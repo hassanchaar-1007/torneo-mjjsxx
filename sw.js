@@ -1,4 +1,4 @@
-var CACHE_NAME = 'torneo-v3.17';
+var CACHE_NAME = 'torneo-v3.18';
 var urlsToCache = ['/', '/index.html', '/logo.png', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', function(e) {
