@@ -341,6 +341,21 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
+    <div class="card" id="cj-insc-widget" style="border:1px solid var(--neon-dim);text-align:center;">
+      <div style="font-size:12px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-insc-total">0</span>)</div>
+      <div id="cj-insc-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
+      <div id="cj-insc-carousel" style="margin-top:12px;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;">
+          <button onclick="navInscriptosCj(-1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">‹</button>
+          <div style="min-width:170px;">
+            <div id="cj-insc-nombre" style="font-size:16px;font-weight:900;color:var(--white);"></div>
+            <div id="cj-insc-contador" style="font-size:11px;color:var(--w50);margin-top:2px;"></div>
+          </div>
+          <button onclick="navInscriptosCj(1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">›</button>
+        </div>
+        <div id="cj-insc-integrantes" style="margin-top:10px;font-size:12.5px;color:var(--w80);line-height:1.7;text-align:left;max-width:280px;margin-left:auto;margin-right:auto;"></div>
+      </div>
+    </div>
     <div class="card" style="border:1px solid var(--gold-dim);text-align:center;">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">💎 Lema 2026 · El Tesoro está dentro</div>
       <p style="margin-top:10px;font-size:14px;font-style:italic;color:var(--w80);">"El Reino de los cielos se parece a una perla de gran valor."<br><span style="font-size:12px;color:var(--w50);">Mateo 13,45-46</span></p>
@@ -2660,6 +2675,43 @@ function saveCj(d, allowShrink){
   }
 }
 var dataCj = loadCj();
+var _inscriptosIdx = 0;
+function renderInscriptosCj(){
+  var totalEl = document.getElementById('cj-insc-total');
+  if(!totalEl) return;
+  var patrullas = (dataCj && dataCj.patrullas) || [];
+  totalEl.textContent = patrullas.length;
+  var empty = document.getElementById('cj-insc-empty');
+  var carousel = document.getElementById('cj-insc-carousel');
+  if(!patrullas.length){
+    if(empty) empty.style.display = 'block';
+    if(carousel) carousel.style.display = 'none';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  if(carousel) carousel.style.display = 'block';
+  if(_inscriptosIdx >= patrullas.length) _inscriptosIdx = 0;
+  if(_inscriptosIdx < 0) _inscriptosIdx = patrullas.length - 1;
+  var p = patrullas[_inscriptosIdx];
+  var n = (p.integrantes || []).length;
+  document.getElementById('cj-insc-nombre').textContent = p.nombre + ' (' + n + ')';
+  document.getElementById('cj-insc-contador').textContent = (_inscriptosIdx + 1) + ' / ' + patrullas.length;
+  var listEl = document.getElementById('cj-insc-integrantes');
+  if(n){
+    listEl.innerHTML = (p.integrantes || []).map(function(m){
+      return '<div style="padding:3px 0;">• ' + esc(m) + (p.jefe === m ? ' 👑' : '') + '</div>';
+    }).join('');
+  } else {
+    listEl.innerHTML = '<div style="color:var(--w50);text-align:center;">Sin integrantes cargados todavía.</div>';
+  }
+}
+function navInscriptosCj(dir){
+  var patrullas = (dataCj && dataCj.patrullas) || [];
+  if(!patrullas.length) return;
+  _inscriptosIdx = (_inscriptosIdx + dir + patrullas.length) % patrullas.length;
+  renderInscriptosCj();
+}
+try { renderInscriptosCj(); } catch(e){}
 // Sync en vivo del nodo campajor (lectura publica: todos ven el ranking actualizado)
 function setupCampajorSync(){
   if (!fbReady || !campajorRef) return;
@@ -2669,7 +2721,7 @@ function setupCampajorSync(){
       dataCj = normCj(v);
       if (dataCj.patrullas.length > fbMaxPatrullasCj) fbMaxPatrullasCj = dataCj.patrullas.length;
       try { localStorage.setItem(STORE_KEY_CJ, JSON.stringify(dataCj)); } catch(e){}
-      try { renderPatrullasCj(); renderRankingCj(); } catch(e){}
+      try { renderPatrullasCj(); renderRankingCj(); renderInscriptosCj(); } catch(e){}
     }
   });
 }
