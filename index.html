@@ -2826,6 +2826,7 @@ function renderPatrullasCj(){
       return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid '+(esJefe?'var(--gold)':'var(--w30)')+';border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'
         +(esJefe?'👑 ':'')+esc(m)
         +(isAdmin()?' <span title="'+(esJefe?'Quitar jefe':'Hacer jefe')+'" style="cursor:pointer;opacity:.7;" onclick="setJefeCj('+i+','+j+')">👑</span>':'')
+        +(isAdmin()?' <span title="Editar" style="cursor:pointer;opacity:.7;" onclick="editarIntegranteCj('+i+','+j+')">✏️</span>':'')
         +(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="removeIntegranteCj('+i+','+j+')">×</span>':'')
         +'</span>';
     }).join('');
@@ -2840,7 +2841,8 @@ function renderPatrullasCj(){
       + '<div style="display:flex;align-items:center;gap:10px;">'
       +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+iconoRemeraCj(p.nombre)+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
       +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
-      +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
+      +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span>'
+      +     (isAdmin()?' <span title="Renombrar" style="cursor:pointer;opacity:.7;" onclick="renombrarPatrullaCj('+i+')">✏️</span>':'')+'</div>'
       +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
       + '</div>'
       + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
@@ -3021,6 +3023,7 @@ function renderSelectCedulasCj(){
   sel.innerHTML = '<option value="">Elegir patrulla...</option>' + (dataCj.patrullas||[]).map(function(p){ return '<option value="'+esc(p.nombre)+'">'+esc(p.nombre)+'</option>'; }).join('');
   if(actual) sel.value = actual;
 }
+var _cedulasPatrullaActual = '';
 function verCedulasCj(){
   if(!isAdmin())return;
   var nombre = document.getElementById('cj-ced-patrulla').value;
@@ -3030,13 +3033,14 @@ function verCedulasCj(){
   if(!pat){ out.innerHTML=''; return; }
   if(!fbReady || !privadoCjRef){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Sin conexión a Firebase.</p>'; return; }
   out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Cargando...</p>';
+  _cedulasPatrullaActual = nombre;
   var clave = sanitizarClaveCj(nombre);
   var pr = privadoCjRef.child(clave).child('cedulas').once('value', function(snap){
     var cedulas = snap.val() || [];
     var integrantes = pat.integrantes || [];
-    if(!cedulas.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">No hay cédulas cargadas para esta patrulla todavía (o las reglas de Firebase para <code>campajor_privado</code> no están publicadas aún).</p>'; return; }
-    out.innerHTML = integrantes.map(function(m,i){
-      return '<div style="padding:3px 0;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--w20,rgba(255,255,255,.08));"><span style="flex:1;">'+esc(m)+'</span><span style="color:var(--danger,#ff5a5a);font-weight:800;white-space:nowrap;">'+esc(cedulas[i]||'—')+'</span></div>';
+    if(!integrantes.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Esta patrulla todavía no tiene integrantes cargados.</p>'; return; }
+    out.innerHTML = '<p style="font-size:11px;color:var(--w50);margin-bottom:4px;">Tocá una cédula para editarla o cargarla.</p>' + integrantes.map(function(m,i){
+      return '<div style="padding:3px 0;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--w20,rgba(255,255,255,.08));"><span style="flex:1;">'+esc(m)+'</span><span onclick="editarCedulaCj('+i+')" style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;white-space:nowrap;text-decoration:underline dotted;" title="Click para editar">'+esc(cedulas[i]||'— agregar')+'</span></div>';
     }).join('');
   }, function(err){
     var msg = (err && err.code === 'PERMISSION_DENIED') || /permission_denied/i.test((err&&err.message)||'')
@@ -3046,8 +3050,71 @@ function verCedulasCj(){
   });
   if(pr && pr.catch) pr.catch(function(){});
 }
+function editarCedulaCj(idx){
+  if(!isAdmin())return;
+  if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
+  var nombre = _cedulasPatrullaActual;
+  if(!nombre) return;
+  var clave = sanitizarClaveCj(nombre);
+  var ref = privadoCjRef.child(clave).child('cedulas');
+  var pr = ref.once('value', function(snap){
+    var actuales = snap.val() || [];
+    var actual = actuales[idx] || '';
+    var nueva = prompt('Cédula:', actual);
+    if(nueva===null) return;
+    nueva = nueva.trim();
+    while(actuales.length <= idx) actuales.push('');
+    actuales[idx] = nueva;
+    var pr2 = ref.set(actuales);
+    pr2.then(function(){ toast('Cédula actualizada 🪪'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
+  }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
+  if(pr && pr.catch) pr.catch(function(){});
+}
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
 function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
+function editarIntegranteCj(i,j){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var p=dataCj.patrullas[i]; if(!p||!p.integrantes||p.integrantes[j]===undefined) return;
+  var actual=p.integrantes[j];
+  var nuevo=prompt('Editar integrante (nombre, apodo, jornada):', actual);
+  if(nuevo===null) return;
+  nuevo=nuevo.trim();
+  if(!nuevo){ toast('No puede quedar vacío'); return; }
+  if(p.jefe===actual) p.jefe=nuevo;
+  p.integrantes[j]=nuevo;
+  saveCj(dataCj);
+  renderPatrullasCj();
+  toast('Integrante actualizado ✏️');
+}
+function renombrarPatrullaCj(i){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var p=dataCj.patrullas[i]; if(!p) return;
+  var nuevo=prompt('Nuevo nombre de la patrulla:', p.nombre);
+  if(nuevo===null) return;
+  nuevo=nuevo.trim();
+  if(!nuevo){ toast('El nombre no puede quedar vacío'); return; }
+  if(nuevo===p.nombre) return;
+  var viejo=p.nombre;
+  dataCj.patrullas[i].nombre=nuevo;
+  (dataCj.puntajes||[]).forEach(function(x){ if(x.patrulla===viejo) x.patrulla=nuevo; });
+  (dataCj.premios||[]).forEach(function(x){ if(x.patrulla===viejo) x.patrulla=nuevo; });
+  saveCj(dataCj);
+  renderPatrullasCj(); renderRankingCj();
+  toast('Patrulla renombrada ✏️');
+  if(fbReady && privadoCjRef && isFbAdmin()){
+    var claveVieja=sanitizarClaveCj(viejo), claveNueva=sanitizarClaveCj(nuevo);
+    if(claveVieja!==claveNueva){
+      var refVieja=privadoCjRef.child(claveVieja);
+      var pr=refVieja.once('value', function(snap){
+        var val=snap.val();
+        if(val){ privadoCjRef.child(claveNueva).set(val); refVieja.remove(); }
+      });
+      if(pr && pr.catch) pr.catch(function(){});
+    }
+  }
+}
 function setJefeCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes[j]!==undefined){ var nom=p.integrantes[j]; p.jefe=(p.jefe===nom)?'':nom; saveCj(dataCj); renderPatrullasCj(); toast(p.jefe?('👑 Jefe: '+nom):'Jefe quitado'); } }
 function addPuntajeCj(){ if(!isAdmin())return; var p=document.getElementById('cj-pt-patrulla').value, j=document.getElementById('cj-pt-juego').value.trim(), pts=parseInt(document.getElementById('cj-pt-puntos').value)||0; if(!p){toast('Elegí una patrulla');return;} dataCj=loadCj(); dataCj.puntajes.push({patrulla:p,juego:j,puntos:pts}); saveCj(dataCj); document.getElementById('cj-pt-juego').value=''; document.getElementById('cj-pt-puntos').value=''; renderRankingCj(); toast('Puntaje cargado (+'+pts+')'); }
 
