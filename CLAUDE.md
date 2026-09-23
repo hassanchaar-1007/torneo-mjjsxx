@@ -231,6 +231,45 @@ Eventos actuales:
   datos que ya son públicos en `campajor.patrullas`). Si no hay patrullas, muestra estado vacío
   invitando a inscribirse.
 
+### Etapa 9 — Sesión del 23/09/2026 (layout de Inicio + cédulas + más patrullas)
+- **Grito de Guerra reemplazado** por la versión final que armó el plantel en el grupo (formato
+  llamada/respuesta líder↔grupo — en la app solo se dejan las líneas del líder, con una nota de
+  que el grupo las repite). Cierre: "¡CAMPAJOR! ¡CAMPAJOR!".
+- **Layout de `page-cj-inicio` rehecho dos veces** por feedback directo del usuario (mandó un
+  mockup dibujado a mano):
+  1. Primer intento: layout tipo "muro" (`#cj-inicio-columns`, CSS `columns: 380px` con
+     `break-inside:avoid-column`) metiendo TODAS las tarjetas de contenido en columnas fluidas.
+  2. El usuario no lo quería así — mostró con su mockup que el widget de Patrullas Inscriptas
+     debía ir **compacto, al costado del header** (no una fila más). Layout final: hero y el
+     widget en un `display:flex` de 2 columnas arriba de todo (`flex:2 1 420px` el hero,
+     `flex:1 1 300px;max-width:380px` el widget); el resto de las tarjetas (Lema, Esencia,
+     Subcampos, Oración, Grito, cierre) sigue en `#cj-inicio-columns`. El CTA final queda
+     afuera, a todo el ancho. En mobile todo cae a 1 columna igual que siempre.
+  - Trade-off conocido: con el widget compacto, nombres largos con apodo pueden volver a cortar
+    en 2 líneas (antes se había ensanchado a full-width para evitar justo eso). El usuario lo
+    aceptó implícitamente al pedir la versión compacta — si vuelve a molestar, achicar el
+    formato del texto (sacar comillas del apodo, por ejemplo) en vez de volver a ensanchar.
+- **Parser de carga masiva mejorado** (`parseCargaMasivaCj` en `index.html`): ahora entiende
+  bloques multilínea (nombre/apodo/jornada/cédula separados por línea en blanco) **y** líneas
+  sueltas por persona ("Nombre (Apodo) cédula · J52", sin separadores) — se detecta solo mirando
+  si TODAS las líneas de un bloque "parecen de persona" (tienen paréntesis o patrón `J\d+`). Se
+  agregaron `formatearEntradaCj()`, `pareceLineaDePersonaCj()`, `extraerCedulaCj()`.
+- ⚠️ **Cambio de rumbo sobre la cédula**: en la Etapa 8 se decidió NO guardarla nunca. El usuario
+  pidió explícitamente lo contrario acá — la necesita para el control de entrada a Tati Yupi.
+  Ahora SÍ se captura, pero **nunca en el nodo público** `campajor.patrullas`: va a un nodo
+  nuevo `campajor_privado/<nombrePatrullaSanitizado>/cedulas` (array, mismo orden que
+  `integrantes`), con reglas RTDB admin-only (ver sección 6 — **todavía sin publicar**, pendiente
+  de que el usuario las pegue en la consola). `sanitizarClaveCj()` reemplaza `. # $ [ ] /` por
+  `_` para que el nombre de patrulla sirva de clave de Firebase. Nuevo visor admin-only en
+  Patrullas: `#cj-cedulas-viewer` (selector de patrulla + `verCedulasCj()`, hace zip de
+  integrantes↔cédulas por índice) — muestra un aviso claro si las reglas no están publicadas
+  todavía (detecta `PERMISSION_DENIED`) en vez de un error crudo.
+- **2 patrullas más para cargar** (el usuario las pasó, Claude no pudo escribirlas — mismo motivo
+  de siempre, hace falta el login del admin): **LOS MBORE** (naranja, 8 integrantes, tabla con
+  celular+cédula+apodo — Claude reformateó a mano al formato de bloques porque venía de una
+  imagen) y **JAGUA TIRIKA** (verde musgo, 10 integrantes, ya venía en formato de una línea por
+  persona — se puede pegar tal cual sin reformatear gracias a la mejora del parser).
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -358,12 +397,19 @@ Publicarlas en: Firebase console → Realtime Database → Reglas →
       }
     },
     "campajor_backups": { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
+    "campajor_privado": { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
     "torneo":           { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
     "backups":          { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
     "backup":           { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" }
   }
 }
 ```
+
+⚠️ **`campajor_privado` es NUEVO (22/09/2026) y todavía NO está publicado** — hace falta pegar
+este JSON actualizado en la consola (runbook 9.4) para que el visor de cédulas y el guardado
+de cédulas en la carga masiva funcionen. Hasta entonces dan `PERMISSION_DENIED` (la app lo
+maneja gracioso, con un aviso, no rompe nada — nombre/apodo/jornada se guardan igual en
+`campajor.patrullas`, que sí tiene reglas vigentes).
 
 **Cómo funciona el modelo del PIN-llave** (`campajor_inscripciones/$pin`):
 - El PIN de 6 dígitos ES la clave del registro. Conocer el PIN = poder leer y editar ESA patrulla.
