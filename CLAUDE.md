@@ -221,6 +221,15 @@ Eventos actuales:
   - **Por qué no lo cargó Claude directo**: escribir en `campajor` requiere estar autenticado
     como `hassan.chaar@gmail.com` vía Firebase Auth (lo exigen las reglas RTDB) y Claude nunca
     escribe contraseñas — el admin tiene que loguearse él mismo y usar la herramienta.
+  - **Usada con éxito**: el usuario cargó la primera patrulla real ("Patrulla Lila (a
+    confirmar nombre)", 10 integrantes) con la herramienta — confirmado en producción.
+- **Widget "🚩 Patrullas Inscriptas"** en `page-cj-inicio`, justo debajo del hero (antes de la
+  tarjeta del Lema): contador total (`renderInscriptosCj()`, lee `dataCj.patrullas` en vivo vía
+  `setupCampajorSync`) + carrusel navegable con `‹ ›` (`navInscriptosCj(dir)`, índice global
+  `_inscriptosIdx`) que muestra nombre de patrulla + cantidad de integrantes entre paréntesis,
+  y la lista completa de integrantes debajo (con 👑 si es el jefe). Público, sin PII (mismos
+  datos que ya son públicos en `campajor.patrullas`). Si no hay patrullas, muestra estado vacío
+  invitando a inscribirse.
 
 ---
 
