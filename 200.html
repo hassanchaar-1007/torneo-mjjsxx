@@ -2914,8 +2914,15 @@ function formatearEntradaCj(linea){
 function pareceLineaDePersonaCj(linea){
   return /\(([^)]+)\)/.test(linea) || /J\s*\d{1,3}\b/i.test(linea);
 }
+// Lineas de "encabezado" que a veces se pegan junto con la lista (WhatsApp: "*Nombre de la
+// patrulla:* _X_", "Integrantes:", "Líder: X") — no son personas, se descartan antes de parsear.
+function esLineaCabeceraCj(linea){
+  return /^(nombre\s+de\s+la\s+patrulla|patrulla|l[ií]der|responsable|jefe)\s*:.*$/i.test(linea) || /^integrantes\s*:?\s*$/i.test(linea);
+}
 function parseCargaMasivaCj(texto){
-  var bloques = texto.split(/\n\s*\n/);
+  texto = texto.replace(/[*_]/g, ''); // sacar negrita/cursiva estilo WhatsApp (*texto*, _texto_)
+  var lineasUtiles = texto.split('\n').filter(function(l){ return !esLineaCabeceraCj(l.trim()); }).join('\n');
+  var bloques = lineasUtiles.split(/\n\s*\n/);
   var out = [];
   for(var b=0;b<bloques.length;b++){
     var lineas = bloques[b].split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});

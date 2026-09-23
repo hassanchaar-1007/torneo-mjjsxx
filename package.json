@@ -1,0 +1,24 @@
+{
+  "name": "torneo",
+  "version": "1.0.0",
+  "description": "PWA para gestionar un **torneo deportivo de integración** del movimiento (fútbol masculino/femenino, vóley, pádel): equipos, fixture, jornadas, llaves/eliminatorias, resultados y ranking.",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hassanchaar-1007/torneo-mjjsxx.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hassanchaar-1007/torneo-mjjsxx/issues"
+  },
+  "homepage": "https://github.com/hassanchaar-1007/torneo-mjjsxx#readme",
+  "dependencies": {
+    "firebase-admin": "^14.4.0"
+  }
+}
