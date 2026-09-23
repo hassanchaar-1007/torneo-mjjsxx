@@ -544,7 +544,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">🚀 Carga masiva de integrantes</div>
       <p style="font-size:11.5px;color:var(--w50);margin-bottom:8px;">Pegá la lista tal cual la tenés (nombre, apodo, jornada, cédula — una persona por bloque separado por línea en blanco, o una línea por persona). Nombre/apodo/jornada quedan públicos; la <b>cédula va aparte</b>, a un nodo que solo lee el Staff (control de entrada a Tati Yupi).</p>
       <div class="form-group"><label>Nombre de la patrulla (nueva o existente)</label><input id="cj-masiva-nombre" placeholder="Ej: Patrulla Lila (a confirmar)"></div>
-      <div class="form-group"><label>Pegar lista</label><textarea id="cj-masiva-texto" rows="8" placeholder="1. Nombre Apellido&#10;Apodo&#10;J52&#10;5.928.636&#10;&#10;2. Otro Nombre&#10;Apodo&#10;J52&#10;..." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea>
+      <div class="form-group"><label>Pegar lista</label><textarea id="cj-masiva-texto" rows="8" placeholder="1. Nombre Apellido&#10;Apodo&#10;J52&#10;5.928.636&#10;&#10;2. Otro Nombre&#10;Apodo&#10;J52&#10;..." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea></div>
       <button class="btn btn-secondary btn-sm" onclick="previewCargaMasivaCj()" style="margin-top:8px;">👀 Previsualizar</button>
       <div id="cj-masiva-preview" style="margin-top:10px;"></div>
     </div>
@@ -2640,6 +2640,32 @@ JUEGOS_CJ.forEach(function(g){ g.vir = VIRTUD_X_JUEGO[g.n] || ''; });
 // SANTO TOMÁS=Perla·blanco·Fe·aire | SANTIAGO=Senda·verde·Esperanza·tierra | SAN JUAN=Antorcha·rojo·Caridad·fuego | SAN PEDRO=Red·azul·Sabiduría·agua
 // (plantel de integración = AMARILLO, el color del Tesoro)
 var SUBCAMPOS_CJ = ['SANTO TOMÁS','SANTIAGO','SAN JUAN','SAN PEDRO'];
+
+// Detecta el color de la patrulla a partir de una palabra dentro de su nombre (ej: "LOS MBORE
+// (Naranja)") y muestra un iconito de remera con ese color al lado del nombre.
+var COLORES_PATRULLA_CJ = {
+  'verde musgo': '#5a6b3f', 'musgo': '#5a6b3f', 'verde': '#00e676',
+  'naranja': '#ff8c1a', 'anaranjado': '#ff8c1a',
+  'lila': '#b78bff', 'violeta': '#9b59ff', 'morado': '#8e44ad', 'púrpura': '#8e44ad', 'purpura': '#8e44ad',
+  'rojo': '#ff5a5a', 'bordó': '#8b2e3f', 'bordo': '#8b2e3f',
+  'celeste': '#7ab8ff', 'azul': '#4da6ff',
+  'amarillo': '#ffc828', 'dorado': '#ffd700', 'oro': '#ffd700',
+  'rosa': '#ff8fd6', 'rosado': '#ff8fd6', 'fucsia': '#ff2ea6',
+  'negro': '#3a3a3a', 'blanco': '#ffffff', 'gris': '#9aa0a6', 'plateado': '#c0c0c0',
+  'marrón': '#8b5a2b', 'marron': '#8b5a2b', 'café': '#8b5a2b',
+  'turquesa': '#1abc9c', 'cian': '#22d3ee'
+};
+function detectarColorPatrullaCj(nombre){
+  var n = String(nombre||'').toLowerCase();
+  var claves = Object.keys(COLORES_PATRULLA_CJ).sort(function(a,b){return b.length-a.length;});
+  for(var i=0;i<claves.length;i++){ if(n.indexOf(claves[i]) !== -1) return COLORES_PATRULLA_CJ[claves[i]]; }
+  return null;
+}
+function iconoRemeraCj(nombre){
+  var color = detectarColorPatrullaCj(nombre);
+  if(!color) return '';
+  return '<svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:3px;" xmlns="http://www.w3.org/2000/svg"><path fill="'+color+'" stroke="rgba(255,255,255,.35)" stroke-width="1" d="M16.5 3.5L12 7 7.5 3.5 2 6.5l2.8 4.3L7 9.8V21h10V9.8l2.2 1 2.8-4.3z"/></svg>';
+}
 function subcampoBadgeCj(sc){
   if(!sc) return '';
   var m={'SANTO TOMÁS':'🦪','SANTIAGO':'🗺️','SAN JUAN':'🔥','SAN PEDRO':'🎣'};
@@ -2710,7 +2736,7 @@ function renderInscriptosCj(){
   if(_inscriptosIdx < 0) _inscriptosIdx = patrullas.length - 1;
   var p = patrullas[_inscriptosIdx];
   var n = (p.integrantes || []).length;
-  document.getElementById('cj-inscriptas-nombre').textContent = p.nombre + ' (' + n + ')';
+  document.getElementById('cj-inscriptas-nombre').innerHTML = iconoRemeraCj(p.nombre) + esc(p.nombre) + ' (' + n + ')';
   document.getElementById('cj-inscriptas-contador').textContent = (_inscriptosIdx + 1) + ' / ' + patrullas.length;
   var listEl = document.getElementById('cj-inscriptas-integrantes');
   if(n){
@@ -2812,7 +2838,7 @@ function renderPatrullasCj(){
     }
     return '<div class="card">'
       + '<div style="display:flex;align-items:center;gap:10px;">'
-      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
+      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+iconoRemeraCj(p.nombre)+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
       +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
       +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span></div>'
       +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
@@ -2857,7 +2883,7 @@ function renderRankingCj(){
     var scDePatrulla={}; dataCj.patrullas.forEach(function(p){ scDePatrulla[p.nombre]=p.subcampo||''; });
     l.innerHTML = arr.map(function(r,i){
       var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-      return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+esc(r.nombre)+subcampoBadgeCj(scDePatrulla[r.nombre])+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
+      return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+iconoRemeraCj(r.nombre)+esc(r.nombre)+subcampoBadgeCj(scDePatrulla[r.nombre])+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
     }).join('');
   }
   // Premios "Virtud del Jornadista"

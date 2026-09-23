@@ -12,7 +12,8 @@
 import { readFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import admin from 'firebase-admin';
+import { initializeApp, cert } from 'firebase-admin/app';
+import { getDatabase } from 'firebase-admin/database';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const keyPath = join(__dirname, '..', '.secrets', 'serviceAccountKey.json');
@@ -34,12 +35,12 @@ if (!existsSync(archivoTextoArg)) {
 
 const serviceAccount = JSON.parse(readFileSync(keyPath, 'utf8'));
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+const app = initializeApp({
+  credential: cert(serviceAccount),
   databaseURL: 'https://torneo-mjjsxx-default-rtdb.firebaseio.com',
 });
 
-const db = admin.database();
+const db = getDatabase(app);
 
 // ── Mismo parser que usa el sitio (index.html), portado a Node ──────────────
 function sanitizarClave(s) { return String(s).replace(/[.#$[\]/]/g, '_'); }
