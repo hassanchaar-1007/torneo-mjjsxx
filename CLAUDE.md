@@ -264,6 +264,14 @@ Eventos actuales:
   Patrullas: `#cj-cedulas-viewer` (selector de patrulla + `verCedulasCj()`, hace zip de
   integrantes↔cédulas por índice) — muestra un aviso claro si las reglas no están publicadas
   todavía (detecta `PERMISSION_DENIED`) en vez de un error crudo.
+- ⚠️ **Bug encontrado y arreglado**: el widget de Patrullas Inscriptas usaba ids con prefijo
+  `cj-insc-*`, que YA estaba tomado por el formulario público de Inscripción de Patrulla
+  (`cj-insc-nombre`, `cj-insc-integrantes`). La colisión hacía que `addIntegranteRowCj()` (del
+  formulario de inscripción) inyectara sus filas editables dentro del widget de la portada en
+  vez del formulario, y que el formulario quedara sin filas. Se renombró todo el widget a
+  `cj-inscriptas-*` (sección de Etapa 9 arriba). **Lección: revisar colisiones de id con
+  `grep` antes de reusar un prefijo existente**, sobre todo con nombres parecidos como
+  `insc`/`inscriptas`.
 - **2 patrullas más para cargar** (el usuario las pasó, Claude no pudo escribirlas — mismo motivo
   de siempre, hace falta el login del admin): **LOS MBORE** (naranja, 8 integrantes, tabla con
   celular+cédula+apodo — Claude reformateó a mano al formato de bloques porque venía de una
