@@ -552,6 +552,32 @@ una edición nueva (backup antes).
 - Backups descargables: `descargarBackup()` genera `torneo_backup_YYYY-MM-DD.json` (gitignored).
 - Último recurso: nodo `backup` (legacy) o exportar JSON desde la consola RTDB (pestaña Datos → ⋮ → Exportar).
 
+### 9.9 Cargar patrullas directo a Firebase (Admin SDK, sin login manual)
+Claude no puede loguearse como staff (regla: nunca escribe contraseñas), así que para cargar
+datos directo a la base (en vez de guiar al usuario por la UI) existe `.tools/campajor-cargar-patrulla.mjs`,
+que usa una **service account** (Firebase Admin SDK) — bypassea las reglas RTDB por completo,
+así que la clave es sensible y **nunca se commitea** (gitignored: `.secrets/`, `*firebase-adminsdk*.json`).
+
+**Setup (una sola vez, lo hace el usuario):**
+1. `https://console.firebase.google.com/project/torneo-mjjsxx/settings/serviceaccounts/adminsdk`
+   (con `hassan.chaar@gmail.com`) → "Generar nueva clave privada" → descarga un `.json`.
+2. Guardar ese archivo como `C:\JORNADAS\torneo\.secrets\serviceAccountKey.json`.
+3. `npm install` ya corrido (hay `package.json` con `firebase-admin`).
+
+**Uso:**
+```powershell
+node .tools\campajor-cargar-patrulla.mjs "Nombre de la patrulla" ruta\al\texto.txt
+```
+El script porta el MISMO parser que usa la carga masiva del sitio (`parseCargaMasivaCj` en
+`index.html` — si se edita uno, editar el otro): entiende bloques nombre/apodo/jornada/cédula
+separados por línea en blanco, líneas sueltas "Nombre (Apodo) cédula · J52", ignora líneas de
+encabezado tipo "Nombre de la patrulla:"/"Integrantes:" y formato WhatsApp (`*negrita*`/`_cursiva_`).
+Escribe integrantes en `campajor/patrullas` (concatena si la patrulla ya existe) y cédulas en
+`campajor_privado/<nombreSanitizado>/cedulas` — funciona aunque las reglas RTDB de
+`campajor_privado` (sección 6) todavía no estén publicadas, porque el Admin SDK no las respeta.
+Los `.txt` de entrada con datos reales (nombres/cédulas) van en el scratchpad de la sesión, NO
+en el repo, aunque estén gitignored — mejor no tentar al destino.
+
 ---
 
 ## 10. Trampas del entorno (para no volver a tropezar)
