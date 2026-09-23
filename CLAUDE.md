@@ -313,6 +313,12 @@ Eventos actuales:
 - De acá en más, para cargar una patrulla nueva: pedir el texto, guardarlo en el scratchpad de
   la sesión (nunca en el repo, aunque esté gitignored), y correr
   `node .tools/campajor-cargar-patrulla.mjs "Nombre" ruta\al\texto.txt`.
+- **Admin ahora puede editar** (todo con ✏️, admin-only, en Patrullas):
+  `renombrarPatrullaCj(i)` (prompt, migra `puntajes`/`premios` que referencian el nombre viejo
+  y hace best-effort de mover la clave en `campajor_privado`); `editarIntegranteCj(i,j)` (edita
+  el string en el mismo índice — no desincroniza el array paralelo de cédulas; si el integrante
+  editado era el jefe, actualiza `p.jefe` también); `editarCedulaCj(idx)` (desde el visor de
+  cédulas, click en el valor — lee/escribe `campajor_privado/<clave>/cedulas[idx]`).
 
 ---
 
