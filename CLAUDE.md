@@ -272,11 +272,47 @@ Eventos actuales:
   `cj-inscriptas-*` (sección de Etapa 9 arriba). **Lección: revisar colisiones de id con
   `grep` antes de reusar un prefijo existente**, sobre todo con nombres parecidos como
   `insc`/`inscriptas`.
-- **2 patrullas más para cargar** (el usuario las pasó, Claude no pudo escribirlas — mismo motivo
-  de siempre, hace falta el login del admin): **LOS MBORE** (naranja, 8 integrantes, tabla con
-  celular+cédula+apodo — Claude reformateó a mano al formato de bloques porque venía de una
-  imagen) y **JAGUA TIRIKA** (verde musgo, 10 integrantes, ya venía en formato de una línea por
-  persona — se puede pegar tal cual sin reformatear gracias a la mejora del parser).
+- ⚠️⚠️ **Bug GRAVE encontrado y arreglado**: al `<div class="form-group">` del campo "Pegar
+  lista" (dentro de `#cj-carga-masiva`) le faltaba el `</div>` de cierre. Por HTML5 error-recovery,
+  TODO lo que venía después en el documento (botón Previsualizar, preview, `#cj-cedulas-viewer`,
+  **`#cj-patrullas-list` — la lista pública de patrullas —**, y de hecho el resto del `<body>`
+  entero) quedaba anidado como descendiente de esa tarjeta. Como `#cj-carga-masiva` tiene
+  `display:none` para cualquiera que no sea staff, **la lista de patrullas desaparecía por
+  completo para el público** (el usuario reportó "no veo nada"). Estaba así desde que se creó
+  la carga masiva (Etapa 9), pasó desapercibido porque como admin la tarjeta contenedora SÍ es
+  visible. Diagnóstico: `document.getElementById('page-cj-patrullas').outerHTML.length` daba
+  210.740 caracteres (se había tragado ranking/reglamento/staff/organización/el torneo entero)
+  — bajó a ~11.000 al arreglarlo. **Lección: ante un elemento con `getBoundingClientRect()` en
+  {0,0,0,0} o contenido que "desaparece", sospechar de un tag sin cerrar antes que de CSS —
+  revisar con `el.parentElement.id` y `document.createElement('div').innerHTML=seg` para ver
+  la estructura real que arma el parser, no confiar en una lectura visual del HTML fuente.**
+- **Ícono de remera con el color de la patrulla** al lado del nombre (portada, Patrullas,
+  Ranking): `detectarColorPatrullaCj(nombre)` busca palabras de color dentro del nombre
+  (diccionario `COLORES_PATRULLA_CJ` — naranja, verde musgo, lila, etc.) y `iconoRemeraCj()`
+  arma un SVG de remera con ese color de relleno. Sin color detectado, no muestra nada.
+- **LOS MBORE** (naranja, 8 integrantes, venía de tabla con celular+cédula+apodo — reformateado
+  a mano al formato de bloques) y **JAGUA TIRIKA** (verde musgo, 10 integrantes, formato de una
+  línea por persona) — ambas cargadas en producción (ver Etapa 10, vía Admin SDK).
+
+### Etapa 10 — Sesión del 23/09/2026 (Admin SDK: Claude ya puede escribir directo)
+- El usuario preguntó por qué Claude no podía cargar las patrullas él mismo. Se le explicó la
+  regla (Claude nunca escribe contraseñas — no es limitación técnica, es una regla de seguridad
+  que se respeta a propósito) y se ofreció la alternativa: una **service account** de Firebase
+  Admin SDK, que bypasea las reglas RTDB por completo y no depende de ningún login.
+- **Setup hecho**: `npm init` + `npm install firebase-admin` (quedaron `package.json` y
+  `package-lock.json` commiteados). El usuario generó la clave en
+  `Configuración del proyecto → Cuentas de servicio → Generar nueva clave privada` y la guardó
+  en `C:\JORNADAS\torneo\.secrets\serviceAccountKey.json` (gitignored, ver sección 9.9 para el
+  detalle completo y el comando de uso).
+  - ⚠️ Truco de la versión moderna del SDK: `admin.credential` **no existe** en el import por
+    defecto (`import admin from 'firebase-admin'` da `admin.credential === undefined`) — hay
+    que usar la API modular: `import { initializeApp, cert } from 'firebase-admin/app'` y
+    `import { getDatabase } from 'firebase-admin/database'`.
+- **Las 2 patrullas pendientes (LOS MBORE, JAGUA TIRIKA) se cargaron así**, sin que el usuario
+  tocara el navegador — confirmado en producción (`dataCj.patrullas` con las 3 patrullas).
+- De acá en más, para cargar una patrulla nueva: pedir el texto, guardarlo en el scratchpad de
+  la sesión (nunca en el repo, aunque esté gitignored), y correr
+  `node .tools/campajor-cargar-patrulla.mjs "Nombre" ruta\al\texto.txt`.
 
 ---
 
