@@ -122,6 +122,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .card h3 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
 #cj-postas-list .card, #cj-yincanas-list .card, #staffRolesGrid .card, #reglamentoTopGrid .card, #orgGrid .card { margin-bottom: 0; }
+#cj-inicio-columns { column-width: 380px; column-gap: 16px; }
+#cj-inicio-columns > .card { break-inside: avoid-column; -webkit-column-break-inside: avoid; }
 
 /* ═══ TEAMS ═══ */
 .team-row { display: block; padding: 0; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent; text-align: left; }
@@ -326,7 +328,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 
 <!-- ═══ EVENTO CAMPAJOR: PÁGINAS ═══ -->
 <div class="page" id="page-cj-inicio">
-  <div class="section-page">
+  <div class="section-page" style="max-width:1500px;">
     <div style="text-align:center;padding:20px 10px 8px;">
       <div style="font-size:46px;">🏕️</div>
       <h1 style="font-size:28px;font-weight:900;letter-spacing:2px;color:var(--neon);margin-top:6px;">CAMPAJOR</h1>
@@ -341,6 +343,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
+    <div id="cj-inicio-columns">
     <div class="card" id="cj-insc-widget" style="border:1px solid var(--neon-dim);text-align:center;">
       <div style="font-size:12px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-insc-total">0</span>)</div>
       <div id="cj-insc-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
@@ -458,6 +461,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="card" style="text-align:center;">
       <p style="font-size:14px;line-height:1.7;color:var(--w80);">Solo recuerda: cuidá a los demás, respetá a tu líder, participá y disfrutá estos días con tu patrulla. 🫂<br>Y sobre todo… honremos a Dios en todo lo que hagamos. 🤍</p>
       <p style="margin-top:10px;font-size:16px;font-weight:800;color:var(--gold);">Nos vemos en el Campa. ❤️‍🔥</p>
+    </div>
     </div>
     <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
       <div style="font-size:20px;font-weight:900;color:var(--white);">¿Listos para la aventura?</div>
