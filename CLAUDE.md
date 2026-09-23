@@ -203,6 +203,25 @@ Eventos actuales:
   tipo tarjeta roja — "llegar sin tu Biblia", "dormirte en la prédica") quedaron **solo como
   referencia**, el usuario pidió no subirlas todavía.
 
+### Etapa 8 — Sesión del 16-23/09/2026 (correcciones de lore + carga masiva de patrullas)
+- Fixes chicos de contenido: "tribu"→"patrulla" en el mensaje de cierre; **El Cuarto Día es
+  después de LA JORNADA** (el retiro de 3 días), NO después del CAMPAJOR — el CAMPAJOR es el
+  campamento anual al que cada jornadista se suma ya viviendo su Cuarto Día (corregido en
+  Organización); la frase **"¡Viví tu momento!"** es la respuesta clásica para cortar spoilers
+  cuando alguien pregunta de más — se ajustó su uso y se sumó también en la tarjeta de Staff
+  con las pistas (`page-cj-funciones`).
+- **Carga masiva de integrantes** en Patrullas (`#cj-carga-masiva`, admin-only, junto a
+  "Agregar patrulla"): el staff pega una lista con formato `Nombre / Apodo / Jornada / (cédula
+  opcional)` separando cada persona con línea en blanco — `parseCargaMasivaCj()` arma
+  `"Nombre ("Apodo") · JNN"` por integrante. **La cédula se ignora siempre, aunque esté en el
+  texto pegado** — el nodo `campajor.patrullas` es de lectura pública (`.read:true`), así que
+  ningún dato de identidad va ahí. Preview antes de confirmar (`previewCargaMasivaCj()` →
+  `confirmarCargaMasivaCj()`), reusa `saveCj()` (respeta el anti-encogimiento). Si la patrulla
+  del nombre ingresado ya existe, hace `concat` a sus integrantes en vez de duplicar.
+  - **Por qué no lo cargó Claude directo**: escribir en `campajor` requiere estar autenticado
+    como `hassan.chaar@gmail.com` vía Firebase Auth (lo exigen las reglas RTDB) y Claude nunca
+    escribe contraseñas — el admin tiene que loguearse él mismo y usar la herramienta.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
