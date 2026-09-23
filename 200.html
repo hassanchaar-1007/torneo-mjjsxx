@@ -542,11 +542,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     <div class="card" id="cj-carga-masiva" style="display:none;border:1px dashed var(--w30);">
       <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">🚀 Carga masiva de integrantes</div>
-      <p style="font-size:11.5px;color:var(--w50);margin-bottom:8px;">Pegá la lista tal cual la tenés (nombre, apodo, jornada — una persona por bloque, separado por línea en blanco). Cédulas NO se guardan: este nodo es público.</p>
+      <p style="font-size:11.5px;color:var(--w50);margin-bottom:8px;">Pegá la lista tal cual la tenés (nombre, apodo, jornada, cédula — una persona por bloque separado por línea en blanco, o una línea por persona). Nombre/apodo/jornada quedan públicos; la <b>cédula va aparte</b>, a un nodo que solo lee el Staff (control de entrada a Tati Yupi).</p>
       <div class="form-group"><label>Nombre de la patrulla (nueva o existente)</label><input id="cj-masiva-nombre" placeholder="Ej: Patrulla Lila (a confirmar)"></div>
       <div class="form-group"><label>Pegar lista</label><textarea id="cj-masiva-texto" rows="8" placeholder="1. Nombre Apellido&#10;Apodo&#10;J52&#10;5.928.636&#10;&#10;2. Otro Nombre&#10;Apodo&#10;J52&#10;..." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea>
       <button class="btn btn-secondary btn-sm" onclick="previewCargaMasivaCj()" style="margin-top:8px;">👀 Previsualizar</button>
       <div id="cj-masiva-preview" style="margin-top:10px;"></div>
+    </div>
+    <div class="card" id="cj-cedulas-viewer" style="display:none;border:1px dashed var(--danger,#ff5a5a);">
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Cédulas · solo Staff (control de entrada a Tati Yupi)</div>
+      <div class="form-group" style="margin-top:8px;"><label>Patrulla</label><select id="cj-ced-patrulla" onchange="verCedulasCj()"></select></div>
+      <div id="cj-ced-lista" style="margin-top:8px;font-size:13px;color:var(--w80);line-height:1.7;"></div>
     </div>
     <div id="cj-patrullas-list"></div>
   </div>
@@ -1166,6 +1171,7 @@ var dbRef = null;
 var publicRef = null; // nodo PUBLICO del torneo (datos sin info personal, lectura publica)
 var campajorRef = null; // nodo CAMPAJOR (patrullas/puntajes, sin PII: lectura publica)
 var inscCjRef = null;   // nodo campajor_inscripciones (PII protegida: cada registro solo se lee/edita conociendo su PIN; listado solo admin)
+var privadoCjRef = null; // nodo campajor_privado (cedulas por patrulla, SOLO admin lee/escribe - jamas publico)
 
 try {
   firebase.initializeApp(firebaseConfig);
@@ -1174,6 +1180,7 @@ try {
   publicRef = db.ref('publico');  // datos seguros del torneo (lectura publica)
   campajorRef = db.ref('campajor'); // datos de campajor (sin PII, lectura publica)
   inscCjRef = db.ref('campajor_inscripciones'); // inscripciones de patrullas (crear: cualquiera; leer/editar: solo con el PIN exacto)
+  privadoCjRef = db.ref('campajor_privado'); // cedulas por patrulla (SOLO admin - requiere reglas RTDB publicadas)
   fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
@@ -2783,6 +2790,7 @@ function renderPatrullasCj(){
   try { renderInscripcionesAdminCj(); } catch(e){}
   var f=document.getElementById('cj-patrullas-form'); if(f) f.style.display = isAdmin()?'block':'none';
   var cm=document.getElementById('cj-carga-masiva'); if(cm) cm.style.display = isAdmin()?'block':'none';
+  var cv=document.getElementById('cj-cedulas-viewer'); if(cv){ cv.style.display = isAdmin()?'block':'none'; if(isAdmin()) renderSelectCedulasCj(); }
   var l=document.getElementById('cj-patrullas-list');
   if(!l) return;
   if(dataCj.patrullas.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Aún no hay patrullas cargadas</p>'; return; }
@@ -2883,21 +2891,51 @@ function addPremioCj(){
 function removePremioCj(idx){ if(!isAdmin())return; dataCj=loadCj(); dataCj.premios.splice(idx,1); saveCj(dataCj); renderRankingCj(); toast('Premio quitado'); }
 function addPatrullaCj(){ if(!isAdmin())return; var n=document.getElementById('cj-pat-nombre').value.trim(); if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); dataCj.patrullas.push({nombre:n, integrantes:[]}); saveCj(dataCj); document.getElementById('cj-pat-nombre').value=''; renderPatrullasCj(); renderRankingCj(); toast('Patrulla agregada 🚩'); }
 
-// Carga masiva de integrantes: parsea bloques "Nombre / Apodo / Jornada / (cédula, se ignora)" separados por línea en blanco.
-// La cédula NUNCA se guarda: el nodo campajor/patrullas es de lectura pública.
+// Carga masiva de integrantes: parsea "Nombre / Apodo / Jornada / Cédula" (en bloque de 4 líneas
+// separadas por línea en blanco, o en una sola línea "Nombre (Apodo) cédula · J52").
+// El nombre+apodo+jornada van al nodo público campajor.patrullas. La CÉDULA se guarda aparte,
+// en campajor_privado (solo admin la lee/escribe — nunca en el nodo público).
+function sanitizarClaveCj(s){ return String(s).replace(/[.#$\[\]\/]/g, '_'); }
+function extraerCedulaCj(linea){
+  var m = linea.replace(/\([^)]*\)/, '').match(/\b(\d[\d.]{4,}\d)\b/);
+  return m ? m[1] : '';
+}
+function formatearEntradaCj(linea){
+  var apodoMatch = linea.match(/\(([^)]+)\)/);
+  var apodo = apodoMatch ? apodoMatch[1].trim() : '';
+  var nombre = linea.split('(')[0].replace(/^\d+[\.\)]\s*/, '').trim();
+  var jornadaMatch = linea.match(/J\s*\d{1,3}\b/i);
+  var jornada = jornadaMatch ? jornadaMatch[0].toUpperCase().replace(/\s+/, '') : '';
+  var texto = nombre;
+  if(apodo) texto += ' ("' + apodo + '")';
+  if(jornada) texto += ' · ' + jornada;
+  return {texto: texto, cedula: extraerCedulaCj(linea)};
+}
+function pareceLineaDePersonaCj(linea){
+  return /\(([^)]+)\)/.test(linea) || /J\s*\d{1,3}\b/i.test(linea);
+}
 function parseCargaMasivaCj(texto){
   var bloques = texto.split(/\n\s*\n/);
   var out = [];
-  for(var i=0;i<bloques.length;i++){
-    var lineas = bloques[i].split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
+  for(var b=0;b<bloques.length;b++){
+    var lineas = bloques[b].split('\n').map(function(l){return l.trim();}).filter(function(l){return l;});
     if(!lineas.length) continue;
-    var nombre = lineas[0].replace(/^\d+[\.\)]\s*/, '');
-    var apodo = lineas[1] || '';
-    var jornada = lineas[2] || '';
-    var texto2 = nombre;
-    if(apodo) texto2 += ' ("'+apodo+'")';
-    if(jornada) texto2 += ' · '+jornada;
-    out.push(texto2);
+    var todasSonPersona = true;
+    for(var k=0;k<lineas.length;k++){ if(!pareceLineaDePersonaCj(lineas[k])){ todasSonPersona = false; break; } }
+    if(todasSonPersona){
+      for(var k=0;k<lineas.length;k++){ out.push(formatearEntradaCj(lineas[k])); }
+    } else {
+      var nombre = lineas[0].replace(/^\d+[\.\)]\s*/, '');
+      var apodo = lineas[1] || '';
+      var jornadaRaw = lineas[2] || '';
+      var jornadaMatch = jornadaRaw.match(/J\s*\d{1,3}\b/i);
+      var jornada = jornadaMatch ? jornadaMatch[0].toUpperCase().replace(/\s+/, '') : jornadaRaw;
+      var cedula = lineas[3] ? (extraerCedulaCj(lineas[3]) || lineas[3].replace(/[^\d.]/g, '')) : '';
+      var texto2 = nombre;
+      if(apodo) texto2 += ' ("' + apodo + '")';
+      if(jornada) texto2 += ' · ' + jornada;
+      out.push({texto: texto2, cedula: cedula});
+    }
   }
   return out;
 }
@@ -2908,8 +2946,10 @@ function previewCargaMasivaCj(){
   _cargaMasivaParsed = parseCargaMasivaCj(texto);
   var prev = document.getElementById('cj-masiva-preview');
   if(!_cargaMasivaParsed.length){ prev.innerHTML = '<p style="color:var(--w50);font-size:12px;">No se detectó nada. Revisá el formato: nombre, apodo, jornada — cada persona separada por una línea en blanco.</p>'; return; }
-  prev.innerHTML = '<p style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">Detecté '+_cargaMasivaParsed.length+' integrantes:</p>'
-    + '<div style="font-size:12.5px;line-height:1.7;color:var(--w80);">'+_cargaMasivaParsed.map(function(t){return '• '+esc(t);}).join('<br>')+'</div>'
+  var conCedula = _cargaMasivaParsed.filter(function(p){return p.cedula;}).length;
+  prev.innerHTML = '<p style="font-size:12px;color:var(--gold);font-weight:700;margin-bottom:6px;">Detecté '+_cargaMasivaParsed.length+' integrantes ('+conCedula+' con cédula):</p>'
+    + '<div style="font-size:12.5px;line-height:1.7;color:var(--w80);">'+_cargaMasivaParsed.map(function(p){return '• '+esc(p.texto)+(p.cedula?' <span style="color:var(--danger,#ff5a5a);font-size:11px;">(C.I. '+esc(p.cedula)+')</span>':'');}).join('<br>')+'</div>'
+    + '<p style="font-size:11px;color:var(--w50);margin-top:6px;">Las cédulas se guardan aparte, en un nodo que solo lee el Staff.</p>'
     + '<button class="btn btn-primary btn-sm" onclick="confirmarCargaMasivaCj()" style="margin-top:10px;">✅ Confirmar y agregar</button>';
 }
 function confirmarCargaMasivaCj(){
@@ -2921,8 +2961,19 @@ function confirmarCargaMasivaCj(){
   var idx = -1;
   for(var i=0;i<dataCj.patrullas.length;i++){ if(dataCj.patrullas[i].nombre === nombrePat){ idx = i; break; } }
   if(idx === -1){ dataCj.patrullas.push({nombre: nombrePat, integrantes: []}); idx = dataCj.patrullas.length - 1; }
-  dataCj.patrullas[idx].integrantes = dataCj.patrullas[idx].integrantes.concat(_cargaMasivaParsed);
+  var textos = _cargaMasivaParsed.map(function(p){return p.texto;});
+  var cedulas = _cargaMasivaParsed.map(function(p){return p.cedula || '';});
+  dataCj.patrullas[idx].integrantes = dataCj.patrullas[idx].integrantes.concat(textos);
   saveCj(dataCj);
+  if (fbReady && privadoCjRef && isFbAdmin()) {
+    var clave = sanitizarClaveCj(nombrePat);
+    var refCedulas = privadoCjRef.child(clave).child('cedulas');
+    var pr = refCedulas.once('value', function(snap){
+      var actuales = snap.val() || [];
+      refCedulas.set(actuales.concat(cedulas));
+    });
+    if (pr && pr.catch) pr.catch(function(){ toast('⚠️ No se pudieron guardar las cédulas (revisar reglas de Firebase)'); });
+  }
   var totalAgregado = _cargaMasivaParsed.length;
   document.getElementById('cj-masiva-texto').value = '';
   document.getElementById('cj-masiva-preview').innerHTML = '';
@@ -2931,6 +2982,37 @@ function confirmarCargaMasivaCj(){
   toast('Patrulla cargada 🚩 (+' + totalAgregado + ' integrantes)');
 }
 function removePatrullaCj(i){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!confirm('¿Eliminar la patrulla "'+((p&&p.nombre)||'')+'" y sus integrantes? Esto no se puede deshacer.'))return; dataCj.patrullas.splice(i,1); saveCj(dataCj, true); renderPatrullasCj(); renderRankingCj(); toast('Eliminada'); }
+function renderSelectCedulasCj(){
+  var sel = document.getElementById('cj-ced-patrulla'); if(!sel) return;
+  var actual = sel.value;
+  sel.innerHTML = '<option value="">Elegir patrulla...</option>' + (dataCj.patrullas||[]).map(function(p){ return '<option value="'+esc(p.nombre)+'">'+esc(p.nombre)+'</option>'; }).join('');
+  if(actual) sel.value = actual;
+}
+function verCedulasCj(){
+  if(!isAdmin())return;
+  var nombre = document.getElementById('cj-ced-patrulla').value;
+  var out = document.getElementById('cj-ced-lista');
+  if(!nombre){ out.innerHTML=''; return; }
+  var pat = (dataCj.patrullas||[]).filter(function(p){return p.nombre===nombre;})[0];
+  if(!pat){ out.innerHTML=''; return; }
+  if(!fbReady || !privadoCjRef){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Sin conexión a Firebase.</p>'; return; }
+  out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Cargando...</p>';
+  var clave = sanitizarClaveCj(nombre);
+  var pr = privadoCjRef.child(clave).child('cedulas').once('value', function(snap){
+    var cedulas = snap.val() || [];
+    var integrantes = pat.integrantes || [];
+    if(!cedulas.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">No hay cédulas cargadas para esta patrulla todavía (o las reglas de Firebase para <code>campajor_privado</code> no están publicadas aún).</p>'; return; }
+    out.innerHTML = integrantes.map(function(m,i){
+      return '<div style="padding:3px 0;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--w20,rgba(255,255,255,.08));"><span style="flex:1;">'+esc(m)+'</span><span style="color:var(--danger,#ff5a5a);font-weight:800;white-space:nowrap;">'+esc(cedulas[i]||'—')+'</span></div>';
+    }).join('');
+  }, function(err){
+    var msg = (err && err.code === 'PERMISSION_DENIED') || /permission_denied/i.test((err&&err.message)||'')
+      ? 'Todavía no se publicaron las reglas de Firebase para <code>campajor_privado</code> (ver Etapa 9 de la biblia / runbook 9.4).'
+      : 'Error: ' + esc((err&&err.message)||String(err));
+    out.innerHTML = '<p style="color:var(--danger,#ff5a5a);font-size:12px;">' + msg + '</p>';
+  });
+  if(pr && pr.catch) pr.catch(function(){});
+}
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
 function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
 function setJefeCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes[j]!==undefined){ var nom=p.integrantes[j]; p.jefe=(p.jefe===nom)?'':nom; saveCj(dataCj); renderPatrullasCj(); toast(p.jefe?('👑 Jefe: '+nom):'Jefe quitado'); } }
