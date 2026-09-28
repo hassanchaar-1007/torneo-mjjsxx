@@ -709,6 +709,21 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="font-size:13px;line-height:1.55;color:var(--w80);margin-top:8px;">Así como los 4 subcampos custodian su virtud, cada jefe del plantel custodia una parte del camino para que los jornadistas puedan vivir su encuentro con Jesús. Cada función de acá abajo tiene su propia virtud — la que mejor la describe. Esta es la primera vez que dejamos escritas estas funciones — se va completando entre todos, edición tras edición.</p>
     </div>
 
+    <div class="card" style="border-left:3px solid var(--teal);">
+      <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">👥 Plantel J52 · quién es quién</div>
+      <p style="font-size:11.5px;color:var(--w50);margin-top:4px;">Cada persona del plantel con su cargo para esta edición.</p>
+      <div id="cj-plantel-admin" style="display:none;margin-top:10px;gap:6px;flex-wrap:wrap;">
+        <input type="text" id="cj-plantel-nombre" placeholder="Nombre" style="flex:1;min-width:140px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">
+        <input type="text" id="cj-plantel-cargo" placeholder="Cargo" style="flex:2;min-width:200px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">
+        <select id="cj-plantel-grupo" style="padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">
+          <option value="Plantel Integración J52">Plantel Integración J52</option>
+          <option value="Plantel Apoyo J52">Plantel Apoyo J52</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="agregarPlantelCj()">+ Agregar</button>
+      </div>
+      <div id="cj-plantel-list" style="margin-top:10px;"></div>
+    </div>
+
     <div class="card" style="border:1px solid var(--gold-dim);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🗺️ El camino del Tesoro en el CAMPAJOR</div>
       <p style="font-size:11.5px;color:var(--w50);margin-top:4px;">🤫 Solo Staff — es el recorrido espiritual del finde, no va en la portada pública.</p>
@@ -2875,6 +2890,7 @@ function normCj(d){
   if(!d.patrullas) d.patrullas=[];
   if(!d.puntajes) d.puntajes=[];
   if(!d.premios) d.premios=[];
+  if(!d.plantel) d.plantel=[]; // roster de personas+cargo del plantel (Staff → Plantel J52), ver Etapa 17
   if(d.gritoPlantel===undefined) d.gritoPlantel=GRITO_PLANTEL_DEFAULT_CJ;
   // Postas y juegos empiezan como copia editable de los catálogos hardcodeados (POSTAS_CJ/
   // JUEGOS_CJ quedan como semilla/default) - una vez que existen en dataCj, son la fuente real.
@@ -2937,6 +2953,63 @@ function guardarGritoPlantelCj(){
   dataCj.gritoPlantel=el.value;
   saveCj(dataCj);
   toast('Grito de guerra guardado 🔥');
+}
+// ===== Plantel J52 (Staff → quién es quién): roster de personas+cargo, editable por admin =====
+function renderPlantelCj(){
+  var adminBox=document.getElementById('cj-plantel-admin'); if(!adminBox) return;
+  adminBox.style.display = isAdmin() ? 'flex' : 'none';
+  dataCj=loadCj();
+  var grupos={};
+  (dataCj.plantel||[]).forEach(function(p,i){ var g=p.grupo||'Plantel'; if(!grupos[g]) grupos[g]=[]; grupos[g].push({p:p,i:i}); });
+  var el=document.getElementById('cj-plantel-list'); if(!el) return;
+  var orden=['Plantel Integración J52','Plantel Apoyo J52'];
+  Object.keys(grupos).forEach(function(g){ if(orden.indexOf(g)<0) orden.push(g); });
+  var html='';
+  orden.forEach(function(g){
+    if(!grupos[g]) return;
+    html += '<div style="font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:10px;">'+esc(g)+'</div>';
+    html += grupos[g].map(function(x){
+      return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));font-size:13px;">'
+        + '<div style="flex:1;"><b>'+esc(x.p.nombre)+'</b> <span style="color:var(--w50);">— '+esc(x.p.cargo)+'</span></div>'
+        + (isAdmin()?'<span style="cursor:pointer;opacity:.7;" onclick="editarPlantelCj('+x.i+')">✏️</span> <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarPlantelCj('+x.i+')">×</span>':'')
+        + '</div>';
+    }).join('');
+  });
+  el.innerHTML = html || '<p style="color:var(--w50);font-size:12px;">Todavía no hay nadie cargado.</p>';
+}
+function agregarPlantelCj(){
+  if(!isAdmin())return;
+  var nombre=document.getElementById('cj-plantel-nombre').value.trim();
+  var cargo=document.getElementById('cj-plantel-cargo').value.trim();
+  var grupo=document.getElementById('cj-plantel-grupo').value;
+  if(!nombre||!cargo){toast('Completá nombre y cargo');return;}
+  dataCj=loadCj();
+  dataCj.plantel.push({nombre:nombre, cargo:cargo, grupo:grupo});
+  saveCj(dataCj);
+  document.getElementById('cj-plantel-nombre').value='';
+  document.getElementById('cj-plantel-cargo').value='';
+  renderPlantelCj();
+  toast('Agregado al plantel');
+}
+function editarPlantelCj(i){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var p=dataCj.plantel[i]; if(!p) return;
+  var nombre=prompt('Nombre:', p.nombre); if(nombre===null)return;
+  var cargo=prompt('Cargo:', p.cargo); if(cargo===null)return;
+  p.nombre=nombre.trim(); p.cargo=cargo.trim();
+  saveCj(dataCj);
+  renderPlantelCj();
+  toast('Actualizado');
+}
+function quitarPlantelCj(i){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar a esta persona del plantel?'))return;
+  dataCj=loadCj();
+  dataCj.plantel.splice(i,1);
+  saveCj(dataCj);
+  renderPlantelCj();
+  toast('Quitado');
 }
 // ===== Accesos de Staff: el admin crea logins nuevos con los mismos permisos que el suyo =====
 // Usa una instancia SECUNDARIA de Firebase (createUserWithEmailAndPassword autentica en la
@@ -3227,7 +3300,7 @@ function showCj(name){
   if(name==='yincanas') renderJuegosCj();
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
-  if(name==='funciones'){ renderGritoPlantelCj(); renderAccesosStaffCj(); }
+  if(name==='funciones'){ renderGritoPlantelCj(); renderAccesosStaffCj(); renderPlantelCj(); }
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   if(name==='finanzas'){
     if(!isAdmin()){ showCj('reglamento'); return; }

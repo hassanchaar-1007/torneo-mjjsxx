@@ -608,7 +608,53 @@ Eventos actuales:
   - Igual que `admins` (Etapa 15), la regla de `campajor_finanzas` está en la biblia (sección 6)
     pero **todavía no publicada** — hasta entonces la pestaña muestra el aviso de
     `PERMISSION_DENIED` en vez de romper.
-- sw subió a **v3.45**.
+- sw subió a **v3.46**.
+
+### Etapa 17 — Sesión del 28/09/2026, noche (roster "Plantel J52" + carga real de Finanzas desde Excel del usuario)
+- El usuario adjuntó **2 archivos de Descargas** con datos reales para cargar "donde corresponda":
+  `CARGO CAMPAJOR.xlsx` (roster de personas+cargo del plantel J52) y
+  `Caja_Plantel_Integracion.xlsx` (caja real del plantel de integración, con movimientos desde
+  el 11/08/2026).
+- **Nueva sección "👥 Plantel J52 · quién es quién"** en Staff (`page-cj-funciones`, después de
+  la intro "Nuestro equipo"): lista de personas con su cargo, agrupada en "Plantel Integración
+  J52" / "Plantel Apoyo J52" (mismos 2 grupos del Excel). Dato nuevo `dataCj.plantel:
+  [{nombre,cargo,grupo}]` (array plano, en el nodo público `campajor` — misma sensibilidad que
+  el resto del contenido de Staff, gateado igual que toda la pestaña por `isAdmin()` o el
+  código `TESORO26`). Admin-only: agregar (`agregarPlantelCj()`), editar con 2 prompts
+  (`editarPlantelCj(i)`) y quitar con confirm (`quitarPlantelCj(i)`).
+  - **Se cargaron las 34 personas del Excel** (21 en Integración + 13 en Apoyo — coincide con
+    la numeración 1-21/1-13 del propio archivo) vía Admin SDK, verificado antes de escribir que
+    `campajor.plantel` no tuviera datos ya cargados (para no duplicar si se corre dos veces).
+  - **Cruce con las postas ya cargadas (Etapa 14) — confirma que coinciden**: el Excel de cargos
+    aclara que "Candonga" (que yo tenía como líder de la Posta 5 desde un WhatsApp previo del
+    usuario) no aparece con ese nombre en el roster — la Posta Nº 5 según el Excel es **Pedro
+    Perez + Lorenzo Bogado**. Probablemente "Candonga" es el apodo de Pedro Perez, pero **no se
+    tocó lo ya cargado en `dataCj.postas` por las dudas** (evitar el error de la Etapa 11: nunca
+    asumir sin confirmar) — pendiente que el usuario confirme si son la misma persona.
+- **Finanzas reales cargadas** (`campajor_finanzas.movimientos`, 17 registros) desde el Excel de
+  caja: el saldo base del 11/08 (Gs. 12.676.550) se cargó como un **ingreso especial** con
+  categoría "Saldo Base" (el modelo de la app no tiene un campo de saldo inicial aparte — sumar
+  el saldo base como ingreso da el mismo resultado matemático y es la forma más simple de no
+  perder precisión). Categorías asignadas (el Excel no traía columna de categoría, se
+  categorizó a partir de la descripción de cada movimiento): **Remeras** (ingresos por venta +
+  egresos de transferencias por remeras), **Patrullas** (los 6 ingresos por inscripción de
+  patrulla: Los Gatis, Lorito Oga, Mbore, J52, Jagua Tirika, Halcones), **Compras** (compras del
+  centro), **Materiales** (impresión de imágenes), **Yerberos** (2 transferencias). Verificado
+  matemáticamente antes de cargar: ingresos totales 14.796.550 (2.120.000 reales + el saldo
+  base) − egresos 7.034.000 = **saldo 7.762.550**, exactamente el "Saldo Actual en Caja" que
+  muestra el Excel — cuadra perfecto.
+  - **No se cargó** (quedó fuera del modelo actual, son datos de reconciliación manual del
+    Excel que no tienen campo equivalente en la app): quién tiene físicamente la plata de cada
+    patrulla (Fabi y Moni retuvieron Gs. 900.000 cada una de sus cobros, según una nota aparte
+    del Excel), el "pendiente de reponer a la Cordi" de Gs. 198.000, y el "saldo final" ajustado
+    de Gs. 5.764.550 que resta esas retenciones — la app solo calcula ingresos−egresos=saldo,
+    sin noción de "quién custodia" cada monto. Si el usuario lo necesita, se puede sumar un
+    campo `responsable` a los movimientos más adelante.
+  - Verificado con una segunda lectura vía Admin SDK (no solo el log del script) que
+    `campajor.plantel` (34) y `campajor_finanzas.movimientos` (17) quedaron escritos.
+- Los 2 archivos `.xlsx` quedaron en la carpeta Descargas del usuario — no se copiaron al repo
+  ni al scratchpad de la sesión (se leyeron directo desde su ubicación original con pandas/
+  openpyxl y no se necesitó nada más).
 
 ---
 
@@ -712,7 +758,8 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
   gritoPlantel: str,
   postas: [{n, nombre, mat, exp, vid, ora, consigna, lider:str, integrantes:[str]}],   // editable (alta/baja incluida), ver Etapa 14
   juegos: [{n, nombre, exp, mat, seg, vir, lider:str, integrantes:[str]}],             // editable (alta/baja incluida), ver Etapa 14
-  cronoSab: [{hora, actividad}], cronoDom: [{hora, actividad}] }                       // editable, ver Etapa 14
+  cronoSab: [{hora, actividad}], cronoDom: [{hora, actividad}],                        // editable, ver Etapa 14
+  plantel: [{nombre, cargo, grupo:'Plantel Integración J52'|'Plantel Apoyo J52'}] }    // editable, ver Etapa 17
 // postas/juegos/cronoSab/cronoDom se siembran una sola vez desde POSTAS_CJ/JUEGOS_CJ/
 // CRONO_SAB_CJ/CRONO_DOM_CJ (normCj) si todavia no existen en dataCj; de ahi en mas viven en
 // Firebase como el resto de dataCj (agregar/editar/eliminar items no toca los arrays fijos).
