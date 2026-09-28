@@ -655,6 +655,15 @@ Eventos actuales:
 - Los 2 archivos `.xlsx` quedaron en la carpeta Descargas del usuario — no se copiaron al repo
   ni al scratchpad de la sesión (se leyeron directo desde su ubicación original con pandas/
   openpyxl y no se necesitó nada más).
+- **Layout del hero de Inicio corregido** (feedback directo con captura: "le quita protagonismo
+  [al título] y no queda centrado" el widget de Patrullas Inscriptas al lado): al agrandar el
+  widget/escudo en los pasos anteriores de esta misma sesión, el layout de 2 columnas lado a
+  lado (hero + widget, decisión original de la Etapa 9) dejó de funcionar — el widget competía
+  visualmente con el título CAMPAJOR. Se volvió a **apilar verticalmente**: el hero ocupa todo
+  el ancho y queda centrado y protagonista arriba; el widget de Patrullas Inscriptas pasa a ser
+  un bloque secundario debajo, centrado, `max-width:520px`, escudo bajado a 110×110px (ya no
+  necesita competir por espacio con nada).
+- sw subió a **v3.48**.
 
 ---
 
