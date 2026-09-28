@@ -534,6 +534,51 @@ Eventos actuales:
     (`agregarCronoCj(dia)`) al pie de cada día para sumar actividades nuevas.
 - sw subió a **v3.43**.
 
+### Etapa 15 — Sesión del 28/09/2026, noche (escudo también en el Inicio + accesos de Staff múltiples)
+- **Escudo de patrulla visible en el widget "Patrullas Inscriptas" del Inicio** (antes solo se
+  veía en la tarjeta de Patrullas): `<img id="cj-inscriptas-escudo">` nueva arriba del nombre en
+  el widget, `renderInscriptosCj()` la muestra/oculta según `p.escudo` exista o no. El usuario ya
+  había subido el escudo real de LOS MBORE desde la app (un tigre/león) — se confirmó con
+  captura que ahora aparece también ahí.
+- **Accesos de Staff múltiples** — pedido del usuario: poder crear, desde la propia app y como
+  admin, logins nuevos para otras personas del plantel con los MISMOS permisos que
+  `hassan.chaar@gmail.com` (hasta ahora el único email hardcodeado en las reglas RTDB).
+  Confirmado con el usuario antes de tocar nada (pregunta explícita, dado que es un cambio de
+  seguridad que toca TODA la app): permisos iguales al admin actual, y el mecanismo es que **el
+  propio admin elige nombre + contraseña ahí mismo** (no un link de restablecimiento por mail).
+  - **Nuevo nodo `admins/<uid>: {nombre, email}`** (uid = Firebase Auth UID, no el email — así
+    no hace falta sanitizar el email dentro de las reglas, que solo soportan `.replace()` de UNA
+    ocurrencia por llamada, nada práctico para emails con varios puntos). Pertenecer a este nodo
+    = tener los mismos permisos que `hassan.chaar@gmail.com` en TODAS las reglas (ver sección 6).
+  - **`isFbAdmin()`** ahora es `email===ADMIN_EMAIL || _esStaffExtra` (`_esStaffExtra` es un
+    booleano cacheado, seteado una vez por login vía `onAuthStateChanged`: si el email logueado
+    NO es el hardcodeado, se consulta `admins/<uid>` una sola vez de forma async y se cachea —
+    `isFbAdmin()` en sí sigue siendo síncrona, no puede volverse async sin romper todos sus usos).
+    `currentUser` pasa a `{type:'admin', nombreStaff:v.nombre}` para los accesos extra, y el
+    badge (`updateUserBadge`) muestra ese nombre en vez de "Admin" genérico.
+  - **Crear un acceso** (`crearAccesoStaffCj()`, tarjeta "🔐 Accesos de Staff" arriba de todo en
+    Staff, admin-only — invisible para viewers con el código `TESORO26`): usa una **instancia
+    SECUNDARIA de Firebase** (`firebase.initializeApp(firebaseConfig, 'staffAlt_'+Date.now())`)
+    para `createUserWithEmailAndPassword` — si se hiciera en la instancia principal, crear la
+    cuenta nueva **desloguearía al admin actual** (comportamiento estándar del SDK de Firebase
+    Auth: crear usuario autentica como ese usuario en la instancia donde se llama). Tras crear,
+    escribe `admins/<uid>`, cierra sesión de la instancia secundaria y la borra (`.delete()`) —
+    la sesión del admin que está usando la app en ningún momento se ve afectada.
+  - **Quitar un acceso** (`quitarAccesoStaffCj(uid)`, con `confirm()`): borra `admins/<uid>`.
+    NO borra la cuenta de Firebase Auth en sí (eso requeriría Admin SDK) — alcanza con quitarle
+    el permiso: sin figurar en `admins`, las reglas RTDB le niegan cualquier escritura, y
+    `isFbAdmin()`/`currentUser` tampoco la tratan como admin en el próximo login.
+  - ⚠️ **Reglas de Firebase actualizadas en la sección 6 — TODAVÍA NO PUBLICADAS.** Hasta que el
+    usuario las pegue en la consola (runbook 9.4), "Crear acceso" da un aviso claro de
+    `PERMISSION_DENIED` en vez de fallar feo (mismo patrón que `campajor_privado`). El admin
+    original sigue funcionando exactamente igual mientras tanto — el `||` en las reglas nuevas
+    evalúa primero el email hardcodeado, así que no depende de `admins` para nada.
+  - **Confirmado con el usuario que "accesos de usuarios normales"** = el acceso por patrulla
+    que ya existía (Etapa 12, botón "🔑 Acceso" + "Mi patrulla" con grito/puntaje) — no hacía
+    falta nada nuevo ahí, ya cumple "que vean todo lo público + su propia patrulla, agreguen su
+    grito y vean su puntaje".
+- sw subió a **v3.44**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -541,7 +586,7 @@ Eventos actuales:
 | Servicio | Cuenta | Rol / Notas |
 |---|---|---|
 | **Firebase** (proyecto `torneo-mjjsxx`) | `hassan.chaar@gmail.com` | Único dueño/admin del proyecto Y único email autorizado a escribir por las reglas RTDB. La consola se abre con esa cuenta de Google. |
-| **Firebase Auth (login staff en la app)** | `hassan.chaar@gmail.com` + contraseña | Se ingresa con el botón "Entrar" → sección staff de la app. La contraseña la sabe el usuario (nunca guardarla en ningún archivo). |
+| **Firebase Auth (login staff en la app)** | `hassan.chaar@gmail.com` + contraseña (dueño del proyecto) **+ otros accesos de staff que el admin cree desde la app** (Etapa 15, pestaña Staff → "🔐 Accesos de Staff") | Se ingresa con el botón "Entrar" → sección staff de la app. Cualquier acceso creado ahí tiene los MISMOS permisos que el admin dueño. Las contraseñas las elige quien crea/usa cada cuenta (nunca guardarlas en ningún archivo). |
 | **Cloudflare Pages** (proyecto `jornadas`) | `hassan.chaar@gmail.com` (OAuth) | Account: "Hassan.chaar@gmail.com's Account", ID `86ef61bd99401cf86d8de0d1b0f8020b`. En una máquina nueva: `wrangler login` con esa cuenta. |
 | **GitHub** | usuario `hassanchaar-1007` | Repo: `github.com/hassanchaar-1007/torneo-mjjsxx` (rama `main`). |
 | **Claude** (para trabajar con Claude Code / extensión Chrome) | `andre.oliveira@acte-sa.com` | Es la cuenta con plan pago. OJO: la cuenta de Claude `hassan.chaar@gmail.com` NO tiene plan para "Claude in Chrome". |
@@ -645,6 +690,8 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 // campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo
 // autoinscripciones): { ..., esOficial:true, grito:str } - grito POR PATRULLA, distinto del
 // gritoPlantel de arriba - ver Etapa 12, seccion 7.
+// admins/<uid>: { nombre:str, email:str } - pertenecer aca = mismos permisos que ADMIN_EMAIL
+// en TODAS las reglas (uid de Firebase Auth, no el email). Ver Etapa 15, seccion 3.
 // (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
@@ -664,21 +711,22 @@ Publicarlas en: Firebase console → Realtime Database → Reglas →
 ```json
 {
   "rules": {
-    "publico":          { ".read": true, ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
-    "campajor":         { ".read": true, ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
+    "publico":          { ".read": true, ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "campajor":         { ".read": true, ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
     "campajor_inscripciones": {
-      ".read":  "auth != null && auth.token.email === 'hassan.chaar@gmail.com'",
-      ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'",
+      ".read":  "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())",
+      ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())",
       "$pin": {
         ".read": true,
         ".write": "newData.exists()"
       }
     },
-    "campajor_backups": { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
-    "campajor_privado": { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
-    "torneo":           { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
-    "backups":          { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" },
-    "backup":           { ".read": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'", ".write": "auth != null && auth.token.email === 'hassan.chaar@gmail.com'" }
+    "campajor_backups": { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "campajor_privado": { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "torneo":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "backups":          { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "backup":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "admins":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" }
   }
 }
 ```
@@ -688,6 +736,13 @@ este JSON actualizado en la consola (runbook 9.4) para que el visor de cédulas 
 de cédulas en la carga masiva funcionen. Hasta entonces dan `PERMISSION_DENIED` (la app lo
 maneja gracioso, con un aviso, no rompe nada — nombre/apodo/jornada se guardan igual en
 `campajor.patrullas`, que sí tiene reglas vigentes).
+
+⚠️ **`admins` es NUEVO (28/09/2026, Etapa 15) y TAMPOCO está publicado todavía** — hace falta
+pegar este JSON actualizado (con el nodo `admins` y el `|| root.child('admins')...` agregado
+a TODOS los demás nodos) para que "🔐 Accesos de Staff" (pestaña Staff) funcione. El admin
+original (`hassan.chaar@gmail.com`) sigue andando igual que siempre pase lo que pase — el OR
+lo evalúa primero y ese camino no depende de `admins` para nada. Hasta que se publique, crear
+un acceso nuevo da `PERMISSION_DENIED` con el aviso explicado (ver Etapa 15).
 
 **Cómo funciona el modelo del PIN-llave** (`campajor_inscripciones/$pin`):
 - El PIN de 6 dígitos ES la clave del registro. Conocer el PIN = poder leer y editar ESA patrulla.

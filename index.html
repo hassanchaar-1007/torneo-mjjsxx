@@ -359,6 +359,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12.5px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-inscriptas-total">0</span>)</div>
       <div id="cj-inscriptas-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
       <div id="cj-inscriptas-carousel" style="margin-top:12px;">
+        <img id="cj-inscriptas-escudo" style="display:none;width:56px;height:56px;border-radius:12px;object-fit:cover;border:1px solid var(--w30);margin-bottom:8px;">
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
           <button onclick="navInscriptosCj(-1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">‹</button>
           <div style="min-width:150px;">
@@ -691,6 +692,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-funciones">
   <div class="section-page" style="max-width:1180px;">
     <div class="section-title">🗂️ Staff · Manual de Funciones</div>
+
+    <div class="card" id="cj-accesos-staff" style="display:none;border:1px solid var(--gold-dim);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🔐 Accesos de Staff · solo admin</div>
+      <p style="font-size:12px;color:var(--w50);margin-top:6px;">Creá un login para otra persona del plantel: va a poder editar todo, igual que vos. Elegís vos el nombre y la contraseña.</p>
+      <div class="form-group" style="margin-top:10px;"><label>Nombre</label><input type="text" id="cj-acceso-nombre" placeholder="Ej: Massi"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="cj-acceso-email" placeholder="correo@ejemplo.com"></div>
+      <div class="form-group"><label>Contraseña (mínimo 6 caracteres)</label><input type="password" id="cj-acceso-pass" placeholder="••••••"></div>
+      <button class="btn btn-primary btn-sm" onclick="crearAccesoStaffCj()">+ Crear acceso</button>
+      <div id="cj-accesos-staff-list" style="margin-top:12px;"></div>
+    </div>
 
     <div class="card" style="border:1px dashed var(--w30);">
       <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">👑 Nuestro equipo · cada uno guarda una parte del Tesoro</div>
@@ -1439,8 +1450,9 @@ function buildPublic(d) {
     campeones: d.campeones || []
   };
 }
+var _esStaffExtra = false; // true si el usuario logueado no es ADMIN_EMAIL pero figura en admins/<uid> (ver Etapa 15)
 function isFbAdmin() {
-  return fbReady && firebase.auth && firebase.auth().currentUser && firebase.auth().currentUser.email === ADMIN_EMAIL;
+  return fbReady && firebase.auth && firebase.auth().currentUser && (firebase.auth().currentUser.email === ADMIN_EMAIL || _esStaffExtra);
 }
 // Sync del nodo PRIVADO 'torneo' (datos completos; solo admin autenticado puede leerlo)
 function _torneoSnap(snapshot) {
@@ -1682,21 +1694,36 @@ function doAdminLogin() {
 // Restaura la sesión de staff al recargar y refleja el estado de Firebase Auth
 if (fbReady && typeof firebase !== 'undefined' && firebase.auth) {
   firebase.auth().onAuthStateChanged(function(user){
-    if (user && user.email === ADMIN_EMAIL) {
-      currentUser = { type: 'admin' };
-    } else if (currentUser && currentUser.type === 'admin') {
-      currentUser = null;
+    function terminarAuthUpdate(){
+      try { setupSync(); } catch(e){}   // re-suscribe al nodo correcto (privado si admin, publico si no)
+      try { updateUserBadge(); renderAll(); } catch(e){}
+      try { renderPatrullasCj(); renderRankingCj(); } catch(e){}  // refrescar campajor (mostrar/ocultar formularios de admin)
     }
-    try { setupSync(); } catch(e){}   // re-suscribe al nodo correcto (privado si admin, publico si no)
-    try { updateUserBadge(); renderAll(); } catch(e){}
-    try { renderPatrullasCj(); renderRankingCj(); } catch(e){}  // refrescar campajor (mostrar/ocultar formularios de admin)
+    if (user && user.email === ADMIN_EMAIL) {
+      _esStaffExtra = false;
+      currentUser = { type: 'admin' };
+      terminarAuthUpdate();
+    } else if (user) {
+      // Podria ser un acceso de staff extra (Etapa 15) - se confirma consultando admins/<uid>.
+      db.ref('admins/'+user.uid).once('value', function(snap){
+        var v = snap.val();
+        _esStaffExtra = !!v;
+        if (v) { currentUser = { type: 'admin', nombreStaff: v.nombre }; }
+        else if (currentUser && currentUser.type === 'admin') { currentUser = null; }
+        terminarAuthUpdate();
+      }, function(){ _esStaffExtra = false; if (currentUser && currentUser.type === 'admin') currentUser = null; terminarAuthUpdate(); });
+    } else {
+      _esStaffExtra = false;
+      if (currentUser && currentUser.type === 'admin') currentUser = null;
+      terminarAuthUpdate();
+    }
   });
 }
 
 function updateUserBadge() {
   var b = document.getElementById('userBadge');
   if (!currentUser) { b.textContent = 'Entrar'; b.style.borderColor = 'var(--neon-dim)'; b.style.color = 'var(--neon)'; }
-  else if (currentUser.type === 'admin') { b.textContent = '🔑 Admin'; b.style.borderColor = 'var(--gold)'; b.style.color = 'var(--gold)'; }
+  else if (currentUser.type === 'admin') { b.textContent = '🔑 ' + (currentUser.nombreStaff || 'Admin'); b.style.borderColor = 'var(--gold)'; b.style.color = 'var(--gold)'; }
   else if (currentUser.type === 'patrulla') { b.textContent = '🚩 ' + currentUser.patrulla.nombre; b.style.borderColor = 'var(--neon)'; b.style.color = 'var(--neon)'; }
   else { b.textContent = '👤 ' + currentUser.team.nombre; b.style.borderColor = 'var(--teal)'; b.style.color = 'var(--teal)'; }
   var fBtn = document.getElementById('navCjFunciones');
@@ -2857,6 +2884,72 @@ function guardarGritoPlantelCj(){
   saveCj(dataCj);
   toast('Grito de guerra guardado 🔥');
 }
+// ===== Accesos de Staff: el admin crea logins nuevos con los mismos permisos que el suyo =====
+// Usa una instancia SECUNDARIA de Firebase (createUserWithEmailAndPassword autentica en la
+// instancia donde se llama - sin esto, crear la cuenta nueva cerraria la sesion del admin actual).
+// El permiso real lo da el nodo admins/<uid> (ver reglas RTDB, seccion 6) - isFbAdmin() lo
+// consulta una vez por login via onAuthStateChanged y lo cachea en _esStaffExtra.
+function crearAccesoStaffCj(){
+  if(!isAdmin() || !fbReady) return;
+  var nombre=document.getElementById('cj-acceso-nombre').value.trim();
+  var email=document.getElementById('cj-acceso-email').value.trim();
+  var pass=document.getElementById('cj-acceso-pass').value;
+  if(!nombre){toast('Poné un nombre');return;}
+  if(!email){toast('Poné un email');return;}
+  if(!pass||pass.length<6){toast('La contraseña debe tener al menos 6 caracteres');return;}
+  var secApp;
+  try { secApp = firebase.initializeApp(firebaseConfig, 'staffAlt_'+Date.now()); }
+  catch(e){ toast('No se pudo iniciar la creación'); return; }
+  toast('Creando acceso...');
+  secApp.auth().createUserWithEmailAndPassword(email, pass).then(function(cred){
+    var uid=cred.user.uid;
+    return db.ref('admins/'+uid).set({nombre:nombre, email:email}).then(function(){
+      return secApp.auth().signOut();
+    });
+  }).then(function(){
+    return secApp.delete();
+  }).then(function(){
+    toast('Acceso de staff creado ✅ — compartile el email y la contraseña');
+    document.getElementById('cj-acceso-nombre').value='';
+    document.getElementById('cj-acceso-email').value='';
+    document.getElementById('cj-acceso-pass').value='';
+    renderAccesosStaffCj();
+  }).catch(function(err){
+    try{ secApp.delete(); }catch(e){}
+    var msg = err && err.code==='auth/email-already-in-use' ? 'Ese email ya tiene una cuenta'
+      : (err && err.code==='auth/weak-password') ? 'Contraseña muy débil'
+      : (err && /permission_denied/i.test(err.message||'')) ? 'Faltan publicar las reglas nuevas de Firebase (nodo admins) — ver biblia sección 6/9.4'
+      : 'Error: '+((err&&err.message)||'no se pudo crear');
+    toast(msg);
+  });
+}
+function renderAccesosStaffCj(){
+  var box=document.getElementById('cj-accesos-staff'); if(!box) return;
+  box.style.display = isAdmin() ? 'block' : 'none';
+  if(!isAdmin()) return;
+  var list=document.getElementById('cj-accesos-staff-list');
+  if(!fbReady || !db){ list.innerHTML=''; return; }
+  var pr = db.ref('admins').once('value', function(snap){
+    var v=snap.val()||{};
+    var keys=Object.keys(v);
+    if(!keys.length){ list.innerHTML='<p style="color:var(--w50);font-size:12px;">Todavía no creaste otros accesos.</p>'; return; }
+    list.innerHTML = '<div style="font-size:12px;color:var(--w50);margin-bottom:4px;">Accesos creados</div>' + keys.map(function(uid){
+      var s=v[uid]||{};
+      return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="flex:1;"><b>'+esc(s.nombre||'(sin nombre)')+'</b><div style="font-size:11.5px;color:var(--w50);">'+esc(s.email||'')+'</div></div><span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;font-size:12.5px;" onclick="quitarAccesoStaffCj(\''+uid+'\')">× Quitar</span></div>';
+    }).join('');
+  }, function(err){
+    var msg = (err && err.code==='PERMISSION_DENIED') || /permission_denied/i.test((err&&err.message)||'')
+      ? 'Faltan publicar las reglas nuevas de Firebase (nodo <code>admins</code>) — ver biblia sección 6/9.4.'
+      : 'Error al leer los accesos.';
+    list.innerHTML = '<p style="color:var(--danger,#ff5a5a);font-size:12px;">'+msg+'</p>';
+  });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+function quitarAccesoStaffCj(uid){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar este acceso de staff? La persona ya no va a poder editar la app (su login sigue existiendo, pero sin permisos).')) return;
+  db.ref('admins/'+uid).remove().then(function(){ renderAccesosStaffCj(); toast('Acceso quitado'); });
+}
 function saveCj(d, allowShrink){
   try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
   if (fbReady && campajorRef && isFbAdmin()) {
@@ -2897,6 +2990,8 @@ function renderInscriptosCj(){
   if(_inscriptosIdx < 0) _inscriptosIdx = patrullas.length - 1;
   var p = patrullas[_inscriptosIdx];
   var n = (p.integrantes || []).length;
+  var escudoEl = document.getElementById('cj-inscriptas-escudo');
+  if(escudoEl){ if(p.escudo){ escudoEl.src=p.escudo; escudoEl.style.display='inline-block'; } else { escudoEl.style.display='none'; } }
   document.getElementById('cj-inscriptas-nombre').innerHTML = iconoRemeraCj(p) + esc(p.nombre) + ' (' + n + ')';
   document.getElementById('cj-inscriptas-contador').textContent = (_inscriptosIdx + 1) + ' / ' + patrullas.length;
   var listEl = document.getElementById('cj-inscriptas-integrantes');
@@ -2941,7 +3036,7 @@ function showCj(name){
   if(name==='yincanas') renderJuegosCj();
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
-  if(name==='funciones') renderGritoPlantelCj();
+  if(name==='funciones'){ renderGritoPlantelCj(); renderAccesosStaffCj(); }
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   window.scrollTo(0,0);
 }
