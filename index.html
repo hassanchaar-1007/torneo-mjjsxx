@@ -122,8 +122,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 .card h3 { font-size: 18px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
 #cj-postas-list .card, #cj-yincanas-list .card, #staffRolesGrid .card, #reglamentoTopGrid .card, #orgGrid .card { margin-bottom: 0; }
-#cj-inicio-columns { column-width: 380px; column-gap: 16px; }
-#cj-inicio-columns > .card { break-inside: avoid-column; -webkit-column-break-inside: avoid; }
+#cj-inicio-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px; max-width: 900px; margin: 0 auto; }
+#cj-inicio-columns > .card { margin-bottom: 0; }
 
 /* ═══ TEAMS ═══ */
 .team-row { display: block; padding: 0; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; border: 1px solid transparent; text-align: left; }
@@ -339,7 +339,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12.5px;font-weight:700;margin-top:3px;"><span style="color:#ffffff;">🦪 Sto. Tomás</span> · <span style="color:#00e676;">🗺️ Santiago</span> · <span style="color:#ff6b6b;">🔥 San Juan</span> · <span style="color:#4da6ff;">🎣 San Pedro</span> — <span style="color:var(--gold);">El Tesoro está dentro</span></div>
       <p style="color:var(--w50);font-size:14px;margin-top:4px;">Campamento de integración · M.J.J.S.XX.</p>
       <div style="margin-top:12px;">
-        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 11 y Dom 12/10</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 17 y Dom 18/10</span>
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Juegos</span>
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔥 Fogón</span>
       </div>
@@ -363,7 +363,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     </div>
     <div id="cj-inicio-columns">
-    <div class="card" style="border:1px solid var(--gold-dim);text-align:center;">
+    <div class="card" style="border:1px solid var(--gold-dim);text-align:center;grid-column:1/-1;">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">💎 Lema 2026 · El Tesoro está dentro</div>
       <p style="margin-top:10px;font-size:14px;font-style:italic;color:var(--w80);">"El Reino de los cielos se parece a una perla de gran valor."<br><span style="font-size:12px;color:var(--w50);">Mateo 13,45-46</span></p>
       <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">La perla que llevás en tu vasija te recuerda que <b style="color:var(--gold);">Cristo es el Tesoro</b> por el que vale la pena darlo todo.</p>
@@ -383,6 +383,18 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
       <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 juegos</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--gold);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🙏 La oración: el oxígeno del alma</div>
+      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">"Es el alma que respira la presencia de Dios." Los <b>5 tipos de oración</b> guían nuestras <b>5 postas</b> de recepción:</p>
+      <div style="margin-top:8px;">
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">1️⃣ Adoración</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">2️⃣ Confesión</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">3️⃣ Acción de Gracias</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">4️⃣ Intercesión</span>
+        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">5️⃣ Petición</span>
+      </div>
+      <p style="margin-top:10px;font-size:13px;color:var(--w80);">Frutos de la oración: <b>👂 Escucha</b> · <b>🤫 Silencio</b> · <b>💬 Diálogo</b> — los tres momentos de nuestro fogón.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--gold);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">✝️ Nuestra esencia · Virtudes del Jornadista</div>
@@ -437,34 +449,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <p style="margin-top:10px;font-size:12.5px;color:var(--gold);text-align:center;font-weight:700;">💛 Y el plantel de integración viste el AMARILLO — el color del Tesoro.</p>
     </div>
-    <div class="card" style="border-left:3px solid var(--gold);">
-      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🙏 La oración: el oxígeno del alma</div>
-      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">"Es el alma que respira la presencia de Dios." Los <b>5 tipos de oración</b> guían nuestras <b>5 postas</b> de recepción:</p>
-      <div style="margin-top:8px;">
-        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">1️⃣ Adoración</span>
-        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">2️⃣ Confesión</span>
-        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">3️⃣ Acción de Gracias</span>
-        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">4️⃣ Intercesión</span>
-        <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">5️⃣ Petición</span>
-      </div>
-      <p style="margin-top:10px;font-size:13px;color:var(--w80);">Frutos de la oración: <b>👂 Escucha</b> · <b>🤫 Silencio</b> · <b>💬 Diálogo</b> — los tres momentos de nuestro fogón.</p>
-    </div>
-    <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(255,200,40,0.08) 0%, var(--navy2) 60%);border:1px solid var(--gold-dim);">
-      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🔥 Grito de Guerra</div>
-      <p style="font-size:11.5px;color:var(--w50);margin-top:6px;">🎙️ El líder canta cada línea, todos la repiten fuerte 👥</p>
-      <p style="margin-top:12px;font-size:15px;line-height:1.85;color:var(--w80);font-weight:700;">
-        ¡Somos jornadistas, con fuerza y valor!<br>
-        ¡Buscando el tesoro que guarda el Señor!<br>
-        ¡No es oro, no es plata, es lo que brilla más!<br>
-        ¡Son nuestras virtudes, las que nos salvarán!<br>
-        ¡Caemos en cuneta, pero nos levantamos!<br>
-        ¡Con fuerza en el camino, marchando como hermanos!<br>
-        ¡En el cuarto día a Cristo le cantamos!<br>
-        ¡Y en el Campajor el tesoro encontramos!
-      </p>
-      <p style="margin-top:14px;font-size:22px;font-weight:900;color:var(--gold);letter-spacing:1px;">¡CAMPAJOR! ¡CAMPAJOR!</p>
-    </div>
-    <div class="card" style="text-align:center;">
+    <div class="card" style="text-align:center;grid-column:1/-1;">
       <p style="font-size:14px;line-height:1.7;color:var(--w80);">Solo recuerda: cuidá a los demás, respetá a tu líder, participá y disfrutá estos días con tu patrulla. 🫂<br>Y sobre todo… honremos a Dios en todo lo que hagamos. 🤍</p>
       <p style="margin-top:10px;font-size:16px;font-weight:800;color:var(--gold);">Nos vemos en el Campa. ❤️‍🔥</p>
     </div>
@@ -510,8 +495,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-cronograma">
   <div class="section-page">
     <div class="section-title">📅 Cronograma</div>
-    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Sábado 11/10</div><div id="cj-crono-sab"></div></div>
-    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Domingo 12/10</div><div id="cj-crono-dom"></div></div>
+    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Sábado 17/10</div><div id="cj-crono-sab"></div></div>
+    <div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Domingo 18/10</div><div id="cj-crono-dom"></div></div>
   </div>
 </div>
 
@@ -543,6 +528,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🚫 Esto NO</div>
       <div style="font-size:13.5px;line-height:1.9;color:var(--w80);">
         🍺 Bebidas alcohólicas — cero alcohol en la reserva<br>
+        🚭 Cigarrillos, vapeadores o cualquier elemento de vapeo<br>
         🔫 Armas, explosivos o cualquier elemento peligroso<br>
         🐾 Mascotas<br>
         💍 Objetos de valor innecesarios (el movimiento no se hace responsable por pérdidas)<br>
@@ -709,6 +695,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:1px;">👑 Nuestro equipo · cada uno guarda una parte del Tesoro</div>
       <p style="font-size:13px;line-height:1.55;color:var(--w80);margin-top:8px;">Así como los 4 subcampos custodian su virtud, cada jefe del plantel custodia una parte del camino para que los jornadistas puedan vivir su encuentro con Jesús. Cada función de acá abajo tiene su propia virtud — la que mejor la describe. Esta es la primera vez que dejamos escritas estas funciones — se va completando entre todos, edición tras edición.</p>
     </div>
+
+    <div id="cj-grito-plantel"></div>
 
     <div class="card" style="border:1px dashed var(--danger,#ff5a5a);">
       <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🤫 Solo Staff · spoiler adentro</div>
@@ -2749,11 +2737,13 @@ function subcampoBadgeCj(sc){
   if(!m[sc]) return '';
   return '<span style="border:1px solid '+c[sc]+';color:'+c[sc]+';border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:6px;white-space:nowrap;">'+m[sc]+' '+sc+'</span>';
 }
+var GRITO_PLANTEL_DEFAULT_CJ = '¡Somos jornadistas, con fuerza y valor!\n¡Buscando el tesoro que guarda el Señor!\n¡No es oro, no es plata, es lo que brilla más!\n¡Son nuestras virtudes, las que nos salvarán!\n¡Caemos en cuneta, pero nos levantamos!\n¡Con fuerza en el camino, marchando como hermanos!\n¡En el cuarto día a Cristo le cantamos!\n¡Y en el Campajor el tesoro encontramos!\n¡CAMPAJOR! ¡CAMPAJOR!';
 function normCj(d){
   if(!d) d={};
   if(!d.patrullas) d.patrullas=[];
   if(!d.puntajes) d.puntajes=[];
   if(!d.premios) d.premios=[];
+  if(d.gritoPlantel===undefined) d.gritoPlantel=GRITO_PLANTEL_DEFAULT_CJ;
   if(!Array.isArray(d.premios)){ var pk=Object.keys(d.premios); d.premios=pk.map(function(k){return d.premios[k];}).filter(function(x){return !!x;}); }
   d.patrullas = d.patrullas.map(function(p){
     if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[], subcampo:'' };  // compat: nombres viejos
@@ -2769,6 +2759,36 @@ function normCj(d){
   return d;
 }
 function loadCj(){ try{ var d=JSON.parse(localStorage.getItem(STORE_KEY_CJ)); if(d){ return normCj(d); } }catch(e){} return {patrullas:[],puntajes:[]}; }
+// Grito de guerra del PLANTEL de integración (distinto del grito por patrulla de "Mi patrulla"):
+// vive en la pestaña Staff, editable solo por admin, texto libre guardado en dataCj.gritoPlantel.
+function renderGritoPlantelCj(){
+  var c=document.getElementById('cj-grito-plantel'); if(!c) return;
+  dataCj=loadCj();
+  var texto=dataCj.gritoPlantel||GRITO_PLANTEL_DEFAULT_CJ;
+  if(isAdmin()){
+    c.innerHTML='<div class="card" style="background:linear-gradient(135deg, rgba(255,200,40,0.08) 0%, var(--navy2) 60%);border:1px solid var(--gold-dim);">'
+      +'<div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🔥 Grito de Guerra · Plantel de Integración</div>'
+      +'<p style="font-size:11.5px;color:var(--w50);margin-top:6px;">🎙️ El líder canta cada línea, todos la repiten fuerte 👥 · editable, solo vos lo ves acá</p>'
+      +'<textarea id="cj-grito-plantel-edit" rows="9" style="width:100%;margin-top:10px;padding:10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;font-family:inherit;line-height:1.6;"></textarea>'
+      +'<button class="btn btn-primary btn-sm" onclick="guardarGritoPlantelCj()" style="margin-top:8px;">💾 Guardar grito</button>'
+      +'</div>';
+    document.getElementById('cj-grito-plantel-edit').value=texto;
+  } else {
+    c.innerHTML='<div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(255,200,40,0.08) 0%, var(--navy2) 60%);border:1px solid var(--gold-dim);">'
+      +'<div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🔥 Grito de Guerra · Plantel de Integración</div>'
+      +'<p style="font-size:11.5px;color:var(--w50);margin-top:6px;">🎙️ El líder canta cada línea, todos la repiten fuerte 👥</p>'
+      +'<p style="margin-top:12px;font-size:15px;line-height:1.85;color:var(--w80);font-weight:700;">'+esc(texto).replace(/\n/g,'<br>')+'</p>'
+      +'</div>';
+  }
+}
+function guardarGritoPlantelCj(){
+  if(!isAdmin())return;
+  var el=document.getElementById('cj-grito-plantel-edit'); if(!el) return;
+  dataCj=loadCj();
+  dataCj.gritoPlantel=el.value;
+  saveCj(dataCj);
+  toast('Grito de guerra guardado 🔥');
+}
 function saveCj(d, allowShrink){
   try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
   if (fbReady && campajorRef && isFbAdmin()) {
@@ -2853,6 +2873,7 @@ function showCj(name){
   if(name==='yincanas') renderJuegosCj();
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
+  if(name==='funciones') renderGritoPlantelCj();
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   window.scrollTo(0,0);
 }

@@ -429,6 +429,46 @@ Eventos actuales:
   esa patrulla ya los tenía cargados. Ahora los preserva desde el registro anterior.
 - sw subió a **v3.41**.
 
+### Etapa 13 — Sesión del 28/09/2026, más tarde (fecha corregida a 17-18/10, orden del Inicio, grito del plantel editable, 6 patrullas nuevas)
+- **Fecha del CAMPAJOR corregida**: el usuario avisó que finalmente es **sábado 17 y domingo
+  18 de octubre de 2026** (antes se venía manejando 11-12/10 desde la Etapa 3). Se actualizó el
+  chip del Inicio, los títulos del Cronograma (`Sábado 17/10`/`Domingo 18/10`) y esta biblia.
+  Verificado: el 17/10/2026 cae sábado. ⚠️ Si vuelve a cambiar, buscar "17/10"/"18/10" en
+  `index.html` — solo 2 lugares.
+- **"Qué llevar" — se agregó "🚭 Cigarrillos, vapeadores o cualquier elemento de vapeo"** a la
+  lista de lo que NO hay que llevar (Etapa 12 había armado la pestaña pero sin este ítem).
+- **Reordenamiento del Inicio de CAMPAJOR** (feedback directo: "se ve muuuuchas cosas con letras
+  pequeñas y todo mezclado"): `#cj-inicio-columns` pasó de CSS multi-column (masonry, con orden
+  de lectura impredecible — llenaba una columna entera antes de pasar a la siguiente, mezclando
+  visualmente el contenido) a **CSS grid** de 2 columnas (`repeat(auto-fit, minmax(420px,1fr))`,
+  `max-width:900px`) con orden de lectura normal (izquierda-a-derecha, fila por fila). La
+  tarjeta "Lema 2026" (la más larga, con "El camino del Tesoro") ahora ocupa **todo el ancho**
+  (`grid-column:1/-1`) en vez de competir en una columna angosta. Se reordenaron las tarjetas
+  restantes para que las de altura parecida queden emparejadas en la misma fila (Qué incluye +
+  Oración entre sí, Esencia + Subcampos entre sí) — con `align-items:stretch` por defecto de
+  grid, emparejar alturas distintas dejaba una tarjeta con un montón de espacio vacío abajo.
+- **El "Grito de Guerra" (el de todo el plantel/CAMPAJOR, no el de cada patrulla) se sacó de la
+  portada pública y se movió a Staff** (`#page-cj-funciones`, arriba de la tarjeta de "Borrador
+  del plantel"): el usuario aclaró que ese grito es "de nuestro plantel de integración", o sea
+  contenido de organización, no algo que necesite estar en la portada para cualquier visitante.
+  De paso pidió que sea **editable** ("que sea editable el grito tambien") — se sacó del HTML
+  hardcodeado y pasó a `dataCj.gritoPlantel` (string libre, default = el texto original vía
+  `GRITO_PLANTEL_DEFAULT_CJ`, seteado en `normCj`). `renderGritoPlantelCj()` (llamada desde
+  `showCj('funciones')`) muestra un `<textarea>` + botón "💾 Guardar grito" si sos admin, o el
+  texto ya formateado (con saltos de línea) si sos viewer con el código `TESORO26` sin ser
+  admin. **Ojo, esto es DISTINTO del grito por patrulla** de "Mi patrulla" (Etapa 12, campo
+  `grito` en `campajor_inscripciones/<pin>`) — dos conceptos separados que conviven: el del
+  plantel (uno solo, en Staff) y el de cada patrulla (uno por patrulla, en su propio panel).
+- **Se cargaron las 6 patrullas que faltaban de la lista del usuario** (Admin SDK, sin
+  integrantes todavía — "todo editable" como pidió, el admin las completa cuando tenga los
+  datos), ya con su color de remera estructurado (`color`/`color2`) para que el ícono aparezca
+  desde ya en Patrullas/Ranking:
+  · Los Gatis — gris `#9aa0a6` · Los Loritos — verde `#00e676` · Caperucitas — rojo `#ff5a5a`
+  · keperseguidos — bicolor negro `#3a3a3a` + amarillo `#ffc828`
+  · Panteras — morado `#8e44ad` · Halcones — bicolor negro `#3a3a3a` + verde militar `#5a6b3f`
+  Total: **10 patrullas** en `campajor.patrullas`.
+- sw subió a **v3.42**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -527,11 +567,13 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
                color:'#hex', color2:'#hex' (opcional, bicolor), escudo:'data:image/jpeg;base64,...' (opcional),
                fotosFamiliares:[bool] (opcional, paralelo a integrantes - NO es sensible, va publico)}],
   puntajes: [{patrulla, juego, puntos}],
-  premios: [{virtud, patrulla, motivo}] }  // premios "Virtud del Jornadista"
+  premios: [{virtud, patrulla, motivo}],
+  gritoPlantel: str }  // grito de guerra DEL PLANTEL (uno solo) - editable en Staff, ver Etapa 13
 // campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str] }
 // (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
 // campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo
-// autoinscripciones): { ..., esOficial:true, grito:str } - ver Etapa 12, seccion 7.
+// autoinscripciones): { ..., esOficial:true, grito:str } - grito POR PATRULLA, distinto del
+// gritoPlantel de arriba - ver Etapa 12, seccion 7.
 // (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
@@ -781,7 +823,7 @@ en el repo, aunque estén gitignored — mejor no tentar al destino.
 - **Campeón 2026: J48** (cargado en el Salón de Campeones; faltan años anteriores)
 
 ### CAMPAJOR 2026 (próximo)
-- **Sábado 11 y domingo 12 de octubre de 2026**
+- **Sábado 17 y domingo 18 de octubre de 2026**
 - **Lema (elegido por el plantel: el Tesoro y la búsqueda)**: «En busca del Tesoro» —
   Buscalo, cuidalo, compartilo: el Tesoro está dentro. (Lema del movimiento: "El Tesoro está
   dentro", Mt 13,45-46 + 2 Cor 4,7.)
