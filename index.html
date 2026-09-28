@@ -223,6 +223,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
     <button data-cj="funciones" id="navCjFunciones" onclick="showCj('funciones')" style="display:none;">🗂️ Staff</button>
     <button data-cj="organizacion" id="navCjOrganizacion" onclick="showCj('organizacion')" style="display:none;">🏗️ Organización</button>
+    <button data-cj="finanzas" id="navCjFinanzas" onclick="showCj('finanzas')" style="display:none;">💰 Finanzas</button>
   </div>
   <div class="user-badge" id="userBadge" onclick="openLogin()">Entrar</div>
 </div>
@@ -355,11 +356,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
-    <div class="card" id="cj-inscriptas-widget" style="flex:1 1 420px;max-width:520px;border:1px solid var(--neon-dim);text-align:center;align-self:stretch;display:flex;flex-direction:column;justify-content:center;">
+    <div class="card" id="cj-inscriptas-widget" style="flex:1 1 480px;max-width:640px;border:1px solid var(--neon-dim);text-align:center;align-self:stretch;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:12.5px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-inscriptas-total">0</span>)</div>
       <div id="cj-inscriptas-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
       <div id="cj-inscriptas-carousel" style="margin-top:12px;">
-        <img id="cj-inscriptas-escudo" style="display:none;width:84px;height:84px;border-radius:14px;object-fit:cover;border:1px solid var(--w30);margin-bottom:8px;">
+        <img id="cj-inscriptas-escudo" style="display:none;width:130px;height:130px;border-radius:16px;object-fit:cover;border:1px solid var(--w30);margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
           <button onclick="navInscriptosCj(-1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">‹</button>
           <div style="min-width:260px;">
@@ -976,6 +977,50 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
+<!-- ═══ CAMPAJOR: FINANZAS (solo admin) ═══ -->
+<div class="page" id="page-cj-finanzas">
+  <div class="section-page" style="max-width:1020px;">
+    <div class="section-title">💰 Finanzas · Solo Admin</div>
+    <p style="color:var(--w50);font-size:12.5px;margin-bottom:14px;">Ingresos, egresos y presupuesto del CAMPAJOR. Solo vos y los accesos de staff que crees ven esta pestaña.</p>
+
+    <div id="cj-fin-resumen" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;"></div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">➕ Cargar movimiento</div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="cj-fin-tipo"><option value="ingreso">💚 Ingreso</option><option value="egreso">🔻 Egreso</option></select>
+      </div>
+      <div class="form-group"><label>Categoría</label><input type="text" id="cj-fin-categoria" placeholder="Ej: Inscripciones, Comida, Transporte..." list="cj-fin-categorias-dl"><datalist id="cj-fin-categorias-dl"></datalist></div>
+      <div class="form-group"><label>Descripción</label><input type="text" id="cj-fin-desc" placeholder="Ej: Pago seña reserva Tati Yupi"></div>
+      <div class="form-group"><label>Monto (Gs.)</label><input type="number" id="cj-fin-monto" placeholder="0"></div>
+      <div class="form-group"><label>Fecha</label><input type="date" id="cj-fin-fecha"></div>
+      <button class="btn btn-primary btn-sm" onclick="agregarMovFinanzasCj()">+ Agregar</button>
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🎯 Presupuesto por categoría</div>
+      <p style="font-size:11.5px;color:var(--w50);margin-bottom:8px;">Cuánto planeaste gastar en cada categoría — se compara con los egresos reales.</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <input type="text" id="cj-fin-presu-categoria" placeholder="Categoría" list="cj-fin-categorias-dl" style="flex:1;min-width:140px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">
+        <input type="number" id="cj-fin-presu-monto" placeholder="Monto planificado" style="flex:1;min-width:140px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">
+        <button class="btn btn-secondary btn-sm" onclick="agregarPresupuestoCj()">+ Guardar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📊 Planificado vs. gastado por categoría</div>
+      <div id="cj-fin-categorias-list"></div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📋 Movimientos</div>
+      <div id="cj-fin-movimientos-list"></div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ═══ PAGE: INICIO ═══ -->
 <div class="page" id="page-inicio">
   <div class="hero">
@@ -1262,6 +1307,7 @@ var publicRef = null; // nodo PUBLICO del torneo (datos sin info personal, lectu
 var campajorRef = null; // nodo CAMPAJOR (patrullas/puntajes, sin PII: lectura publica)
 var inscCjRef = null;   // nodo campajor_inscripciones (PII protegida: cada registro solo se lee/edita conociendo su PIN; listado solo admin)
 var privadoCjRef = null; // nodo campajor_privado (cedulas por patrulla, SOLO admin lee/escribe - jamas publico)
+var finanzasCjRef = null; // nodo campajor_finanzas (ingresos/egresos/presupuesto, SOLO admin lee/escribe)
 
 try {
   firebase.initializeApp(firebaseConfig);
@@ -1271,6 +1317,7 @@ try {
   campajorRef = db.ref('campajor'); // datos de campajor (sin PII, lectura publica)
   inscCjRef = db.ref('campajor_inscripciones'); // inscripciones de patrullas (crear: cualquiera; leer/editar: solo con el PIN exacto)
   privadoCjRef = db.ref('campajor_privado'); // cedulas por patrulla (SOLO admin - requiere reglas RTDB publicadas)
+  finanzasCjRef = db.ref('campajor_finanzas'); // ingresos/egresos/presupuesto (SOLO admin - requiere reglas RTDB publicadas)
   fbReady = firebaseConfig.apiKey !== 'PEGAR_AQUI';
 } catch(e) { console.log('Firebase no configurado, usando localStorage'); }
 
@@ -1736,6 +1783,13 @@ function updateUserBadge() {
   if (oBtn) {
     oBtn.style.display = puedeVerFunciones ? '' : 'none';
     if (!puedeVerFunciones && oBtn.classList.contains('active')) showCj('reglamento');
+  }
+  // Finanzas: SOLO admin (a diferencia de Staff/Organizacion, ni siquiera el codigo TESORO26
+  // la ve - son montos de plata, no contenido espiritual/organizativo).
+  var finBtn = document.getElementById('navCjFinanzas');
+  if (finBtn) {
+    finBtn.style.display = isAdmin() ? '' : 'none';
+    if (!isAdmin() && finBtn.classList.contains('active')) showCj('reglamento');
   }
 }
 function isAdmin() { return currentUser && currentUser.type === 'admin'; }
@@ -2950,6 +3004,143 @@ function quitarAccesoStaffCj(uid){
   if(!confirm('¿Quitar este acceso de staff? La persona ya no va a poder editar la app (su login sigue existiendo, pero sin permisos).')) return;
   db.ref('admins/'+uid).remove().then(function(){ renderAccesosStaffCj(); toast('Acceso quitado'); });
 }
+// ===== Finanzas (campajor_finanzas): ingresos, egresos y presupuesto por categoria =====
+// Nodo admin-only aparte de campajor_finanzas (nunca dentro de dataCj/campajor, que es
+// de lectura publica) - montos de plata no van a un nodo publico. Sin sync en vivo: se lee
+// con .once() cada vez que se entra a la pestana (patron igual al de campajor_privado).
+var _dataFin = null;
+function loadFinanzasCj(cb){
+  if(!fbReady || !finanzasCjRef){ cb({movimientos:[], presupuesto:[]}); return; }
+  var pr = finanzasCjRef.once('value', function(snap){
+    var v = snap.val() || {};
+    _dataFin = { movimientos: v.movimientos||[], presupuesto: v.presupuesto||[] };
+    cb(_dataFin);
+  }, function(err){
+    var esPermiso = (err && err.code==='PERMISSION_DENIED') || /permission_denied/i.test((err&&err.message)||'');
+    cb(null, esPermiso?'permiso':'error');
+  });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+function saveFinanzasCj(cb){
+  if(!isAdmin() || !fbReady || !finanzasCjRef || !_dataFin) return;
+  finanzasCjRef.set(_dataFin).then(function(){ if(cb) cb(); }).catch(function(){ toast('Error al guardar (revisar reglas de campajor_finanzas)'); });
+}
+function _fmtGsCj(n){ return 'Gs. ' + Math.round(Number(n)||0).toLocaleString('es-PY'); }
+function renderFinanzasCj(){
+  if(!isAdmin()) return;
+  loadFinanzasCj(function(d, errType){
+    if(!d){
+      var msg = errType==='permiso'
+        ? 'Faltan publicar las reglas nuevas de Firebase (nodo <code>campajor_finanzas</code>) — ver biblia sección 6/9.4.'
+        : 'Error al leer finanzas.';
+      document.getElementById('cj-fin-resumen').innerHTML = '<p style="color:var(--danger,#ff5a5a);font-size:12px;grid-column:1/-1;">'+msg+'</p>';
+      document.getElementById('cj-fin-movimientos-list').innerHTML='';
+      document.getElementById('cj-fin-categorias-list').innerHTML='';
+      return;
+    }
+    _pintarResumenFinanzasCj(d);
+    _pintarCategoriasFinanzasCj(d);
+    _pintarMovimientosFinanzasCj(d);
+    _actualizarDatalistCategoriasCj(d);
+  });
+}
+function _pintarResumenFinanzasCj(d){
+  var ingresos=0, egresos=0;
+  d.movimientos.forEach(function(m){ if(m.tipo==='ingreso') ingresos+=Number(m.monto)||0; else egresos+=Number(m.monto)||0; });
+  var saldo = ingresos - egresos;
+  document.getElementById('cj-fin-resumen').innerHTML =
+    '<div class="card" style="text-align:center;border-left:3px solid var(--neon);margin-bottom:0;"><div style="font-size:11px;color:var(--w50);text-transform:uppercase;">Ingresos</div><div style="font-size:18px;font-weight:900;color:var(--neon);margin-top:4px;">'+_fmtGsCj(ingresos)+'</div></div>'
+    + '<div class="card" style="text-align:center;border-left:3px solid var(--danger,#ff5a5a);margin-bottom:0;"><div style="font-size:11px;color:var(--w50);text-transform:uppercase;">Egresos</div><div style="font-size:18px;font-weight:900;color:var(--danger,#ff5a5a);margin-top:4px;">'+_fmtGsCj(egresos)+'</div></div>'
+    + '<div class="card" style="text-align:center;border-left:3px solid var(--gold);margin-bottom:0;"><div style="font-size:11px;color:var(--w50);text-transform:uppercase;">Saldo</div><div style="font-size:18px;font-weight:900;color:'+(saldo>=0?'var(--gold)':'var(--danger,#ff5a5a)')+';margin-top:4px;">'+_fmtGsCj(saldo)+'</div></div>';
+}
+function _pintarCategoriasFinanzasCj(d){
+  var cats = {};
+  d.presupuesto.forEach(function(p){ if(!cats[p.categoria]) cats[p.categoria]={planificado:0,gastado:0}; cats[p.categoria].planificado += Number(p.monto)||0; });
+  d.movimientos.forEach(function(m){ if(m.tipo==='egreso'){ if(!cats[m.categoria]) cats[m.categoria]={planificado:0,gastado:0}; cats[m.categoria].gastado += Number(m.monto)||0; } });
+  var keys=Object.keys(cats);
+  var el=document.getElementById('cj-fin-categorias-list');
+  if(!keys.length){ el.innerHTML='<p style="color:var(--w50);font-size:12px;">Todavía no hay categorías cargadas.</p>'; return; }
+  el.innerHTML = keys.sort().map(function(cat){
+    var c=cats[cat];
+    var idx=d.presupuesto.findIndex(function(p){return p.categoria===cat;});
+    var pct = c.planificado>0 ? Math.round(c.gastado/c.planificado*100) : (c.gastado>0?100:0);
+    var pasado = c.planificado>0 && c.gastado>c.planificado;
+    var barColor = pasado ? 'var(--danger,#ff5a5a)' : 'var(--neon)';
+    return '<div style="padding:8px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:700;"><span style="flex:1;">'+esc(cat)+'</span><span style="white-space:nowrap;">'+_fmtGsCj(c.gastado)+' / '+_fmtGsCj(c.planificado)+'</span>'+(idx>=0?'<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarPresupuestoCj('+idx+')" title="Quitar del presupuesto">×</span>':'')+'</div>'
+      + '<div style="background:var(--navy3,#121a42);border-radius:8px;height:8px;margin-top:5px;overflow:hidden;"><div style="width:'+Math.min(pct,100)+'%;height:100%;background:'+barColor+';"></div></div>'
+      + (pasado?'<div style="font-size:11px;color:var(--danger,#ff5a5a);margin-top:3px;">⚠️ Te pasaste por '+_fmtGsCj(c.gastado-c.planificado)+'</div>':'')
+      + '</div>';
+  }).join('');
+}
+function _pintarMovimientosFinanzasCj(d){
+  var el=document.getElementById('cj-fin-movimientos-list');
+  if(!d.movimientos.length){ el.innerHTML='<p style="color:var(--w50);font-size:12px;">Todavía no hay movimientos cargados.</p>'; return; }
+  var ordenados = d.movimientos.slice().sort(function(a,b){ return (b.fecha||'')<(a.fecha||'')?-1:1; });
+  el.innerHTML = ordenados.map(function(m){
+    var color = m.tipo==='ingreso' ? 'var(--neon)' : 'var(--danger,#ff5a5a)';
+    var signo = m.tipo==='ingreso' ? '+' : '−';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));">'
+      + '<div style="flex:1;"><b>'+esc(m.categoria||'(sin categoría)')+'</b>'+(m.descripcion?' <span style="color:var(--w50);font-size:12px;">— '+esc(m.descripcion)+'</span>':'')+'<div style="font-size:11px;color:var(--w50);">'+esc(m.fecha||'')+'</div></div>'
+      + '<div style="font-weight:800;color:'+color+';white-space:nowrap;">'+signo+' '+_fmtGsCj(m.monto)+'</div>'
+      + '<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarMovFinanzasCj(\''+m.id+'\')">×</span>'
+      + '</div>';
+  }).join('');
+}
+function _actualizarDatalistCategoriasCj(d){
+  var set={};
+  d.movimientos.forEach(function(m){ if(m.categoria) set[m.categoria]=1; });
+  d.presupuesto.forEach(function(p){ if(p.categoria) set[p.categoria]=1; });
+  var dl=document.getElementById('cj-fin-categorias-dl');
+  if(dl) dl.innerHTML = Object.keys(set).sort().map(function(c){ return '<option value="'+esc(c)+'">'; }).join('');
+}
+function agregarMovFinanzasCj(){
+  if(!isAdmin())return;
+  var tipo=document.getElementById('cj-fin-tipo').value;
+  var categoria=document.getElementById('cj-fin-categoria').value.trim();
+  var desc=document.getElementById('cj-fin-desc').value.trim();
+  var monto=Number(document.getElementById('cj-fin-monto').value);
+  var fecha=document.getElementById('cj-fin-fecha').value || new Date().toISOString().slice(0,10);
+  if(!categoria){toast('Poné una categoría');return;}
+  if(!monto || monto<=0){toast('Poné un monto válido');return;}
+  if(!_dataFin) _dataFin={movimientos:[],presupuesto:[]};
+  _dataFin.movimientos.push({id:'m'+Date.now()+Math.floor(Math.random()*1000), tipo:tipo, categoria:categoria, descripcion:desc, monto:monto, fecha:fecha});
+  saveFinanzasCj(function(){
+    document.getElementById('cj-fin-categoria').value='';
+    document.getElementById('cj-fin-desc').value='';
+    document.getElementById('cj-fin-monto').value='';
+    toast('Movimiento agregado');
+    renderFinanzasCj();
+  });
+}
+function quitarMovFinanzasCj(id){
+  if(!isAdmin() || !_dataFin) return;
+  if(!confirm('¿Eliminar este movimiento?'))return;
+  _dataFin.movimientos = _dataFin.movimientos.filter(function(m){return m.id!==id;});
+  saveFinanzasCj(function(){ renderFinanzasCj(); toast('Eliminado'); });
+}
+function agregarPresupuestoCj(){
+  if(!isAdmin())return;
+  var categoria=document.getElementById('cj-fin-presu-categoria').value.trim();
+  var monto=Number(document.getElementById('cj-fin-presu-monto').value);
+  if(!categoria){toast('Poné una categoría');return;}
+  if(!monto || monto<=0){toast('Poné un monto válido');return;}
+  if(!_dataFin) _dataFin={movimientos:[],presupuesto:[]};
+  var idx=_dataFin.presupuesto.findIndex(function(p){return p.categoria===categoria;});
+  if(idx>=0) _dataFin.presupuesto[idx].monto=monto; else _dataFin.presupuesto.push({categoria:categoria, monto:monto});
+  saveFinanzasCj(function(){
+    document.getElementById('cj-fin-presu-categoria').value='';
+    document.getElementById('cj-fin-presu-monto').value='';
+    toast('Presupuesto guardado');
+    renderFinanzasCj();
+  });
+}
+function quitarPresupuestoCj(idx){
+  if(!isAdmin() || !_dataFin) return;
+  if(!confirm('¿Quitar esta categoría del presupuesto?'))return;
+  _dataFin.presupuesto.splice(idx,1);
+  saveFinanzasCj(function(){ renderFinanzasCj(); toast('Quitado'); });
+}
 function saveCj(d, allowShrink){
   try{ localStorage.setItem(STORE_KEY_CJ, JSON.stringify(d)); }catch(e){}
   if (fbReady && campajorRef && isFbAdmin()) {
@@ -3038,6 +3229,11 @@ function showCj(name){
   if(name==='ranking') renderRankingCj();
   if(name==='funciones'){ renderGritoPlantelCj(); renderAccesosStaffCj(); }
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
+  if(name==='finanzas'){
+    if(!isAdmin()){ showCj('reglamento'); return; }
+    document.getElementById('cj-fin-fecha').value = document.getElementById('cj-fin-fecha').value || new Date().toISOString().slice(0,10);
+    renderFinanzasCj();
+  }
   window.scrollTo(0,0);
 }
 function _filaCronoCj(dia, r, i){

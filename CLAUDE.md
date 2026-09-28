@@ -579,6 +579,37 @@ Eventos actuales:
     grito y vean su puntaje".
 - sw subió a **v3.44**.
 
+### Etapa 16 — Sesión del 28/09/2026, noche (widget/escudo más grandes, pestaña Finanzas)
+- **Widget "Patrullas Inscriptas" agrandado dos veces** por feedback directo (primero se ensanchó
+  380→520px con escudo a 84px; el usuario pidió más porque los escudos "aún no se ven bien" →
+  520→640px de ancho máximo, escudo a **130×130px**). `min-width` del bloque de nombre subió a
+  260px para que cada integrante entre en una sola línea sin cortarse.
+- **Nueva pestaña "💰 Finanzas"** (`#page-cj-finanzas`, nav `navCjFinanzas`) — **admin-only, ni
+  siquiera el código `TESORO26` la ve** (a diferencia de Staff/Organización): son montos de
+  plata, no contenido espiritual/organizativo. Confirmado el diseño con el usuario antes de
+  programar (3 preguntas): visibilidad solo-admin, categorías de texto libre (sin lista fija),
+  y presupuesto comparado **por categoría** contra los egresos reales (no un total único).
+  - **Nodo nuevo `campajor_finanzas`** (admin-only, mismo patrón `email hardcodeado || admins`
+    que el resto) — **nunca** dentro de `campajor` (que es de lectura pública). Estructura:
+    `{ movimientos:[{id,tipo:'ingreso'|'egreso',categoria,descripcion,monto,fecha}],
+    presupuesto:[{categoria,monto}] }`. Sin sync en vivo — se lee con `.once('value')` cada vez
+    que se entra a la pestaña (mismo patrón que `campajor_privado`/inscripciones online), cache
+    local en `_dataFin`.
+  - `renderFinanzasCj()` pinta 3 bloques: **resumen** (ingresos/egresos/saldo totales),
+    **planificado vs. gastado por categoría** (`_pintarCategoriasFinanzasCj` — junta categorías
+    de `presupuesto` y de los egresos de `movimientos`, barra de progreso que se pone roja y
+    avisa "Te pasaste por Gs. X" si el gasto superó lo planificado) y **listado de movimientos**
+    (ordenado por fecha descendente, ingreso en verde, egreso en rojo).
+  - Formularios admin: cargar movimiento (tipo/categoría/descripción/monto/fecha, con
+    `<datalist>` de categorías ya usadas para autocompletar) y cargar/actualizar presupuesto por
+    categoría (`agregarPresupuestoCj()` — si la categoría ya tenía presupuesto, actualiza el
+    monto en vez de duplicar). Eliminar movimiento e eliminar línea de presupuesto, ambos con
+    `confirm()`.
+  - Igual que `admins` (Etapa 15), la regla de `campajor_finanzas` está en la biblia (sección 6)
+    pero **todavía no publicada** — hasta entonces la pestaña muestra el aviso de
+    `PERMISSION_DENIED` en vez de romper.
+- sw subió a **v3.45**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -692,6 +723,9 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 // gritoPlantel de arriba - ver Etapa 12, seccion 7.
 // admins/<uid>: { nombre:str, email:str } - pertenecer aca = mismos permisos que ADMIN_EMAIL
 // en TODAS las reglas (uid de Firebase Auth, no el email). Ver Etapa 15, seccion 3.
+// campajor_finanzas: { movimientos:[{id,tipo:'ingreso'|'egreso',categoria,descripcion,monto,
+// fecha}], presupuesto:[{categoria,monto}] } - admin-only, NUNCA en campajor (publico). Sin
+// sync en vivo, se lee con .once() al entrar a la pestana. Ver Etapa 16.
 // (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
@@ -726,7 +760,8 @@ Publicarlas en: Firebase console → Realtime Database → Reglas →
     "torneo":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
     "backups":          { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
     "backup":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
-    "admins":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" }
+    "admins":           { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" },
+    "campajor_finanzas": { ".read": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())", ".write": "auth != null && (auth.token.email === 'hassan.chaar@gmail.com' || root.child('admins').child(auth.uid).exists())" }
   }
 }
 ```
@@ -737,12 +772,13 @@ de cédulas en la carga masiva funcionen. Hasta entonces dan `PERMISSION_DENIED`
 maneja gracioso, con un aviso, no rompe nada — nombre/apodo/jornada se guardan igual en
 `campajor.patrullas`, que sí tiene reglas vigentes).
 
-⚠️ **`admins` es NUEVO (28/09/2026, Etapa 15) y TAMPOCO está publicado todavía** — hace falta
-pegar este JSON actualizado (con el nodo `admins` y el `|| root.child('admins')...` agregado
-a TODOS los demás nodos) para que "🔐 Accesos de Staff" (pestaña Staff) funcione. El admin
-original (`hassan.chaar@gmail.com`) sigue andando igual que siempre pase lo que pase — el OR
-lo evalúa primero y ese camino no depende de `admins` para nada. Hasta que se publique, crear
-un acceso nuevo da `PERMISSION_DENIED` con el aviso explicado (ver Etapa 15).
+⚠️ **`admins` y `campajor_finanzas` son NUEVOS (28/09/2026, Etapas 15-16) y TAMPOCO están
+publicados todavía** — hace falta pegar este JSON actualizado (con esos 2 nodos nuevos y el
+`|| root.child('admins')...` agregado a TODOS los demás) para que "🔐 Accesos de Staff" y
+"💰 Finanzas" (ambas en Staff/nav) funcionen. El admin original (`hassan.chaar@gmail.com`)
+sigue andando igual que siempre pase lo que pase — el OR lo evalúa primero y ese camino no
+depende de `admins` para nada. Hasta que se publique, ambas pestañas dan `PERMISSION_DENIED`
+con el aviso explicado en vez de romper (ver Etapas 15 y 16).
 
 **Cómo funciona el modelo del PIN-llave** (`campajor_inscripciones/$pin`):
 - El PIN de 6 dígitos ES la clave del registro. Conocer el PIN = poder leer y editar ESA patrulla.
