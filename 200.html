@@ -215,6 +215,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button data-cj="inicio" class="active" onclick="showCj('inicio')">Inicio</button>
     <button data-cj="inscripcion" onclick="showCj('inscripcion')">Inscripción</button>
     <button data-cj="cronograma" onclick="showCj('cronograma')">Cronograma</button>
+    <button data-cj="quellevar" onclick="showCj('quellevar')">🎒 Qué llevar</button>
     <button data-cj="postas" onclick="showCj('postas')">Postas</button>
     <button data-cj="yincanas" onclick="showCj('yincanas')">Juegos</button>
     <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
@@ -514,6 +515,49 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
+<div class="page" id="page-cj-quellevar">
+  <div class="section-page">
+    <div class="section-title">🎒 Qué llevar</div>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Para que no te falte nada y disfrutes el CAMPAJOR tranquilo. Cualquier duda, preguntale a tu jefe de patrulla.</p>
+    <div class="card" style="border-left:3px solid var(--neon);">
+      <div style="font-size:12px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">✅ Llevá esto</div>
+      <div style="font-size:13.5px;line-height:1.9;color:var(--w80);">
+        🎒 Mochila (nada de valija con ruedas — vas a caminar y cargarla vos)<br>
+        🛏️ Bolsa de dormir o colchoneta (confirmá con tu jefe de patrulla qué provee el movimiento)<br>
+        👕 Ropa cómoda para 2 días, que se pueda ensuciar<br>
+        🧥 Un abrigo para la noche — en Tati Yupi refresca<br>
+        🌧️ Poncho de lluvia / impermeable<br>
+        👟 Calzado cerrado y cómodo para caminar + ojotas para el campamento<br>
+        🧢 Gorra o sombrero, protector solar y repelente de mosquitos<br>
+        🥤 Cantimplora o botella reutilizable<br>
+        🧼 Kit de higiene personal y toalla<br>
+        🔦 Linterna o frontal, con pilas de repuesto<br>
+        🍽️ Plato, vaso y cubiertos reutilizables (marcados con tu nombre)<br>
+        💊 Tus remedios personales, si tomás alguno — avisale a tu jefe de patrulla<br>
+        🪪 Cédula de identidad — obligatoria para entrar a la reserva<br>
+        📖 Tu Biblia (no te la olvides — de verdad)<br>
+        😊 Una sonrisa y muchas ganas de buscar el Tesoro
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--danger,#ff5a5a);">
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🚫 Esto NO</div>
+      <div style="font-size:13.5px;line-height:1.9;color:var(--w80);">
+        🍺 Bebidas alcohólicas — cero alcohol en la reserva<br>
+        🔫 Armas, explosivos o cualquier elemento peligroso<br>
+        🐾 Mascotas<br>
+        💍 Objetos de valor innecesarios (el movimiento no se hace responsable por pérdidas)<br>
+        🔊 Parlantes — la música y los cantos ya los tiene armados el plantel<br>
+        📵 Nada que te desconecte del grupo. La idea es vivir en comunidad, no en la pantalla
+      </div>
+    </div>
+    <div class="card" style="border:1px dashed var(--gold-dim);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🔍 ¿Qué te vas a encontrar?</div>
+      <p style="font-size:13.5px;color:var(--w80);line-height:1.7;">Hay un Tesoro escondido, y no es solo una forma de decir. Vas a caminar una senda, vas a cruzarte con postas que no son lo que parecen, y al final del camino hay algo que solo se entiende viviéndolo. Cuatro subcampos, veinticuatro juegos, un fogón, una misa que se va a sentir distinta... y una pregunta que te va a perseguir todo el fin de semana: <strong style="color:var(--gold);">¿qué estás buscando vos?</strong></p>
+      <p style="font-size:12px;color:var(--w50);margin-top:8px;font-style:italic;">Si alguien te cuenta de más antes de tiempo... ¡Viví tu momento! 😉</p>
+    </div>
+  </div>
+</div>
+
 <div class="page" id="page-cj-postas">
   <div class="section-page" style="max-width:1180px;">
     <div class="section-title">🎪 Postas de recepción</div>
@@ -560,6 +604,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-ranking">
   <div class="section-page">
     <div class="section-title">🏆 Ranking</div>
+    <div id="cj-dashboard-staff"></div>
     <div class="card" id="cj-puntaje-form" style="display:none;">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Cargar puntaje</div>
       <div class="form-group"><label>Patrulla</label><select id="cj-pt-patrulla"></select></div>
@@ -2886,6 +2931,7 @@ function renderPatrullasCj(){
       +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
       +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span>'
       +     (isAdmin()?' <span title="Renombrar" style="cursor:pointer;opacity:.7;" onclick="renombrarPatrullaCj('+i+')">✏️</span>':'')+'</div>'
+      +   (isAdmin()?'<button class="btn btn-secondary btn-sm" title="Generar o ver la clave de acceso de esta patrulla" onclick="accesoPatrullaCj('+i+')">🔑 Acceso</button>':'')
       +   (isAdmin()?'<button class="btn btn-danger btn-sm" onclick="removePatrullaCj('+i+')">×</button>':'')
       + '</div>'
       + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
@@ -2934,8 +2980,48 @@ function quitarEscudoCj(i){
   saveCj(dataCj);
   renderPatrullasCj();
 }
+// Dashboard de staff: de un vistazo, puntaje/posicion, grito de guerra y avance de fotos
+// familiares de cada patrulla oficial. El grito vive en campajor_inscripciones/<pin> (record
+// vinculado via accesoPatrullaCj/esOficial), asi que hace falta una lectura extra de ese nodo.
+function renderDashboardStaffCj(){
+  var c=document.getElementById('cj-dashboard-staff'); if(!c) return;
+  if(!isAdmin()){ c.innerHTML=''; return; }
+  dataCj=loadCj();
+  var patrullas=dataCj.patrullas||[];
+  if(!patrullas.length){ c.innerHTML=''; return; }
+  var totals={}; patrullas.forEach(function(p){ totals[p.nombre]=0; });
+  (dataCj.puntajes||[]).forEach(function(x){ if(totals[x.patrulla]===undefined) totals[x.patrulla]=0; totals[x.patrulla]+=Number(x.puntos)||0; });
+  var orden=Object.keys(totals).map(function(k){return {nombre:k,pts:totals[k]};}).sort(function(a,b){return b.pts-a.pts;});
+  var posPorNombre={}; orden.forEach(function(r,i){ posPorNombre[r.nombre]=i+1; });
+  function pintar(gritos){
+    c.innerHTML = '<div class="card" style="border:1px solid var(--gold-dim);">'
+      + '<div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">📊 Dashboard de Patrullas · solo Staff</div>'
+      + patrullas.map(function(p){
+          var fotos=p.fotosFamiliares||[], ints=p.integrantes||[];
+          var okFotos=fotos.filter(function(f){return !!f;}).length;
+          var g=gritos[p.nombre];
+          return '<div style="border-top:1px solid var(--w20,rgba(255,255,255,.1));padding:10px 0;">'
+            + '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><strong style="flex:1;">'+iconoRemeraCj(p)+esc(p.nombre)+'</strong>'
+            + '<span style="color:var(--gold);font-weight:800;">🏆 '+(totals[p.nombre]||0)+' pts</span><span style="color:var(--w50);font-size:12px;">· puesto '+posPorNombre[p.nombre]+'</span></div>'
+            + '<div style="font-size:12px;color:var(--w50);margin-top:4px;">📸 Fotos familiares: '+okFotos+'/'+ints.length+(ints.length&&okFotos<ints.length?' <span style="color:var(--gold);">— faltan '+(ints.length-okFotos)+'</span>':(ints.length?' ✅':''))+'</div>'
+            + (g&&g.grito ? '<div style="font-size:12.5px;color:var(--w80);margin-top:4px;font-style:italic;">📣 "'+esc(g.grito)+'"</div>' : '<div style="font-size:11.5px;color:var(--w50);margin-top:4px;">📣 Todavía no cargaron su grito de guerra</div>')
+            + '</div>';
+        }).join('')
+      + '</div>';
+  }
+  if(fbReady && inscCjRef){
+    var pr = inscCjRef.once('value', function(snap){
+      var v=snap.val()||{};
+      var gritos={};
+      Object.keys(v).forEach(function(k){ if(v[k] && v[k].esOficial) gritos[v[k].nombre]=v[k]; });
+      pintar(gritos);
+    }, function(){ pintar({}); });
+    if(pr && pr.catch) pr.catch(function(){});
+  } else { pintar({}); }
+}
 function renderRankingCj(){
   dataCj=loadCj();
+  try{ renderDashboardStaffCj(); }catch(e){}
   var pf=document.getElementById('cj-puntaje-form'); if(pf) pf.style.display = isAdmin()?'block':'none';
   var prf=document.getElementById('cj-premio-form'); if(prf) prf.style.display = isAdmin()?'block':'none';
   var sel=document.getElementById('cj-pt-patrulla'); if(sel) sel.innerHTML = dataCj.patrullas.map(function(p){return '<option>'+esc(p.nombre)+'</option>';}).join('');
@@ -3120,7 +3206,7 @@ function verCedulasCj(){
   var clave = sanitizarClaveCj(nombre);
   var pr = privadoCjRef.child(clave).once('value', function(snap){
     var priv = snap.val() || {};
-    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotos = priv.fotosFamiliares || [];
+    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotos = pat.fotosFamiliares || [];
     var integrantes = pat.integrantes || [];
     if(!integrantes.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Esta patrulla todavía no tiene integrantes cargados.</p>'; return; }
     var campo = function(valor, ph){ return '<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:700;white-space:nowrap;text-decoration:underline dotted;">'+esc(valor||('— '+ph))+'</span>'; };
@@ -3165,20 +3251,21 @@ function editarCampoPrivadoCj(idx, campo, label){
   }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
   if(pr && pr.catch) pr.catch(function(){});
 }
+// fotosFamiliares vive en el objeto PÚBLICO de la patrulla (campajor.patrullas), no en
+// campajor_privado: no es dato sensible (solo si-o-no) y así la propia patrulla lo puede leer
+// desde "Mi patrulla" sin necesitar una regla nueva.
 function toggleFotoFamiliarCj(idx){
   if(!isAdmin())return;
-  if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
+  dataCj=loadCj();
   var nombre = _cedulasPatrullaActual;
-  if(!nombre) return;
-  var clave = sanitizarClaveCj(nombre);
-  var ref = privadoCjRef.child(clave).child('fotosFamiliares');
-  var pr = ref.once('value', function(snap){
-    var actuales = snap.val() || [];
-    while(actuales.length <= idx) actuales.push(false);
-    actuales[idx] = !actuales[idx];
-    ref.set(actuales).then(function(){ toast(actuales[idx]?'📸 Foto marcada como recibida':'Foto desmarcada'); }).catch(function(){ toast('⚠️ No se pudo guardar'); verCedulasCj(); });
-  }, function(){ toast('⚠️ No se pudo leer'); });
-  if(pr && pr.catch) pr.catch(function(){});
+  var pat = (dataCj.patrullas||[]).filter(function(p){return p.nombre===nombre;})[0];
+  if(!pat) return;
+  if(!Array.isArray(pat.fotosFamiliares)) pat.fotosFamiliares=[];
+  while(pat.fotosFamiliares.length <= idx) pat.fotosFamiliares.push(false);
+  pat.fotosFamiliares[idx] = !pat.fotosFamiliares[idx];
+  saveCj(dataCj);
+  toast(pat.fotosFamiliares[idx]?'📸 Foto marcada como recibida':'Foto desmarcada');
+  verCedulasCj();
 }
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }
 function removeIntegranteCj(i,j){ if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(p&&p.integrantes){ var quitado=p.integrantes[j]; p.integrantes.splice(j,1); if(p.jefe===quitado) p.jefe=''; saveCj(dataCj); renderPatrullasCj(); } }
@@ -3292,6 +3379,19 @@ function submitInscripcionCj(){
   })(0);
 }
 // "Mi patrulla": tarjeta editable para la patrulla logueada (pestaña Patrullas)
+// Calcula puntaje total + posicion en el ranking para una patrulla oficial por nombre
+// (misma logica que renderRankingCj). Devuelve null si la patrulla todavia no esta en la
+// lista oficial (por ejemplo, una autoinscripcion recien enviada que el admin no aprobo).
+function puntajeYPosicionCj(nombre){
+  dataCj=loadCj();
+  var oficial=(dataCj.patrullas||[]).filter(function(x){return x.nombre===nombre;})[0];
+  if(!oficial) return null;
+  var totals={}; (dataCj.patrullas||[]).forEach(function(x){ totals[x.nombre]=0; });
+  (dataCj.puntajes||[]).forEach(function(x){ if(totals[x.patrulla]===undefined) totals[x.patrulla]=0; totals[x.patrulla]+=Number(x.puntos)||0; });
+  var arr=Object.keys(totals).map(function(k){return {nombre:k,pts:totals[k]};}).sort(function(a,b){return b.pts-a.pts;});
+  var pos=-1; for(var i=0;i<arr.length;i++){ if(arr[i].nombre===nombre){pos=i+1;break;} }
+  return { oficial:oficial, puntaje:totals[nombre]||0, posicion:pos, total:arr.length };
+}
 function renderMiPatrullaCj(){
   var c=document.getElementById('cj-mi-patrulla'); if(!c) return;
   if(!currentUser||currentUser.type!=='patrulla'){ c.innerHTML=''; return; }
@@ -3303,8 +3403,24 @@ function renderMiPatrullaCj(){
     return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'+esc(m)
       +' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarIntegranteMiPatrulla('+j+')">×</span></span>';
   }).join('');
+  var pyp = puntajeYPosicionCj(p.nombre);
+  var puntajeHtml = pyp
+    ? '<div class="card" style="border-left:3px solid var(--gold);margin-top:10px;"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🏆 Tu puntaje</div>'
+      + '<div style="display:flex;align-items:baseline;gap:14px;"><span style="font-size:26px;font-weight:900;color:var(--gold);">'+pyp.puntaje+'</span><span style="color:var(--w50);font-size:13px;">puesto '+pyp.posicion+' de '+pyp.total+'</span></div></div>'
+    : '<div class="card" style="border-left:3px solid var(--w30);margin-top:10px;"><p style="color:var(--w50);font-size:12.5px;margin:0;">Todavía no tenés puntaje — aparece apenas el staff confirme tu patrulla y cargue el primer juego.</p></div>';
+  var fotosHtml = '';
+  if(pyp && pyp.oficial){
+    var ofInteg = pyp.oficial.integrantes||[], fotos = pyp.oficial.fotosFamiliares||[];
+    if(ofInteg.length){
+      fotosHtml = '<div class="card" style="margin-top:10px;"><div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📸 Fotos familiares</div>'
+        + '<p style="font-size:11.5px;color:var(--w50);margin-bottom:6px;">El staff marca acá quién ya entregó la suya.</p>'
+        + ofInteg.map(function(m,i){ return '<div style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:13px;">'+(fotos[i]?'✅':'⬜')+' <span style="flex:1;">'+esc(m)+'</span></div>'; }).join('')
+        + '</div>';
+    }
+  }
   c.innerHTML='<div class="card" style="border:1px solid var(--neon-dim);">'
     +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div style="font-weight:800;font-size:15px;flex:1;">🚩 Mi patrulla</div>'+estado+'</div>'
+    +'<p style="font-size:12px;color:var(--w50);margin-top:6px;">Acá podés cargar el grito de guerra de tu patrulla y revisar tu puntaje. También podés ver a las demás patrullas en la pestaña Patrullas y toda la esencia del Tesoro en Inicio.</p>'
     +'<div class="form-group" style="margin-top:10px;"><label>Nombre</label><input type="text" id="cj-mi-nombre"></div>'
     +'<div class="form-group"><label>Jefe / responsable</label><input type="text" id="cj-mi-jefe"></div>'
     +'<div class="form-group"><label>Celular</label><input type="tel" id="cj-mi-celular"></div>'
@@ -3312,31 +3428,41 @@ function renderMiPatrullaCj(){
     +'<div style="font-size:12px;color:var(--w50);margin-bottom:4px;">Integrantes ('+(p.integrantes?p.integrantes.length:0)+')</div>'
     +'<div>'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
     +'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-mi-nuevo-integ" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')agregarIntegranteMiPatrulla()" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarIntegranteMiPatrulla()">+ Integrante</button></div>'
-    +'<button class="btn btn-primary btn-block" onclick="guardarMiPatrulla()" style="margin-top:12px;">💾 Guardar cambios</button>'
-    +'</div>';
+    +'<div class="form-group" style="margin-top:10px;"><label>📣 Grito de guerra</label><textarea id="cj-mi-grito" rows="4" placeholder="Escribí acá el grito de guerra de tu patrulla..." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea></div>'
+    +'<button class="btn btn-primary btn-block" onclick="guardarMiPatrulla()" style="margin-top:6px;">💾 Guardar cambios</button>'
+    +'</div>'
+    +puntajeHtml+fotosHtml;
   document.getElementById('cj-mi-nombre').value=p.nombre||'';
   document.getElementById('cj-mi-jefe').value=p.jefe||'';
   document.getElementById('cj-mi-celular').value=p.celular||'';
   document.getElementById('cj-mi-correo').value=p.correo||'';
+  document.getElementById('cj-mi-grito').value=p.grito||'';
 }
 function _persistirMiPatrulla(msgOk){
   if(!currentUser||currentUser.type!=='patrulla'||!fbReady||!inscCjRef) return;
   var p=currentUser.patrulla;
-  if(p.estado==='aprobada') p.estado='editada'; // el staff ve que hubo cambios después de confirmar
+  // Las patrullas oficiales (esOficial) no pasan por revision del admin - no tiene sentido
+  // marcarlas "editada" (eso es para que el staff note ediciones post-aprobacion de autoinscripciones).
+  if(p.estado==='aprobada' && !p.esOficial) p.estado='editada';
   inscCjRef.child(currentUser.pin).set(p).then(function(){ if(msgOk) toast(msgOk); renderMiPatrullaCj(); })
     .catch(function(){ toast('Error al guardar — revisá tu conexión'); });
 }
 function guardarMiPatrulla(){
   if(!currentUser||currentUser.type!=='patrulla') return;
+  var p=currentUser.patrulla;
   var nombre=document.getElementById('cj-mi-nombre').value.trim();
   var jefe=document.getElementById('cj-mi-jefe').value.trim();
   var celular=document.getElementById('cj-mi-celular').value.trim();
   if(!nombre){toast('El nombre no puede quedar vacío');return;}
-  if(!jefe){toast('El jefe no puede quedar vacío');return;}
-  if(!celular){toast('El celular no puede quedar vacío');return;}
-  var p=currentUser.patrulla;
+  // Las patrullas oficiales ya tienen jefe/celular manejados por el staff en su tarjeta - acá
+  // esos campos son opcionales (lo unico obligatorio es no dejar el nombre vacio).
+  if(!p.esOficial){
+    if(!jefe){toast('El jefe no puede quedar vacío');return;}
+    if(!celular){toast('El celular no puede quedar vacío');return;}
+  }
   p.nombre=nombre; p.jefe=jefe; p.celular=celular;
   p.correo=document.getElementById('cj-mi-correo').value.trim();
+  p.grito=document.getElementById('cj-mi-grito').value.trim();
   _persistirMiPatrulla('Cambios guardados ✅');
   updateUserBadge();
 }
@@ -3357,9 +3483,9 @@ function renderInscripcionesAdminCj(){
   var c=document.getElementById('cj-inscripciones-admin'); if(!c) return;
   if(!isAdmin()||!fbReady||!inscCjRef){ c.innerHTML=''; return; }
   var pr = inscCjRef.once('value', function(snap){
-    var v=snap.val();
-    if(!v){ c.innerHTML='<div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">📥 Inscripciones online</div><p style="color:var(--w50);font-size:13px;margin-top:6px;">Todavía no llegó ninguna.</p></div>'; return; }
-    var keys=Object.keys(v).sort(function(a,b){ return (v[a].fecha||'')<(v[b].fecha||'')?1:-1; });
+    var v=snap.val()||{};
+    var keys=Object.keys(v).filter(function(k){ return v[k] && !v[k].esOficial; }).sort(function(a,b){ return (v[a].fecha||'')<(v[b].fecha||'')?1:-1; });
+    if(!keys.length){ c.innerHTML='<div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">📥 Inscripciones online</div><p style="color:var(--w50);font-size:13px;margin-top:6px;">Todavía no llegó ninguna.</p></div>'; return; }
     c.innerHTML='<div class="card"><div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📥 Inscripciones online ('+keys.length+')</div>'
       +keys.map(function(k){
         var r=v[k]; var ints=normIntegrantesCj(r.integrantes);
@@ -3384,13 +3510,52 @@ function aprobarInscripcionCj(pin){
     dataCj=loadCj();
     var idx=-1;
     for(var i=0;i<dataCj.patrullas.length;i++){ if(dataCj.patrullas[i].nombre===r.nombre){idx=i;break;} }
-    var pat={ nombre:r.nombre, jefe:r.jefe||'', integrantes:ints, subcampo: idx>=0 ? (dataCj.patrullas[idx].subcampo||'') : '' };
+    var anterior = idx>=0 ? dataCj.patrullas[idx] : null;
+    // Se preservan campos que solo maneja el admin desde la tarjeta de la patrulla (color, escudo,
+    // subcampo, fotos familiares) - la inscripcion online no los toca, no hay que perderlos al aprobar.
+    var pat={ nombre:r.nombre, jefe:r.jefe||'', integrantes:ints, subcampo: anterior?(anterior.subcampo||''):'' };
+    if(anterior){
+      if(anterior.color) pat.color=anterior.color;
+      if(anterior.color2) pat.color2=anterior.color2;
+      if(anterior.escudo) pat.escudo=anterior.escudo;
+      if(anterior.fotosFamiliares) pat.fotosFamiliares=anterior.fotosFamiliares;
+    }
     if(idx>=0) dataCj.patrullas[idx]=pat; else dataCj.patrullas.push(pat);
     saveCj(dataCj);
     inscCjRef.child(pin).update({estado:'aprobada'});
     renderPatrullasCj(); renderRankingCj();
     toast('Patrulla aprobada ✔');
   });
+}
+// Acceso de patrulla oficial (cargada por admin, no por autoinscripcion): genera o muestra el PIN
+// que le vamos a compartir a la patrulla para que entre a "Mi patrulla" (grito, puntaje, fotos).
+// Reusa el mismo nodo/mecanismo de campajor_inscripciones, marcado con esOficial:true para que
+// no aparezca en la bandeja de "Inscripciones online" (esa es para revisar autoinscripciones nuevas).
+function accesoPatrullaCj(i){
+  if(!isAdmin() || !fbReady || !inscCjRef) return;
+  dataCj=loadCj();
+  var p=dataCj.patrullas[i]; if(!p) return;
+  var pr = inscCjRef.once('value', function(snap){
+    var v=snap.val()||{};
+    var pinExistente=null;
+    Object.keys(v).forEach(function(k){ if(v[k] && v[k].esOficial && v[k].nombre===p.nombre) pinExistente=k; });
+    if(pinExistente){
+      prompt('Clave de acceso de "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pinExistente);
+      return;
+    }
+    (function intentar(n){
+      if(n>=8){ toast('No se pudo generar la clave, probá de nuevo'); return; }
+      var pin=String(Math.floor(100000+Math.random()*900000));
+      inscCjRef.child(pin).once('value', function(s2){
+        if(s2.exists()) return intentar(n+1);
+        var reg={ pin:pin, nombre:p.nombre, jefe:p.jefe||'', celular:'', correo:'', integrantes:(p.integrantes||[]).slice(), estado:'aprobada', esOficial:true, fecha:new Date().toISOString() };
+        inscCjRef.child(pin).set(reg).then(function(){
+          prompt('Clave generada para "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pin);
+        }).catch(function(){ toast('Error al generar la clave'); });
+      }, function(){ toast('Error de conexión'); });
+    })(0);
+  });
+  if(pr && pr.catch) pr.catch(function(){});
 }
 function rechazarInscripcionCj(pin){
   if(!isAdmin())return;

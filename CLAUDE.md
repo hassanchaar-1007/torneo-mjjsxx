@@ -375,6 +375,60 @@ Eventos actuales:
   como admin real; falta que el propio admin abra el visor logueado para confirmar que lee bien.
 - sw subió a **v3.40**.
 
+### Etapa 12 — Sesión del 28/09/2026 (portal del jornadista: acceso por patrulla, grito de guerra, dashboard de staff)
+- **Pedido del usuario**: que los inscriptos (de patrullas ya oficiales, no solo autoinscripciones
+  online) tengan un espacio propio para ver la esencia y las demás patrullas, entrar con una
+  clave que el staff les va a compartir, cargar el grito de guerra de su patrulla, ver su
+  puntaje, y chequear si ya entregaron sus fotos familiares — todo visible también para el
+  staff en un dashboard.
+- **Nueva pestaña pública "🎒 Qué llevar"** (`#page-cj-quellevar`, entre Cronograma y Postas):
+  checklist de qué llevar / qué no llevar al CAMPAJOR, más una tarjeta "¿Qué te vas a encontrar?"
+  que abre curiosidad sobre el Tesoro sin spoilear, cerrando con el "¡Viví tu momento!" ya
+  establecido como respuesta a quien pregunta de más. Contenido hardcodeado, sin nodo Firebase.
+- **Acceso por patrulla para las patrullas OFICIALES** (las que carga el admin directo en
+  `campajor.patrullas` — CENTINELAS, LOS MBORE, JAGUA TIRIKA, Formulario 2 — a diferencia de
+  las que se autoinscriben online): en vez de inventar un nodo/regla RTDB nueva, se reusa el
+  mecanismo YA PUBLICADO de `campajor_inscripciones/$pin` (el PIN es la llave: quien lo conoce
+  puede leer/editar ESE registro, nadie puede listar el nodo completo salvo el admin). El admin
+  tiene un botón **"🔑 Acceso"** en la tarjeta de cada patrulla (`accesoPatrullaCj(i)`, en
+  Patrullas): si la patrulla no tiene clave todavía, sortea un PIN de 6 dígitos y crea un
+  registro `campajor_inscripciones/<PIN>` con `esOficial:true` (copia nombre/jefe/integrantes,
+  celular/correo vacíos, `estado:'aprobada'`) y se lo muestra en un `prompt()` para copiarlo y
+  pasárselo a la patrulla por WhatsApp; si ya existe, vuelve a mostrar el mismo PIN. Login: el
+  mismo de siempre (botón Entrar → PIN) — `doLogin()` no necesitó ningún cambio, ya buscaba en
+  `campajor_inscripciones/<pin>`.
+  - Los registros `esOficial:true` se **excluyen** de la bandeja "📥 Inscripciones online" del
+    admin (esa es para revisar autoinscripciones nuevas, no para listar los accesos ya armados).
+  - `_persistirMiPatrulla`/`guardarMiPatrulla` tratan a las oficiales distinto: no se marcan
+    `estado:'editada'` al guardar (no tiene sentido, no hay revisión pendiente) y jefe/celular
+    dejan de ser obligatorios para guardar (una patrulla oficial ya tiene esos datos manejados
+    por el staff en su tarjeta — acá solo hace falta el nombre).
+- **"Mi patrulla" ampliada** (`renderMiPatrullaCj`): se agregó un textarea **"📣 Grito de
+  guerra"** (campo nuevo `grito` en el registro de `campajor_inscripciones/<pin>`, se guarda
+  con el mismo botón "Guardar cambios"); una tarjeta de solo lectura **"🏆 Tu puntaje"**
+  (`puntajeYPosicionCj(nombre)`, misma cuenta que el Ranking público, busca la patrulla por
+  nombre en `dataCj.patrullas`); y una tarjeta de solo lectura **"📸 Fotos familiares"** con un
+  ✅/⬜ por integrante de la lista OFICIAL (no de la copia local editable, para no desalinear
+  índices si alguien edita "Mi patrulla" sin que el admin vuelva a aprobar).
+- **`fotosFamiliares` se movió de `campajor_privado` al objeto PÚBLICO de la patrulla**
+  (`campajor.patrullas[i].fotosFamiliares`, array paralelo a `integrantes`): no es un dato
+  sensible (solo sí/no de si entregó una foto), así que no hace falta la regla admin-only — y
+  así la propia patrulla lo puede leer desde "Mi patrulla" sin pedir ninguna regla nueva. Se
+  migraron con un script puntual (Admin SDK, corrido y borrado) los 2 registros que ya lo tenían
+  cargado (JAGUA TIRIKA y Formulario 2). El visor admin "🪪 Datos privados" sigue mostrando y
+  tildando la casilla igual que antes (`toggleFotoFamiliarCj` ahora escribe en `campajor` vía
+  `saveCj`, no en `campajor_privado`); cédula/celular/fecha/alergias siguen en `campajor_privado`
+  (esos sí son sensibles, con la regla admin-only vigente).
+- **Dashboard de staff** (`#cj-dashboard-staff`, arriba de todo en la pestaña Ranking,
+  admin-only): por cada patrulla oficial, de un vistazo — puntaje + puesto, avance de fotos
+  familiares (ej. "3/10 — faltan 7"), y el grito de guerra si ya lo cargaron (leído de
+  `campajor_inscripciones` filtrando `esOficial:true`, cruzado por nombre).
+- **Fix de confiabilidad de paso**: `aprobarInscripcionCj` (cuando el admin aprueba una
+  autoinscripción online) antes REEMPLAZABA el registro oficial entero con
+  `{nombre,jefe,integrantes,subcampo}`, perdiendo `color`/`color2`/`escudo`/`fotosFamiliares` si
+  esa patrulla ya los tenía cargados. Ahora los preserva desde el registro anterior.
+- sw subió a **v3.41**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -470,11 +524,14 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
   fixture: {...}, goleadores: [...], nextPin: N, campeones: [{anio, campeon}] }
 // dataCj (campajor):
 { patrullas: [{nombre, jefe, integrantes:[str], subcampo:'SANTO TOMÁS'|'SANTIAGO'|'SAN JUAN'|'SAN PEDRO'|'',
-               color:'#hex', color2:'#hex' (opcional, bicolor), escudo:'data:image/jpeg;base64,...' (opcional)}],
+               color:'#hex', color2:'#hex' (opcional, bicolor), escudo:'data:image/jpeg;base64,...' (opcional),
+               fotosFamiliares:[bool] (opcional, paralelo a integrantes - NO es sensible, va publico)}],
   puntajes: [{patrulla, juego, puntos}],
   premios: [{virtud, patrulla, motivo}] }  // premios "Virtud del Jornadista"
-// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str], fotosFamiliares:[bool] }
+// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str] }
 // (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
+// campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo
+// autoinscripciones): { ..., esOficial:true, grito:str } - ver Etapa 12, seccion 7.
 // (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
@@ -541,7 +598,15 @@ callback de error — atajar con `var pr=ref.once(...); if(pr&&pr.catch) pr.catc
 |---|---|---|---|
 | **Admin/staff** | Botón "Entrar" → email `hassan.chaar@gmail.com` + contraseña (Firebase Auth) | TODO: editar equipos, fixture, goleadores, patrullas oficiales, puntajes, aprobar/eliminar inscripciones, restaurar backups | Firebase Auth mantiene la sesión; `onAuthStateChanged` la restaura |
 | **Equipo (torneo)** | Botón "Entrar" → PIN secuencial (1, 2, 3…, `nextPin`) | Ver su panel de equipo (funcionalidad de la época del torneo; hoy sin uso activo) | No persiste recarga. OJO: en modo público `data.teams` viene sin PINs (buildPublic los quita) — el login de equipo solo matchea con datos locales |
-| **Patrulla (campajor)** | Se autologuea al inscribirse, o botón "Entrar" → PIN de 6 dígitos (busca en `campajor_inscripciones/<pin>`) | Ver/editar SU patrulla en la pestaña Patrullas ("Mi patrulla"): nombre, jefe, celular, correo, integrantes | `localStorage['cj_patrulla_pin']` — se restaura al recargar; logout la borra |
+| **Patrulla (campajor)** | Se autologuea al inscribirse, o botón "Entrar" → PIN de 6 dígitos (busca en `campajor_inscripciones/<pin>`) | Ver/editar SU patrulla en la pestaña Patrullas ("Mi patrulla"): nombre, jefe, celular, correo, integrantes, **grito de guerra**; ver de solo lectura su **puntaje/puesto** y el **check de fotos familiares** | `localStorage['cj_patrulla_pin']` — se restaura al recargar; logout la borra |
+
+**Acceso de patrulla OFICIAL (no autoinscripta) — Etapa 12:** las patrullas que carga el admin
+directo (bulk-load / Admin SDK) no nacen con PIN. El admin genera uno desde el botón
+**"🔑 Acceso"** en la tarjeta de la patrulla (Patrullas): `accesoPatrullaCj(i)` crea un
+`campajor_inscripciones/<PIN>` con `esOficial:true` (mismo mecanismo de siempre, PIN=llave) y
+lo muestra para copiarlo y pasárselo a la patrulla. Esas patrullas entran por el mismo login de
+PIN de toda la vida; no aparecen en la bandeja de "Inscripciones online" (esa es solo para
+autoinscripciones nuevas a revisar). Ver Etapa 12 en la sección 2 para el detalle completo.
 
 **Flujo completo de la inscripción de patrulla:**
 1. Visitante → CAMPAJOR → pestaña "Inscripción" (o CTA del inicio) → completa nombre patrulla,
