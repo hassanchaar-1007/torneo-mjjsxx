@@ -549,7 +549,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div id="cj-masiva-preview" style="margin-top:10px;"></div>
     </div>
     <div class="card" id="cj-cedulas-viewer" style="display:none;border:1px dashed var(--danger,#ff5a5a);">
-      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Cédulas · solo Staff (control de entrada a Tati Yupi)</div>
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Datos privados · solo Staff (cédula, celular, fecha, alergias, fotos familiares)</div>
       <div class="form-group" style="margin-top:8px;"><label>Patrulla</label><select id="cj-ced-patrulla" onchange="verCedulasCj()"></select></div>
       <div id="cj-ced-lista" style="margin-top:8px;font-size:13px;color:var(--w80);line-height:1.7;"></div>
     </div>
@@ -2661,10 +2661,38 @@ function detectarColorPatrullaCj(nombre){
   for(var i=0;i<claves.length;i++){ if(n.indexOf(claves[i]) !== -1) return COLORES_PATRULLA_CJ[claves[i]]; }
   return null;
 }
-function iconoRemeraCj(nombre){
-  var color = detectarColorPatrullaCj(nombre);
+// Paleta para el selector de color en el admin (nombre bonito -> hex). El admin elige acá
+// en vez de tener que pedirle a Claude que detecte el color por el nombre de la patrulla.
+var PALETA_COLORES_CJ = [
+  {l:'Verde musgo', h:'#5a6b3f'}, {l:'Verde', h:'#00e676'}, {l:'Naranja', h:'#ff8c1a'},
+  {l:'Lila', h:'#b78bff'}, {l:'Violeta', h:'#9b59ff'}, {l:'Morado/Púrpura', h:'#8e44ad'},
+  {l:'Rojo', h:'#ff5a5a'}, {l:'Bordó', h:'#8b2e3f'}, {l:'Celeste', h:'#7ab8ff'}, {l:'Azul', h:'#4da6ff'},
+  {l:'Amarillo', h:'#ffc828'}, {l:'Dorado', h:'#ffd700'}, {l:'Rosa/Fucsia', h:'#ff2ea6'},
+  {l:'Negro', h:'#3a3a3a'}, {l:'Blanco', h:'#ffffff'}, {l:'Gris', h:'#9aa0a6'}, {l:'Plateado', h:'#c0c0c0'},
+  {l:'Marrón', h:'#8b5a2b'}, {l:'Turquesa', h:'#1abc9c'}, {l:'Cian', h:'#22d3ee'}
+];
+function selectColorCj(id, valorActual, onchangeFn){
+  return '<select id="'+id+'" onchange="'+onchangeFn+'" style="padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:12.5px;">'
+    + '<option value=""'+(!valorActual?' selected':'')+'>— sin color —</option>'
+    + PALETA_COLORES_CJ.map(function(c){ return '<option value="'+c.h+'"'+(valorActual===c.h?' selected':'')+'>'+c.l+'</option>'; }).join('')
+    + '</select>';
+}
+// Acepta el objeto patrulla completo ({color,color2,nombre}) o, por compatibilidad, un nombre
+// suelto (cae al detector por palabra clave). Bicolor: rayas verticales dentro del mismo ícono.
+function iconoRemeraCj(p){
+  var color, color2, nombre;
+  if(p && typeof p === 'object'){ nombre = p.nombre; color = p.color || detectarColorPatrullaCj(nombre); color2 = p.color2 || ''; }
+  else { nombre = p; color = detectarColorPatrullaCj(nombre); color2 = ''; }
   if(!color) return '';
-  return '<svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:3px;" xmlns="http://www.w3.org/2000/svg"><path fill="'+color+'" stroke="rgba(255,255,255,.35)" stroke-width="1" d="M16.5 3.5L12 7 7.5 3.5 2 6.5l2.8 4.3L7 9.8V21h10V9.8l2.2 1 2.8-4.3z"/></svg>';
+  var path = 'M16.5 3.5L12 7 7.5 3.5 2 6.5l2.8 4.3L7 9.8V21h10V9.8l2.2 1 2.8-4.3z';
+  if(color2){
+    var cid = 'rc'+Math.random().toString(36).slice(2,9);
+    return '<svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:3px;" xmlns="http://www.w3.org/2000/svg">'
+      + '<defs><clipPath id="'+cid+'"><path d="'+path+'"/></clipPath></defs>'
+      + '<g clip-path="url(#'+cid+')"><rect x="0" y="0" width="12" height="24" fill="'+color+'"/><rect x="12" y="0" width="12" height="24" fill="'+color2+'"/></g>'
+      + '<path d="'+path+'" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1"/></svg>';
+  }
+  return '<svg width="15" height="15" viewBox="0 0 24 24" style="vertical-align:-3px;margin-right:3px;" xmlns="http://www.w3.org/2000/svg"><path fill="'+color+'" stroke="rgba(255,255,255,.35)" stroke-width="1" d="'+path+'"/></svg>';
 }
 function subcampoBadgeCj(sc){
   if(!sc) return '';
@@ -2736,7 +2764,7 @@ function renderInscriptosCj(){
   if(_inscriptosIdx < 0) _inscriptosIdx = patrullas.length - 1;
   var p = patrullas[_inscriptosIdx];
   var n = (p.integrantes || []).length;
-  document.getElementById('cj-inscriptas-nombre').innerHTML = iconoRemeraCj(p.nombre) + esc(p.nombre) + ' (' + n + ')';
+  document.getElementById('cj-inscriptas-nombre').innerHTML = iconoRemeraCj(p) + esc(p.nombre) + ' (' + n + ')';
   document.getElementById('cj-inscriptas-contador').textContent = (_inscriptosIdx + 1) + ' / ' + patrullas.length;
   var listEl = document.getElementById('cj-inscriptas-integrantes');
   if(n){
@@ -2832,14 +2860,29 @@ function renderPatrullasCj(){
     }).join('');
     var scSel = '';
     if(isAdmin()){
-      scSel = '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;"><span style="font-size:12px;color:var(--w50);">Subcampo:</span><select onchange="setSubcampoCj('+i+',this.value)" style="padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:12.5px;">'
+      scSel = '<div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;">'
+        + '<span style="font-size:12px;color:var(--w50);">Subcampo:</span><select onchange="setSubcampoCj('+i+',this.value)" style="padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:12.5px;">'
         + '<option value=""'+(p.subcampo?'':' selected')+'>— sin asignar —</option>'
         + SUBCAMPOS_CJ.map(function(sc){ return '<option value="'+sc+'"'+(p.subcampo===sc?' selected':'')+'>'+sc+'</option>'; }).join('')
-        + '</select></div>';
+        + '</select>'
+        + '<span style="font-size:12px;color:var(--w50);margin-left:6px;">Color:</span>'
+        + selectColorCj('cj-color1-'+i, p.color||'', 'setColorPatrullaCj('+i+',\'color\',this.value)')
+        + '<span style="font-size:12px;color:var(--w50);">+</span>'
+        + selectColorCj('cj-color2-'+i, p.color2||'', 'setColorPatrullaCj('+i+',\'color2\',this.value)')
+        + '</div>';
     }
+    var escudoBox;
+    if(p.escudo){
+      escudoBox = '<img src="'+p.escudo+'" style="width:44px;height:44px;border-radius:10px;object-fit:cover;border:1px solid var(--w30);'+(isAdmin()?'cursor:pointer;':'')+'"'+(isAdmin()?' title="Click para cambiar el escudo" onclick="document.getElementById(\'cj-escudo-'+i+'\').click()"':'')+'>'
+        + (isAdmin()?'<span onclick="quitarEscudoCj('+i+')" title="Quitar escudo" style="cursor:pointer;color:var(--danger,#ff5a5a);font-size:11px;display:block;text-align:center;">quitar</span>':'');
+    } else if(isAdmin()){
+      escudoBox = '<div onclick="document.getElementById(\'cj-escudo-'+i+'\').click()" title="Subir escudo" style="width:44px;height:44px;border-radius:10px;border:1px dashed var(--w30);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--w50);">🛡️</div>';
+    } else { escudoBox = ''; }
+    if(isAdmin()) escudoBox += '<input type="file" accept="image/*" id="cj-escudo-'+i+'" style="display:none" onchange="subirEscudoCj('+i+',this)">';
     return '<div class="card">'
       + '<div style="display:flex;align-items:center;gap:10px;">'
-      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+iconoRemeraCj(p.nombre)+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
+      +   (escudoBox?'<div style="flex-shrink:0;">'+escudoBox+'</div>':'')
+      +   '<div style="flex:1;font-weight:800;font-size:16px;">🚩 '+iconoRemeraCj(p)+esc(p.nombre)+subcampoBadgeCj(p.subcampo)
       +     (p.jefe?' <span style="color:var(--gold);font-size:13px;font-weight:700;">· 👑 '+esc(p.jefe)+'</span>':'')
       +     ' <span style="color:var(--w50);font-size:13px;font-weight:600;">('+(p.integrantes?p.integrantes.length:0)+')</span>'
       +     (isAdmin()?' <span title="Renombrar" style="cursor:pointer;opacity:.7;" onclick="renombrarPatrullaCj('+i+')">✏️</span>':'')+'</div>'
@@ -2850,6 +2893,46 @@ function renderPatrullasCj(){
       + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-integ-'+i+'" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')addIntegranteCj('+i+')" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="addIntegranteCj('+i+')">+ Integrante</button></div>':'')
       + '</div>';
   }).join('');
+}
+function setColorPatrullaCj(i, campo, valor){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  if(!dataCj.patrullas[i]) return;
+  dataCj.patrullas[i][campo] = valor;
+  saveCj(dataCj);
+  renderPatrullasCj(); renderRankingCj();
+}
+function subirEscudoCj(i, input){
+  if(!isAdmin() || !input.files || !input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var canvas = document.createElement('canvas');
+      var maxW=300, maxH=300, w=img.width, h=img.height;
+      if(w>maxW || h>maxH){ var ratio=Math.min(maxW/w, maxH/h); w=Math.round(w*ratio); h=Math.round(h*ratio); }
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+      dataCj=loadCj();
+      if(!dataCj.patrullas[i]) return;
+      dataCj.patrullas[i].escudo = dataUrl;
+      saveCj(dataCj);
+      renderPatrullasCj();
+      toast('Escudo cargado 🛡️');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+function quitarEscudoCj(i){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar el escudo de esta patrulla?')) return;
+  dataCj=loadCj();
+  if(!dataCj.patrullas[i]) return;
+  delete dataCj.patrullas[i].escudo;
+  saveCj(dataCj);
+  renderPatrullasCj();
 }
 function renderRankingCj(){
   dataCj=loadCj();
@@ -2882,10 +2965,10 @@ function renderRankingCj(){
   var l=document.getElementById('cj-ranking-list');
   if(arr.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Cargá patrullas y puntajes para ver el ranking</p>'; }
   else {
-    var scDePatrulla={}; dataCj.patrullas.forEach(function(p){ scDePatrulla[p.nombre]=p.subcampo||''; });
+    var scDePatrulla={}, patPorNombre={}; dataCj.patrullas.forEach(function(p){ scDePatrulla[p.nombre]=p.subcampo||''; patPorNombre[p.nombre]=p; });
     l.innerHTML = arr.map(function(r,i){
       var m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-      return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+iconoRemeraCj(r.nombre)+esc(r.nombre)+subcampoBadgeCj(scDePatrulla[r.nombre])+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
+      return '<div class="card" style="display:flex;align-items:center;gap:12px;padding:10px 14px;"><div style="font-size:20px;width:34px;text-align:center;">'+m+'</div><div style="flex:1;font-weight:800;font-size:16px;">'+iconoRemeraCj(patPorNombre[r.nombre]||r.nombre)+esc(r.nombre)+subcampoBadgeCj(scDePatrulla[r.nombre])+'</div><div style="color:var(--gold);font-weight:900;font-size:18px;">'+r.pts+'</div></div>';
     }).join('');
   }
   // Premios "Virtud del Jornadista"
@@ -3035,13 +3118,25 @@ function verCedulasCj(){
   out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Cargando...</p>';
   _cedulasPatrullaActual = nombre;
   var clave = sanitizarClaveCj(nombre);
-  var pr = privadoCjRef.child(clave).child('cedulas').once('value', function(snap){
-    var cedulas = snap.val() || [];
+  var pr = privadoCjRef.child(clave).once('value', function(snap){
+    var priv = snap.val() || {};
+    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotos = priv.fotosFamiliares || [];
     var integrantes = pat.integrantes || [];
     if(!integrantes.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Esta patrulla todavía no tiene integrantes cargados.</p>'; return; }
-    out.innerHTML = '<p style="font-size:11px;color:var(--w50);margin-bottom:4px;">Tocá una cédula para editarla o cargarla.</p>' + integrantes.map(function(m,i){
-      return '<div style="padding:3px 0;display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid var(--w20,rgba(255,255,255,.08));"><span style="flex:1;">'+esc(m)+'</span><span onclick="editarCedulaCj('+i+')" style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;white-space:nowrap;text-decoration:underline dotted;" title="Click para editar">'+esc(cedulas[i]||'— agregar')+'</span></div>';
-    }).join('');
+    var campo = function(valor, ph){ return '<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:700;white-space:nowrap;text-decoration:underline dotted;">'+esc(valor||('— '+ph))+'</span>'; };
+    out.innerHTML = '<p style="font-size:11px;color:var(--w50);margin-bottom:6px;">Tocá cualquier dato para editarlo o cargarlo. La casilla marca si ya mandó su foto familiar.</p>'
+      + '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;">'
+      + integrantes.map(function(m,i){
+          return '<tr style="border-bottom:1px solid var(--w20,rgba(255,255,255,.08));">'
+            + '<td style="padding:5px 6px 5px 0;font-weight:700;">'+esc(m)+'</td>'
+            + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'cedulas\',\'Cédula\')">🪪 '+campo(cedulas[i],'agregar cédula')+'</td>'
+            + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'celulares\',\'Celular\')">📱 '+campo(celulares[i],'agregar celular')+'</td>'
+            + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'fechasNacimiento\',\'Fecha de nacimiento\')">🎂 '+campo(fechas[i],'agregar fecha')+'</td>'
+            + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'alergias\',\'Alergias\')">⚕️ '+campo(alergias[i],'agregar alergias')+'</td>'
+            + '<td style="padding:5px 6px;text-align:center;" title="Foto familiar entregada"><input type="checkbox" '+(fotos[i]?'checked':'')+' onchange="toggleFotoFamiliarCj('+i+')" style="width:16px;height:16px;cursor:pointer;"></td>'
+            + '</tr>';
+        }).join('')
+      + '</table></div>';
   }, function(err){
     var msg = (err && err.code === 'PERMISSION_DENIED') || /permission_denied/i.test((err&&err.message)||'')
       ? 'Todavía no se publicaron las reglas de Firebase para <code>campajor_privado</code> (ver Etapa 9 de la biblia / runbook 9.4).'
@@ -3050,24 +3145,39 @@ function verCedulasCj(){
   });
   if(pr && pr.catch) pr.catch(function(){});
 }
-function editarCedulaCj(idx){
+function editarCampoPrivadoCj(idx, campo, label){
   if(!isAdmin())return;
   if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
   var nombre = _cedulasPatrullaActual;
   if(!nombre) return;
   var clave = sanitizarClaveCj(nombre);
-  var ref = privadoCjRef.child(clave).child('cedulas');
+  var ref = privadoCjRef.child(clave).child(campo);
   var pr = ref.once('value', function(snap){
     var actuales = snap.val() || [];
     var actual = actuales[idx] || '';
-    var nueva = prompt('Cédula:', actual);
+    var nueva = prompt(label+':', actual);
     if(nueva===null) return;
     nueva = nueva.trim();
     while(actuales.length <= idx) actuales.push('');
     actuales[idx] = nueva;
     var pr2 = ref.set(actuales);
-    pr2.then(function(){ toast('Cédula actualizada 🪪'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
+    pr2.then(function(){ toast(label+' actualizado 🪪'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
   }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+function toggleFotoFamiliarCj(idx){
+  if(!isAdmin())return;
+  if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
+  var nombre = _cedulasPatrullaActual;
+  if(!nombre) return;
+  var clave = sanitizarClaveCj(nombre);
+  var ref = privadoCjRef.child(clave).child('fotosFamiliares');
+  var pr = ref.once('value', function(snap){
+    var actuales = snap.val() || [];
+    while(actuales.length <= idx) actuales.push(false);
+    actuales[idx] = !actuales[idx];
+    ref.set(actuales).then(function(){ toast(actuales[idx]?'📸 Foto marcada como recibida':'Foto desmarcada'); }).catch(function(){ toast('⚠️ No se pudo guardar'); verCedulasCj(); });
+  }, function(){ toast('⚠️ No se pudo leer'); });
   if(pr && pr.catch) pr.catch(function(){});
 }
 function addIntegranteCj(i){ if(!isAdmin())return; var el=document.getElementById('cj-integ-'+i); var n=el?el.value.trim():''; if(!n){toast('Poné un nombre');return;} dataCj=loadCj(); if(dataCj.patrullas[i]){ dataCj.patrullas[i].integrantes.push(n); saveCj(dataCj); renderPatrullasCj(); toast('Integrante agregado'); } }

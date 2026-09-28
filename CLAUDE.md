@@ -320,6 +320,61 @@ Eventos actuales:
   editado era el jefe, actualiza `p.jefe` también); `editarCedulaCj(idx)` (desde el visor de
   cédulas, click en el valor — lee/escribe `campajor_privado/<clave>/cedulas[idx]`).
 
+### Etapa 11 — Sesión del 27/09/2026 (reconciliación de datos + color estructurado + escudos + datos privados completos)
+- **Bug propio detectado y arreglado**: un script mío de corrección de JAGUA TIRIKA (nombre
+  apellido real "Lujan Ramirez", no "Lujan Cardozo" + grupos sanguíneos + jefe) buscó el
+  registro por nombre exacto, pero el usuario ya lo había renombrado a MAYÚSCULAS
+  (`JAGUA TIRIKA (VERDE MUSGO)`) editando desde la app — el match case-sensitive falló y creó
+  una **patrulla duplicada** en vez de corregir la existente. Se fusionó a mano (Admin SDK):
+  la integración correcta pasó al registro canónico, se borró el duplicado, y se migraron las
+  claves huérfanas de `campajor_privado` (habían quedado con el casing viejo, tanto de esta
+  duplicación como de un desajuste previo en LOS MBORE) a las claves reales. **Lección: nunca
+  asumir el nombre exacto guardado — siempre leer el estado en vivo antes de un script que
+  escribe por nombre, sobre todo si el admin pudo haber renombrado algo entre sesiones.**
+- **Reconciliación completa confirmada**: "CENTINELAS (BORDÓ)" = la ex "Patrulla Lila (a
+  confirmar nombre)", renombrada por el propio usuario con `renombrarPatrullaCj` — es su
+  "J52 bordo". El ZIP de Google Forms en Descargas (`Formulario sin título.csv.zip`) contenía
+  exactamente 2 respuestas: la corrección de JAGUA TIRIKA (arriba) y una 2ª patrulla nueva de
+  10 personas (Alan Martinez líder) que el usuario pidió dejar como **"Formulario 2 (a
+  confirmar nombre)"**, totalmente editable, hasta que la nombre. LOS MBORE quedó con jefe
+  **Julian Garay** (confirmado por la planilla que pasó el usuario). Sin contradicciones entre
+  la lista de 9 patrullas/colores del usuario y lo cargado; quedan sin integrantes: Los Gatis,
+  Los Loritos, Caperucitas, keperseguidos, Panteras, Halcones.
+- **Color estructurado por patrulla** (`p.color`/`p.color2`, hex): `PALETA_COLORES_CJ` (20
+  colores con nombre bonito) + `selectColorCj()` arma un `<select>`; el admin elige el color
+  de la patrulla **desde la propia tarjeta** (junto al selector de Subcampo) sin tener que
+  pedírselo a Claude. `iconoRemeraCj(p)` ahora recibe el **objeto patrulla completo** (antes
+  recibía solo el nombre y dependía de que la palabra apareciera en el nombre vía
+  `detectarColorPatrullaCj`, que se mantiene como fallback de compatibilidad para patrullas
+  sin color explícito todavía). Si hay `color2`, dibuja una **remera bicolor a rayas
+  verticales** (SVG con `clipPath` + dos `rect`) — para keperseguidos 🖤💛 y Halcones 🖤💚.
+  `setColorPatrullaCj(i,campo,valor)` guarda. Se actualizaron los 3 call-sites que antes
+  pasaban solo el nombre: `renderPatrullasCj`, `renderRankingCj` (ahí no había ni objeto
+  patrulla a mano — se armó un mapa `nombre→patrulla` antes de renderizar la lista) y el
+  widget "Patrullas Inscriptas" del inicio.
+- **Escudos de patrulla** (`p.escudo`, dataURL JPEG comprimido a máx. 300×300 @ calidad .7,
+  mismo patrón que `uploadComprobante` del torneo — no requiere Firebase Storage, vive
+  adentro del nodo RTDB de la patrulla): thumbnail de 44×44 al lado del nombre en la tarjeta de
+  Patrullas; si sos admin y no hay escudo, un placeholder 🛡️ clickeable abre el selector de
+  archivo (`subirEscudoCj(i,input)`); con escudo cargado, click para reemplazar o "quitar"
+  (`quitarEscudoCj(i)`, con `confirm()`).
+- **Visor "🪪 Datos privados · solo Staff" ampliado** (antes solo mostraba/editaba cédula):
+  ahora es una tabla por integrante con **cédula, celular, fecha de nacimiento y alergias**
+  (todas editables con click → `prompt()`, función genérica `editarCampoPrivadoCj(idx,campo,
+  label)`) más una **casilla de "foto familiar entregada"** (`toggleFotoFamiliarCj(idx)`,
+  array paralelo `fotosFamiliares` en `campajor_privado/<clave>`). Todo vive en el mismo nodo
+  admin-only de siempre, nada nuevo en las reglas RTDB (sección 6 ya las contemplaba).
+- **Grupo sanguíneo público**: ya venía apareciendo en el texto del integrante ("· A+") para
+  JAGUA TIRIKA y Formulario 2 desde la reconciliación; falta agregarlo para LOS MBORE y
+  CENTINELAS (no se tenía el dato transcripto en esta sesión) y no se automatizó todavía en
+  el parser de carga masiva (`parseCargaMasivaCj`) — sigue siendo edición manual por integrante
+  vía `editarIntegranteCj`.
+- ⚠️ **Pendiente de verificar**: si las reglas de `campajor_privado` (sección 6) ya fueron
+  publicadas por el usuario en la consola — probado en este preview (sin sesión de staff) dio
+  `PERMISSION_DENIED` con el mensaje gracioso esperado, lo cual es normal SIN estar logueado
+  como admin real; falta que el propio admin abra el visor logueado para confirmar que lee bien.
+- sw subió a **v3.40**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -414,9 +469,12 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 { teams: [{id, pin, nombre, capitan, telefono, deporte, jugadores:[{nombre,numero}], status, fecha, comprobante}],
   fixture: {...}, goleadores: [...], nextPin: N, campeones: [{anio, campeon}] }
 // dataCj (campajor):
-{ patrullas: [{nombre, jefe, integrantes:[str], subcampo:'SANTO TOMÁS'|'SANTIAGO'|'SAN JUAN'|'SAN PEDRO'|''}],
+{ patrullas: [{nombre, jefe, integrantes:[str], subcampo:'SANTO TOMÁS'|'SANTIAGO'|'SAN JUAN'|'SAN PEDRO'|'',
+               color:'#hex', color2:'#hex' (opcional, bicolor), escudo:'data:image/jpeg;base64,...' (opcional)}],
   puntajes: [{patrulla, juego, puntos}],
   premios: [{virtud, patrulla, motivo}] }  // premios "Virtud del Jornadista"
+// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str], fotosFamiliares:[bool] }
+// (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
 // (normCj tiene alias de compat: subcampos viejos PERLA/SENDA/ANTORCHA/RED/FE/... → apóstoles)
 // inscripción campajor (campajor_inscripciones/<pin>):
 { pin, nombre, jefe, celular, correo, integrantes:[str], estado:'pendiente'|'aprobada'|'editada', fecha:ISO }
@@ -729,6 +787,14 @@ en el repo, aunque estén gitignored — mejor no tentar al destino.
 ---
 
 ## 13. Estado actual y pendientes (al cierre de la sesión del 12/07/2026)
+
+> ⚠️ Esta sección quedó congelada en el 12/07/2026. Para el estado real y los pendientes
+> vigentes, ver las **Etapas 6 a 11** en la sección 2 (roles/reglamento, layout, carga masiva,
+> Admin SDK, color estructurado, escudos, datos privados completos). Pendientes concretos de
+> la Etapa 11: cargar integrantes de Los Gatis/Los Loritos/Caperucitas/keperseguidos/Panteras/
+> Halcones, agregar grupo sanguíneo a LOS MBORE y CENTINELAS, automatizar el grupo sanguíneo en
+> `parseCargaMasivaCj`, y confirmar en vivo (logueado como staff) que el visor de datos privados
+> lee bien `campajor_privado`.
 
 ### ✅ TODO EN VIVO en https://jornadas-cop.pages.dev (sw v3.9)
 - [x] Reglas RTDB completas publicadas y verificadas (incluida `campajor_inscripciones`).
