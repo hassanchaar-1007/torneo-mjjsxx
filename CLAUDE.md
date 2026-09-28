@@ -469,6 +469,71 @@ Eventos actuales:
   Total: **10 patrullas** en `campajor.patrullas`.
 - sw subió a **v3.42**.
 
+### Etapa 14 — Sesión del 28/09/2026, tarde-noche (camino del Tesoro a Staff, color del plantel a marrón, 4 vasijas, postas/juegos editables con líder+integrantes)
+- **"El camino del Tesoro" (los 6 pasos del recorrido espiritual, dentro de la tarjeta Lema) se
+  sacó del Inicio público y se movió a Staff** ("eso no deben ver los que no son de staff"),
+  tarjeta nueva con borde dorado (no rojo-spoiler, es organizativo no un secreto de juego) justo
+  después de la intro de "Nuestro equipo".
+- **"El plantel de integración viste el AMARILLO" también se sacó del Inicio** (mismo pedido) y
+  **cambió a MARRÓN** — el usuario avisó que el color final del plantel ya no es amarillo. Ahora
+  vive como cierre de esa misma tarjeta en Staff. Actualizado también el comentario en el código
+  (`SUBCAMPOS_CJ`) para que no quede desactualizado.
+- **Layout del Inicio ajustado más**: el widget "Patrullas Inscriptas" se veía desalineado con el
+  hero cuando la patrulla mostrada tenía muchos integrantes (quedaba mucho más alto/angosto que
+  el hero, "descentrado"). Fix: `align-items:center` en la fila flex del hero+widget (antes
+  `flex-start`), el widget ahora usa `align-self:stretch` + `display:flex;flex-direction:column;
+  justify-content:center` para centrarse verticalmente, y `#cj-inscriptas-integrantes` tiene
+  `max-height:190px;overflow-y:auto` para que una patrulla con muchos integrantes no desborde el
+  widget — scroll interno en vez de estirar todo el bloque.
+- **"Las 4 vasijas" — acertijos de apertura** (Staff, tarjeta spoiler roja nueva después del
+  "Borrador del plantel"): idea del plantel (contexto del usuario: 4 vasijas, una por subcampo,
+  cada una con su acertijo — al resolverlo se abre y muestra la palabra de la virtud + reflexión;
+  después oración inicial y arranca la fogata; el cofre final es la perla con la Cruz, el
+  verdadero Tesoro = encontrarse con el Flaco). 4 acertijos, uno por subcampo/color: Santo
+  Tomás·Fe·Blanco y San Pedro·Sabiduría·Azul los pasó el usuario tal cual (WhatsApp, 16/09), el
+  de Santiago·Esperanza·Verde también, y el de **San Juan·Caridad·Rojo lo escribió Claude**
+  siguiendo el mismo estilo poético (marcado explícitamente como propuesta de Claude para que el
+  plantel lo revise).
+- **Postas y Juegos dejan de ser hardcodeados-de-solo-lectura y pasan a ser editables por el
+  admin**, con un modal de detalle al hacer click en cualquier tarjeta ("Ver más / editar ›"):
+  - `POSTAS_CJ`/`JUEGOS_CJ` (los arrays fijos en el código) pasan a ser solo la **semilla**:
+    `normCj` copia su contenido a `dataCj.postas`/`dataCj.juegos` la PRIMERA vez que no existen
+    todavía (`if(!d.postas){...}`), y de ahí en más esos arrays en `dataCj` son la fuente real —
+    viven en Firebase (`campajor.postas`/`campajor.juegos`) igual que patrullas/puntajes.
+  - `parseRespCj(resp)` parsea el viejo campo de texto libre `resp` ("Sofía, Teto y Calixto") a
+    un array de integrantes, usado solo en el momento de la siembra inicial.
+  - Modal `#cjDetalleModal` (nuevo, mismo patrón que los demás modales de la app) +
+    `abrirDetalleCj(tipo,n)` / `renderDetalleCj()` / `cerrarDetalleCj()`: admin ve inputs
+    editables (nombre, explicación, materiales, y según el tipo: oración/consigna/video para
+    postas o seguridad para juegos) más **líder** (texto libre) e **integrantes** (chips
+    editables, mismo patrón que "Mi patrulla") del equipo de staff a cargo de ese puesto;
+    cualquier otro visitante ve el detalle de solo lectura, incluido el equipo a cargo si ya
+    está cargado. `guardarDetalleCj()` guarda todo con `saveCj`.
+  - Las tarjetas de la lista (`renderPostasCj`/`renderJuegosCj`) ahora muestran "👑 Líder +N" si
+    ya hay equipo asignado, y un "Ver más / editar ›" al pie.
+  - **Líderes reales de las 5 postas cargados** (WhatsApp del usuario, 28/09): P1 Palo Borracho →
+    Massi + María Gloria · P2 Rondana con asiento → Candonga + Lorenzo · P3 La Lagartija →
+    Fabiana + Rodrigo Dure · P4 Pasa agua → Andrés + Selva · P5 Pasa huevo → Leslie + Fabio.
+    Cargado directo en Firebase vía Admin SDK (`campajor.postas`/`campajor.juegos` no existían
+    todavía ahí — se verificó antes de escribir). **Los juegos (24) quedan sin líder/integrantes
+    — "a confirmar" según el usuario**, el admin los va completando desde el modal de cada uno.
+  - **Alta y baja de postas/juegos**: pedido de seguimiento del usuario ("que sea editable para
+    cargar despues los juegos en postas... y los otros juegos que no son postas") — antes solo
+    se podían editar las 5 postas y 24 juegos ya sembrados, no agregar nuevos. Botón
+    "+ Agregar posta"/"+ Agregar juego" (admin-only, arriba de la grilla, `cj-postas-admin`/
+    `cj-yincanas-admin`) crea un ítem en blanco con el siguiente `n` correlativo y abre directo
+    el modal de detalle para completarlo (`agregarPostaCj()`/`agregarJuegoCj()`). El modal de
+    detalle suma un botón **"🗑️ Eliminar"** (`eliminarDetalleCj()`, con `confirm()`) para dar de
+    baja una posta/juego cargado de más. El título de la pestaña Juegos pasó de "Juegos (24)" a
+    "Juegos" a secas, ya que el número ahora puede cambiar.
+  - **Cronograma (sábado/domingo) también pasó a editable**, mismo patrón semilla-y-Firebase que
+    postas/juegos: `CRONO_SAB_CJ`/`CRONO_DOM_CJ` (arrays fijos `[hora,actividad]`) quedan como
+    default, `normCj` los copia a `dataCj.cronoSab`/`dataCj.cronoDom` (objetos `{hora,
+    actividad}`) la primera vez. Cada fila tiene ✏️ (`editarCronoCj(dia,i)`, 2 prompts) y ×
+    (`quitarCronoCj(dia,i)`, con confirm) para el admin, más un par de inputs + "+ Agregar"
+    (`agregarCronoCj(dia)`) al pie de cada día para sumar actividades nuevas.
+- sw subió a **v3.43**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -568,7 +633,13 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
                fotosFamiliares:[bool] (opcional, paralelo a integrantes - NO es sensible, va publico)}],
   puntajes: [{patrulla, juego, puntos}],
   premios: [{virtud, patrulla, motivo}],
-  gritoPlantel: str }  // grito de guerra DEL PLANTEL (uno solo) - editable en Staff, ver Etapa 13
+  gritoPlantel: str,
+  postas: [{n, nombre, mat, exp, vid, ora, consigna, lider:str, integrantes:[str]}],   // editable (alta/baja incluida), ver Etapa 14
+  juegos: [{n, nombre, exp, mat, seg, vir, lider:str, integrantes:[str]}],             // editable (alta/baja incluida), ver Etapa 14
+  cronoSab: [{hora, actividad}], cronoDom: [{hora, actividad}] }                       // editable, ver Etapa 14
+// postas/juegos/cronoSab/cronoDom se siembran una sola vez desde POSTAS_CJ/JUEGOS_CJ/
+// CRONO_SAB_CJ/CRONO_DOM_CJ (normCj) si todavia no existen en dataCj; de ahi en mas viven en
+// Firebase como el resto de dataCj (agregar/editar/eliminar items no toca los arrays fijos).
 // campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str] }
 // (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
 // campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo

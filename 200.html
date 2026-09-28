@@ -289,6 +289,16 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
   </div>
 </div>
 
+<!-- CAMPAJOR: DETALLE DE POSTA/JUEGO (ver mas + editar) -->
+<div class="modal-overlay" id="cjDetalleModal">
+  <div class="modal" id="cjDetalleModalBox" style="max-width:520px;max-height:85vh;overflow-y:auto;text-align:left;">
+    <div id="cjDetalleContent"></div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn btn-secondary" onclick="cerrarDetalleCj()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- SORTEO MODAL -->
 <div class="modal-overlay" id="sorteoModal">
   <div class="modal" style="max-width:460px;">
@@ -330,7 +340,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <!-- ═══ EVENTO CAMPAJOR: PÁGINAS ═══ -->
 <div class="page" id="page-cj-inicio">
   <div class="section-page" style="max-width:1500px;">
-    <div style="display:flex;gap:20px;align-items:flex-start;justify-content:center;flex-wrap:wrap;">
+    <div style="display:flex;gap:20px;align-items:center;justify-content:center;flex-wrap:wrap;">
     <div style="flex:2 1 420px;text-align:center;padding:20px 10px 8px;">
       <div style="font-size:46px;">🏕️</div>
       <h1 style="font-size:28px;font-weight:900;letter-spacing:2px;color:var(--neon);margin-top:6px;">CAMPAJOR</h1>
@@ -345,7 +355,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
-    <div class="card" id="cj-inscriptas-widget" style="flex:1 1 300px;max-width:380px;margin-top:20px;border:1px solid var(--neon-dim);text-align:center;">
+    <div class="card" id="cj-inscriptas-widget" style="flex:1 1 320px;max-width:380px;border:1px solid var(--neon-dim);text-align:center;align-self:stretch;display:flex;flex-direction:column;justify-content:center;">
       <div style="font-size:12.5px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-inscriptas-total">0</span>)</div>
       <div id="cj-inscriptas-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
       <div id="cj-inscriptas-carousel" style="margin-top:12px;">
@@ -357,7 +367,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           </div>
           <button onclick="navInscriptosCj(1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">›</button>
         </div>
-        <div id="cj-inscriptas-integrantes" style="margin-top:10px;font-size:12.5px;color:var(--w80);line-height:1.7;text-align:left;"></div>
+        <div id="cj-inscriptas-integrantes" style="margin-top:10px;font-size:12.5px;color:var(--w80);line-height:1.7;text-align:left;max-height:190px;overflow-y:auto;padding-right:4px;"></div>
       </div>
     </div>
     </div>
@@ -369,16 +379,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">La perla que llevás en tu vasija te recuerda que <b style="color:var(--gold);">Cristo es el Tesoro</b> por el que vale la pena darlo todo.</p>
       <p style="margin-top:8px;font-size:14px;font-style:italic;color:var(--w80);">"Llevamos este tesoro en vasijas de barro."<br><span style="font-size:12px;color:var(--w50);">2 Corintios 4,7</span></p>
       <p style="margin-top:10px;font-size:14.5px;font-weight:800;color:var(--neon);">Tú eres una vasija de barro llamada a custodiar el Tesoro del Reino.</p>
-      <div style="text-align:left;margin-top:16px;">
-        <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">🗺️ El camino del Tesoro en el CAMPAJOR</div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🔎</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Buscar a Dios</b> — el tesoro escondido: búsqueda del tesoro con pistas y senda en Santa Catalina. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,44)</span></div></div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">📝</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>El altar te espera</b> — la senda termina en el Altar Mayor, armado por el equipo de Espiritualidad. Cada patrulla escribe en una cartulina: <i>"¿Cómo llegué al Campajor?"</i> y <i>"¿Qué espero encontrar?"</i> — y la deja como <b>palanca</b> para el Flaco (así le decimos a Jesús con cariño), que las recibe con los brazos abiertos. El domingo, esas palancas se convierten en ofrenda de la Misa.</div></div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🦪</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>La perla preciosa</b> — la FE en Jesucristo: cuidarla como se cuida la oración. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,45-46)</span></div></div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">👑</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>La sabiduría de Salomón</b> — pedir sabiduría para distinguir el bien y el mal, y custodiar la perla de la fe con el bautismo y la oración. <span style="color:var(--w50);font-size:11.5px;">(1 Re 3,9)</span></div></div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">📜</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Domingo sabio</b> — los 5 propósitos para cuidar la fe.</div></div>
-        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🎣</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Echar la red</b> — lanzar la predicación y extender el apostolado: el Reino de Dios. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,47)</span></div></div>
-        <div style="display:flex;gap:10px;padding:9px 0 2px;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🙏</div><div style="flex:1;font-size:13px;line-height:1.5;font-style:italic;color:var(--gold);">Que Jesús nos ayude como plantel a formar este trabajo del CAMPAJOR.</div></div>
-      </div>
     </div>
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
@@ -447,7 +447,6 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
           <div style="font-size:12px;color:var(--w50);margin-top:3px;">💧 Agua: el mar de Galilea, el <i>agua viva</i> (Jn 4,14) y el bautismo que custodia la perla de la fe.</div>
         </div>
       </div>
-      <p style="margin-top:10px;font-size:12.5px;color:var(--gold);text-align:center;font-weight:700;">💛 Y el plantel de integración viste el AMARILLO — el color del Tesoro.</p>
     </div>
     <div class="card" style="text-align:center;grid-column:1/-1;">
       <p style="font-size:14px;line-height:1.7;color:var(--w80);">Solo recuerda: cuidá a los demás, respetá a tu líder, participá y disfrutá estos días con tu patrulla. 🫂<br>Y sobre todo… honremos a Dios en todo lo que hagamos. 🤍</p>
@@ -547,15 +546,17 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
 <div class="page" id="page-cj-postas">
   <div class="section-page" style="max-width:1180px;">
     <div class="section-title">🎪 Postas de recepción</div>
-    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">5 postas para el arranque del sábado — cada una encarna un <strong style="color:var(--gold);">tipo de oración</strong>: la patrulla lo vive jugando.</p>
+    <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Postas para el arranque del sábado — cada una encarna un <strong style="color:var(--gold);">tipo de oración</strong>: la patrulla lo vive jugando.</p>
+    <div id="cj-postas-admin" style="display:none;margin-bottom:12px;"><button class="btn btn-primary btn-sm" onclick="agregarPostaCj()">+ Agregar posta</button></div>
     <div id="cj-postas-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start;"></div>
   </div>
 </div>
 
 <div class="page" id="page-cj-yincanas">
   <div class="section-page" style="max-width:1180px;">
-    <div class="section-title">🎯 Juegos (24)</div>
+    <div class="section-title">🎯 Juegos</div>
     <p style="color:var(--w50);font-size:13px;margin-bottom:12px;">Catálogo de juegos con reglas, materiales y seguridad. Cada juego <strong style="color:var(--gold);">trabaja una virtud</strong>: las 3 teologales (🕊️ Fe, ⚓ Esperanza, ❤️‍🔥 Caridad) y las 4 cardinales (🦉 Prudencia, ⚖️ Justicia, 🦁 Fortaleza, 🌿 Templanza).</p>
+    <div id="cj-yincanas-admin" style="display:none;margin-bottom:12px;"><button class="btn btn-primary btn-sm" onclick="agregarJuegoCj()">+ Agregar juego</button></div>
     <div id="cj-yincanas-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;align-items:start;"></div>
   </div>
 </div>
@@ -696,6 +697,21 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="font-size:13px;line-height:1.55;color:var(--w80);margin-top:8px;">Así como los 4 subcampos custodian su virtud, cada jefe del plantel custodia una parte del camino para que los jornadistas puedan vivir su encuentro con Jesús. Cada función de acá abajo tiene su propia virtud — la que mejor la describe. Esta es la primera vez que dejamos escritas estas funciones — se va completando entre todos, edición tras edición.</p>
     </div>
 
+    <div class="card" style="border:1px solid var(--gold-dim);">
+      <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🗺️ El camino del Tesoro en el CAMPAJOR</div>
+      <p style="font-size:11.5px;color:var(--w50);margin-top:4px;">🤫 Solo Staff — es el recorrido espiritual del finde, no va en la portada pública.</p>
+      <div style="text-align:left;margin-top:12px;">
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🔎</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Buscar a Dios</b> — el tesoro escondido: búsqueda del tesoro con pistas y senda en Santa Catalina. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,44)</span></div></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">📝</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>El altar te espera</b> — la senda termina en el Altar Mayor, armado por el equipo de Espiritualidad. Cada patrulla escribe en una cartulina: <i>"¿Cómo llegué al Campajor?"</i> y <i>"¿Qué espero encontrar?"</i> — y la deja como <b>palanca</b> para el Flaco (así le decimos a Jesús con cariño), que las recibe con los brazos abiertos. El domingo, esas palancas se convierten en ofrenda de la Misa.</div></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🦪</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>La perla preciosa</b> — la FE en Jesucristo: cuidarla como se cuida la oración. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,45-46)</span></div></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">👑</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>La sabiduría de Salomón</b> — pedir sabiduría para distinguir el bien y el mal, y custodiar la perla de la fe con el bautismo y la oración. <span style="color:var(--w50);font-size:11.5px;">(1 Re 3,9)</span></div></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">📜</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Domingo sabio</b> — los 5 propósitos para cuidar la fe.</div></div>
+        <div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🎣</div><div style="flex:1;font-size:13px;line-height:1.5;"><b>Echar la red</b> — lanzar la predicación y extender el apostolado: el Reino de Dios. <span style="color:var(--w50);font-size:11.5px;">(Mt 13,47)</span></div></div>
+        <div style="display:flex;gap:10px;padding:9px 0 2px;border-top:1px solid var(--w20,rgba(255,255,255,.1));"><div style="font-size:18px;">🙏</div><div style="flex:1;font-size:13px;line-height:1.5;font-style:italic;color:var(--gold);">Que Jesús nos ayude como plantel a formar este trabajo del CAMPAJOR.</div></div>
+      </div>
+      <p style="margin-top:10px;font-size:12.5px;color:var(--gold);text-align:center;font-weight:700;">🟤 Y el plantel de integración viste el MARRÓN.</p>
+    </div>
+
     <div id="cj-grito-plantel"></div>
 
     <div class="card" style="border:1px dashed var(--danger,#ff5a5a);">
@@ -725,6 +741,36 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       </div>
       <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:8px;">Propuesta borrador — el plantel la revisa, cambia o completa. Ojo: esto es spoiler puro, no lo compartan fuera del equipo 😉</p>
       <p style="font-size:12px;color:var(--gold);font-weight:700;margin-top:10px;text-align:center;">Si un jornadista pregunta de más… ya sabés qué responder: <i>"¡Viví tu momento!"</i> 😏</p>
+    </div>
+
+    <div class="card" style="border:1px dashed var(--danger,#ff5a5a);">
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🏺 Las 4 vasijas · acertijos de apertura</div>
+      <p style="font-size:12px;color:var(--w50);margin-top:6px;line-height:1.5;">Idea del plantel (todavía en borrador): 4 vasijas, una por subcampo. Cada una trae su acertijo — al resolverlo, se abre y adentro está la palabra de la virtud, con una reflexión corta. Después: oración inicial y arranca la fogata. Al final del camino, el cofre — la perla con la Cruz — es el verdadero Tesoro: encontrarse con el Flaco. Eso es lo que uno se lleva.</p>
+      <div style="margin-top:12px;">
+        <div style="background:var(--navy3,#121a42);border:1px solid rgba(255,255,255,.5);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:14px;color:#ffffff;">🦪 SANTO TOMÁS · FE <span style="font-size:10px;font-weight:800;border:1px solid rgba(255,255,255,.6);border-radius:10px;padding:1px 7px;margin-left:4px;">BLANCO</span></div>
+          <p style="font-size:12.5px;line-height:1.6;color:var(--w80);margin-top:6px;font-style:italic;">"No puedo verme con los ojos,<br>pero puedo cambiar tu corazón.<br>No puedo tocarme con las manos,<br>pero me hace confiar en Dios.<br>Cuando todo parece difícil,<br>yo te digo: ¡confía!"<br>¿Qué soy?</p>
+          <p style="font-size:12.5px;color:var(--gold);margin-top:4px;">👉 Respuesta: <b>LA FE</b> — la vasija contiene la palabra FE.</p>
+          <p style="font-size:11.5px;color:var(--w50);margin-top:4px;">Santo Tomás nos recuerda que creer no siempre significa tener todas las respuestas. A veces significa confiar en el Flaco aun cuando no podemos verlo.</p>
+        </div>
+        <div style="background:var(--navy3,#121a42);border:1px solid var(--neon-dim);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:14px;color:#00e676;">🗺️ SANTIAGO · ESPERANZA <span style="font-size:10px;font-weight:800;border:1px solid #00783e;border-radius:10px;padding:1px 7px;margin-left:4px;">VERDE</span></div>
+          <p style="font-size:12.5px;line-height:1.6;color:var(--w80);margin-top:6px;font-style:italic;">"Vivo en el mañana, pero ilumino tu hoy.<br>Soy la voz que te dice que aún vale la pena intentarlo.<br>Cuando todo parece oscuro, soy la luz que no se apaga.<br>¿Qué soy?"</p>
+          <p style="font-size:12.5px;color:var(--gold);margin-top:4px;">👉 Respuesta: <b>LA ESPERANZA</b> — la vasija contiene la palabra ESPERANZA.</p>
+        </div>
+        <div style="background:var(--navy3,#121a42);border:1px solid rgba(255,90,90,.5);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
+          <div style="font-weight:900;font-size:14px;color:#ff6b6b;">🔥 SAN JUAN · CARIDAD <span style="font-size:10px;font-weight:800;border:1px solid rgba(255,90,90,.6);border-radius:10px;padding:1px 7px;margin-left:4px;">ROJO</span></div>
+          <p style="font-size:12.5px;line-height:1.6;color:var(--w80);margin-top:6px;font-style:italic;">"No se guarda, se agranda cuando se reparte.<br>No pesa en las manos, pero sostiene al que cae.<br>Soy el fuego que no quema, el abrazo que no cansa.<br>¿Qué soy?"</p>
+          <p style="font-size:12.5px;color:var(--gold);margin-top:4px;">👉 Respuesta: <b>LA CARIDAD</b> — la vasija contiene la palabra CARIDAD.</p>
+          <p style="font-size:11px;color:var(--w50);margin-top:4px;font-style:italic;">(Acertijo propuesto por Claude, siguiendo el estilo de los demás — el plantel lo puede afinar.)</p>
+        </div>
+        <div style="background:var(--navy3,#121a42);border:1px solid rgba(77,166,255,.5);border-radius:12px;padding:10px 12px;">
+          <div style="font-weight:900;font-size:14px;color:#4da6ff;">🎣 SAN PEDRO · SABIDURÍA <span style="font-size:10px;font-weight:800;border:1px solid rgba(77,166,255,.6);border-radius:10px;padding:1px 7px;margin-left:4px;">AZUL</span></div>
+          <p style="font-size:12.5px;line-height:1.6;color:var(--w80);margin-top:6px;font-style:italic;">"No soy joven ni vieja, pero crezco con el tiempo.<br>No soy un libro, pero guardo muchas páginas en mí.<br>Quien me busca, me encuentra; quien me ignora, se pierde.<br>¿Qué soy?"</p>
+          <p style="font-size:12.5px;color:var(--gold);margin-top:4px;">👉 Respuesta: <b>LA SABIDURÍA</b> — la vasija contiene la palabra SABIDURÍA.</p>
+        </div>
+      </div>
+      <p style="font-size:11.5px;color:var(--w50);font-style:italic;margin-top:10px;">Borrador — spoiler puro, no compartir fuera del equipo. Si preguntan de más: <i>"¡Viví tu momento!"</i> 😏</p>
     </div>
 
     <div class="card" style="border-left:3px solid var(--gold);">
@@ -2671,7 +2717,7 @@ var VIRTUD_X_JUEGO = {
 JUEGOS_CJ.forEach(function(g){ g.vir = VIRTUD_X_JUEGO[g.n] || ''; });
 // Subcampos = apóstoles que buscaron el Tesoro. Cada uno: elemento de la búsqueda + color + virtud + elemento de la tierra
 // SANTO TOMÁS=Perla·blanco·Fe·aire | SANTIAGO=Senda·verde·Esperanza·tierra | SAN JUAN=Antorcha·rojo·Caridad·fuego | SAN PEDRO=Red·azul·Sabiduría·agua
-// (plantel de integración = AMARILLO, el color del Tesoro)
+// (plantel de integración = MARRÓN — cambiado de amarillo, decisión del usuario 28/09/2026)
 var SUBCAMPOS_CJ = ['SANTO TOMÁS','SANTIAGO','SAN JUAN','SAN PEDRO'];
 
 // Detecta el color de la patrulla a partir de una palabra dentro de su nombre (ej: "LOS MBORE
@@ -2738,12 +2784,34 @@ function subcampoBadgeCj(sc){
   return '<span style="border:1px solid '+c[sc]+';color:'+c[sc]+';border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:6px;white-space:nowrap;">'+m[sc]+' '+sc+'</span>';
 }
 var GRITO_PLANTEL_DEFAULT_CJ = '¡Somos jornadistas, con fuerza y valor!\n¡Buscando el tesoro que guarda el Señor!\n¡No es oro, no es plata, es lo que brilla más!\n¡Son nuestras virtudes, las que nos salvarán!\n¡Caemos en cuneta, pero nos levantamos!\n¡Con fuerza en el camino, marchando como hermanos!\n¡En el cuarto día a Cristo le cantamos!\n¡Y en el Campajor el tesoro encontramos!\n¡CAMPAJOR! ¡CAMPAJOR!';
+// "Sofía, Teto y Calixto" -> ["Sofía","Teto","Calixto"] - parseo de arranque para migrar el
+// campo viejo "resp" (texto libre) a la lista de integrantes editable de cada posta.
+function parseRespCj(resp){
+  return String(resp||'').replace(/\by\b/gi,',').split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+}
 function normCj(d){
   if(!d) d={};
   if(!d.patrullas) d.patrullas=[];
   if(!d.puntajes) d.puntajes=[];
   if(!d.premios) d.premios=[];
   if(d.gritoPlantel===undefined) d.gritoPlantel=GRITO_PLANTEL_DEFAULT_CJ;
+  // Postas y juegos empiezan como copia editable de los catálogos hardcodeados (POSTAS_CJ/
+  // JUEGOS_CJ quedan como semilla/default) - una vez que existen en dataCj, son la fuente real.
+  if(!d.postas){
+    d.postas = POSTAS_CJ.map(function(p){
+      return { n:p.n, nombre:p.nombre, mat:p.mat, exp:p.exp, vid:p.vid||'', ora:p.ora||'', consigna:p.consigna||'', lider:'', integrantes:parseRespCj(p.resp) };
+    });
+  }
+  if(!d.juegos){
+    d.juegos = JUEGOS_CJ.map(function(g){
+      return { n:g.n, nombre:g.nombre, exp:g.exp, mat:g.mat, seg:g.seg||'', vir:g.vir||'', lider:'', integrantes:[] };
+    });
+  }
+  d.postas.forEach(function(p){ if(!Array.isArray(p.integrantes)) p.integrantes=[]; if(p.lider===undefined) p.lider=''; });
+  d.juegos.forEach(function(g){ if(!Array.isArray(g.integrantes)) g.integrantes=[]; if(g.lider===undefined) g.lider=''; });
+  // Cronograma: misma logica de semilla-una-vez-y-despues-editable que postas/juegos.
+  if(!d.cronoSab) d.cronoSab = CRONO_SAB_CJ.map(function(r){ return {hora:r[0], actividad:r[1]}; });
+  if(!d.cronoDom) d.cronoDom = CRONO_DOM_CJ.map(function(r){ return {hora:r[0], actividad:r[1]}; });
   if(!Array.isArray(d.premios)){ var pk=Object.keys(d.premios); d.premios=pk.map(function(k){return d.premios[k];}).filter(function(x){return !!x;}); }
   d.patrullas = d.patrullas.map(function(p){
     if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[], subcampo:'' };  // compat: nombres viejos
@@ -2877,32 +2945,205 @@ function showCj(name){
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   window.scrollTo(0,0);
 }
+function _filaCronoCj(dia, r, i){
+  return '<div style="display:flex;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--w20,rgba(255,255,255,.1));">'
+    + '<div style="color:var(--neon);font-weight:800;font-size:13px;min-width:96px;">'+esc(r.hora)+'</div>'
+    + '<div style="flex:1;font-size:14px;">'+esc(r.actividad)+'</div>'
+    + (isAdmin()?'<span title="Editar" style="cursor:pointer;opacity:.7;" onclick="editarCronoCj(\''+dia+'\','+i+')">✏️</span> <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarCronoCj(\''+dia+'\','+i+')">×</span>':'')
+    + '</div>';
+}
 function renderCronoCj(){
-  document.getElementById('cj-crono-sab').innerHTML = CRONO_SAB_CJ.map(function(r){ return '<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--w20,rgba(255,255,255,.1));"><div style="color:var(--neon);font-weight:800;font-size:13px;min-width:96px;">'+r[0]+'</div><div style="flex:1;font-size:14px;">'+esc(r[1])+'</div></div>'; }).join('');
-  document.getElementById('cj-crono-dom').innerHTML = CRONO_DOM_CJ.map(function(r){ return '<div style="display:flex;gap:12px;padding:9px 0;border-bottom:1px solid var(--w20,rgba(255,255,255,.1));"><div style="color:var(--neon);font-weight:800;font-size:13px;min-width:96px;">'+r[0]+'</div><div style="flex:1;font-size:14px;">'+esc(r[1])+'</div></div>'; }).join('');
+  dataCj=loadCj();
+  var sab=document.getElementById('cj-crono-sab'), dom=document.getElementById('cj-crono-dom');
+  sab.innerHTML = dataCj.cronoSab.map(function(r,i){ return _filaCronoCj('sab',r,i); }).join('')
+    + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-crono-sab-hora" placeholder="Horario, ej 08:00–09:00" style="width:130px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><input id="cj-crono-sab-act" placeholder="Actividad" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarCronoCj(\'sab\')">+ Agregar</button></div>':'');
+  dom.innerHTML = dataCj.cronoDom.map(function(r,i){ return _filaCronoCj('dom',r,i); }).join('')
+    + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-crono-dom-hora" placeholder="Horario, ej 08:00–09:00" style="width:130px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><input id="cj-crono-dom-act" placeholder="Actividad" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarCronoCj(\'dom\')">+ Agregar</button></div>':'');
+}
+function _arrCronoCj(dia){ return dia==='sab' ? dataCj.cronoSab : dataCj.cronoDom; }
+function editarCronoCj(dia, i){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var arr=_arrCronoCj(dia); var r=arr[i]; if(!r) return;
+  var hora=prompt('Horario:', r.hora); if(hora===null) return;
+  var act=prompt('Actividad:', r.actividad); if(act===null) return;
+  r.hora=hora.trim(); r.actividad=act.trim();
+  saveCj(dataCj); renderCronoCj();
+}
+function quitarCronoCj(dia, i){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar esta actividad del cronograma?')) return;
+  dataCj=loadCj();
+  var arr=_arrCronoCj(dia); arr.splice(i,1);
+  saveCj(dataCj); renderCronoCj();
+}
+function agregarCronoCj(dia){
+  if(!isAdmin())return;
+  var hEl=document.getElementById('cj-crono-'+dia+'-hora'), aEl=document.getElementById('cj-crono-'+dia+'-act');
+  var hora=hEl.value.trim(), act=aEl.value.trim();
+  if(!hora||!act){toast('Completá horario y actividad');return;}
+  dataCj=loadCj();
+  _arrCronoCj(dia).push({hora:hora, actividad:act});
+  saveCj(dataCj); renderCronoCj();
+  toast('Agregado al cronograma');
+}
+function agregarPostaCj(){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var maxN=dataCj.postas.reduce(function(m,p){return Math.max(m,p.n);},0);
+  var nuevo={ n:maxN+1, nombre:'Nueva posta', mat:'', exp:'', vid:'', ora:'', consigna:'', lider:'', integrantes:[] };
+  dataCj.postas.push(nuevo);
+  saveCj(dataCj);
+  renderPostasCj();
+  abrirDetalleCj('posta', nuevo.n);
+}
+function agregarJuegoCj(){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var maxN=dataCj.juegos.reduce(function(m,g){return Math.max(m,g.n);},0);
+  var nuevo={ n:maxN+1, nombre:'Nuevo juego', exp:'', mat:'', seg:'', vir:'', lider:'', integrantes:[] };
+  dataCj.juegos.push(nuevo);
+  saveCj(dataCj);
+  renderJuegosCj();
+  abrirDetalleCj('juego', nuevo.n);
 }
 function renderPostasCj(){
-  document.getElementById('cj-postas-list').innerHTML = POSTAS_CJ.map(function(p){
-    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">P'+p.n+'</span>'+esc(p.nombre)
+  dataCj=loadCj();
+  var ad=document.getElementById('cj-postas-admin'); if(ad) ad.style.display=isAdmin()?'block':'none';
+  document.getElementById('cj-postas-list').innerHTML = dataCj.postas.map(function(p){
+    return '<div class="card" style="border-left:3px solid var(--neon);cursor:pointer;" onclick="abrirDetalleCj(\'posta\','+p.n+')"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">P'+p.n+'</span>'+esc(p.nombre)
       +(p.ora?' <span style="background:rgba(255,200,40,.12);border:1px solid var(--gold-dim);color:var(--gold);font-size:11px;font-weight:800;border-radius:12px;padding:2px 9px;margin-left:4px;white-space:nowrap;">🙏 '+esc(p.ora)+'</span>':'')+'</h3>'
       +(p.consigna?'<div style="font-size:12.5px;color:var(--gold);margin-bottom:6px;font-style:italic;">'+esc(p.consigna)+'</div>':'')
       +'<div style="font-size:14px;">'+esc(p.exp)+'</div>'
       +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(p.mat)+'</div>'
-      +'<div style="font-size:12px;color:var(--w50);margin-top:3px;">👥 '+esc(p.resp)+'</div>'
-      +(p.vid?'<div style="font-size:12.5px;margin-top:6px;">▶️ <a href="'+p.vid+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver video</a></div>':'')
+      +'<div style="font-size:12px;color:var(--w50);margin-top:3px;">👥 '+(p.lider?'👑 '+esc(p.lider)+(p.integrantes.length>1?' +'+(p.integrantes.length-1):''):(p.integrantes.length?esc(p.integrantes.join(', ')):'sin equipo asignado'))+'</div>'
+      +(p.vid?'<div style="font-size:12.5px;margin-top:6px;">▶️ <a href="'+p.vid+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--gold);">Ver video</a></div>':'')
+      +'<div style="font-size:11px;color:var(--w50);margin-top:6px;text-align:right;">Ver más / editar ›</div>'
       +'</div>';
   }).join('');
 }
 function renderJuegosCj(){
-  document.getElementById('cj-yincanas-list').innerHTML = JUEGOS_CJ.map(function(g){
+  dataCj=loadCj();
+  var ad=document.getElementById('cj-yincanas-admin'); if(ad) ad.style.display=isAdmin()?'block':'none';
+  document.getElementById('cj-yincanas-list').innerHTML = dataCj.juegos.map(function(g){
     var v = g.vir && VIRTUDES_CJ[g.vir];
-    return '<div class="card" style="border-left:3px solid var(--neon);"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">'+g.n+'</span>'+esc(g.nombre)
+    return '<div class="card" style="border-left:3px solid var(--neon);cursor:pointer;" onclick="abrirDetalleCj(\'juego\','+g.n+')"><h3 style="font-size:16px;margin-bottom:6px;"><span style="background:var(--neon-dim);color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;margin-right:6px;">'+g.n+'</span>'+esc(g.nombre)
       +(v?' <span style="border:1px solid '+v.color+';color:'+v.color+';border-radius:12px;padding:2px 9px;font-size:11px;font-weight:800;margin-left:4px;white-space:nowrap;">'+v.icon+' '+esc(g.vir)+'</span>':'')+'</h3>'
       +'<div style="font-size:14px;">'+esc(g.exp)+'</div>'
       +'<div style="font-size:12.5px;color:var(--teal);margin-top:5px;">🧰 '+esc(g.mat)+'</div>'
       +(g.seg?'<div style="font-size:12px;color:var(--w50);margin-top:3px;">⚠️ '+esc(g.seg)+'</div>':'')
+      +(g.lider||g.integrantes.length?'<div style="font-size:12px;color:var(--w50);margin-top:3px;">👥 '+(g.lider?'👑 '+esc(g.lider)+(g.integrantes.length>1?' +'+(g.integrantes.length-1):''):esc(g.integrantes.join(', ')))+'</div>':'')
+      +'<div style="font-size:11px;color:var(--w50);margin-top:6px;text-align:right;">Ver más / editar ›</div>'
       +'</div>';
   }).join('');
+}
+// ===== Detalle de posta/juego: ver mas + editable por admin (nombre, explicacion, materiales,
+// oracion/consigna o seguridad segun el tipo, y lider+integrantes del equipo de staff a cargo) =====
+var _detalleCj = null; // {tipo:'posta'|'juego', n:Number}
+function abrirDetalleCj(tipo, n){
+  _detalleCj = { tipo:tipo, n:n };
+  renderDetalleCj();
+  document.getElementById('cjDetalleModal').classList.add('show');
+}
+function cerrarDetalleCj(){
+  document.getElementById('cjDetalleModal').classList.remove('show');
+  _detalleCj = null;
+}
+function _itemDetalleCj(){
+  if(!_detalleCj) return null;
+  dataCj=loadCj();
+  var arr = _detalleCj.tipo==='posta' ? dataCj.postas : dataCj.juegos;
+  return arr.filter(function(x){return x.n===_detalleCj.n;})[0] || null;
+}
+function renderDetalleCj(){
+  var box=document.getElementById('cjDetalleContent'); if(!box) return;
+  var it=_itemDetalleCj();
+  if(!it){ box.innerHTML='<p style="color:var(--w50);">No encontrado.</p>'; return; }
+  var esPosta = _detalleCj.tipo==='posta';
+  var etiqueta = esPosta ? 'P'+it.n : String(it.n);
+  var integ=(it.integrantes||[]).map(function(m,j){
+    return '<span style="display:inline-flex;align-items:center;gap:5px;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:16px;padding:4px 10px;margin:3px 4px 3px 0;font-size:13px;">'+esc(m)
+      +(isAdmin()?' <span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarIntegranteDetalleCj('+j+')">×</span>':'')+'</span>';
+  }).join('');
+  if(isAdmin()){
+    box.innerHTML = '<h2 style="font-size:17px;text-align:left;">'+etiqueta+' · '+esc(it.nombre)+'</h2>'
+      + '<div class="form-group"><label>Nombre</label><input type="text" id="cjd-nombre" value="'+esc(it.nombre)+'"></div>'
+      + '<div class="form-group"><label>Explicación</label><textarea id="cjd-exp" rows="3" style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;">'+esc(it.exp||'')+'</textarea></div>'
+      + '<div class="form-group"><label>Materiales</label><input type="text" id="cjd-mat" value="'+esc(it.mat||'')+'"></div>'
+      + (esPosta ? (
+          '<div class="form-group"><label>Tipo de oración</label><input type="text" id="cjd-ora" value="'+esc(it.ora||'')+'" placeholder="Ej: Adoración"></div>'
+          + '<div class="form-group"><label>Consigna</label><input type="text" id="cjd-consigna" value="'+esc(it.consigna||'')+'"></div>'
+          + '<div class="form-group"><label>Link de video (opcional)</label><input type="text" id="cjd-vid" value="'+esc(it.vid||'')+'"></div>'
+        ) : (
+          '<div class="form-group"><label>Seguridad</label><input type="text" id="cjd-seg" value="'+esc(it.seg||'')+'"></div>'
+        ))
+      + '<div class="form-group"><label>👑 Líder del equipo</label><input type="text" id="cjd-lider" value="'+esc(it.lider||'')+'" placeholder="Nombre del jefe de este puesto"></div>'
+      + '<div style="font-size:12px;color:var(--w50);margin-bottom:4px;">Integrantes del equipo</div>'
+      + '<div>'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
+      + '<div style="display:flex;gap:6px;margin-top:8px;"><input id="cjd-nuevo-integ" placeholder="Nombre" onkeydown="if(event.key===\'Enter\')agregarIntegranteDetalleCj()" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarIntegranteDetalleCj()">+ Agregar</button></div>'
+      + '<button class="btn btn-primary btn-block" onclick="guardarDetalleCj()" style="margin-top:14px;">💾 Guardar cambios</button>'
+      + '<button class="btn btn-danger btn-block" onclick="eliminarDetalleCj()" style="margin-top:8px;">🗑️ Eliminar '+(esPosta?'posta':'juego')+'</button>';
+  } else {
+    var v = !esPosta && it.vir && VIRTUDES_CJ[it.vir];
+    box.innerHTML = '<h2 style="font-size:17px;text-align:left;">'+etiqueta+' · '+esc(it.nombre)+'</h2>'
+      + (esPosta && it.ora ? '<div style="font-size:12.5px;color:var(--gold);font-weight:700;margin-top:4px;">🙏 '+esc(it.ora)+'</div>' : '')
+      + (v ? '<div style="font-size:12.5px;color:'+v.color+';font-weight:700;margin-top:4px;">'+v.icon+' '+esc(it.vir)+'</div>' : '')
+      + (esPosta && it.consigna ? '<p style="font-size:13px;color:var(--gold);font-style:italic;margin-top:8px;">'+esc(it.consigna)+'</p>' : '')
+      + '<p style="font-size:14px;margin-top:8px;">'+esc(it.exp||'')+'</p>'
+      + '<p style="font-size:13px;color:var(--teal);margin-top:8px;">🧰 '+esc(it.mat||'')+'</p>'
+      + (!esPosta && it.seg ? '<p style="font-size:12.5px;color:var(--w50);margin-top:4px;">⚠️ '+esc(it.seg)+'</p>' : '')
+      + (esPosta && it.vid ? '<p style="font-size:13px;margin-top:8px;">▶️ <a href="'+esc(it.vid)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver video</a></p>' : '')
+      + ((it.lider||integ) ? '<div style="margin-top:12px;font-size:12px;color:var(--w50);">Equipo a cargo</div><div style="margin-top:4px;">'+(it.lider?'<span style="color:var(--gold);font-weight:700;">👑 '+esc(it.lider)+'</span> ':'')+integ+'</div>' : '');
+  }
+}
+function guardarDetalleCj(){
+  if(!isAdmin() || !_detalleCj) return;
+  var it=_itemDetalleCj(); if(!it) return;
+  it.nombre=document.getElementById('cjd-nombre').value.trim()||it.nombre;
+  it.exp=document.getElementById('cjd-exp').value.trim();
+  it.mat=document.getElementById('cjd-mat').value.trim();
+  if(_detalleCj.tipo==='posta'){
+    it.ora=document.getElementById('cjd-ora').value.trim();
+    it.consigna=document.getElementById('cjd-consigna').value.trim();
+    it.vid=document.getElementById('cjd-vid').value.trim();
+  } else {
+    it.seg=document.getElementById('cjd-seg').value.trim();
+  }
+  it.lider=document.getElementById('cjd-lider').value.trim();
+  saveCj(dataCj);
+  if(_detalleCj.tipo==='posta') renderPostasCj(); else renderJuegosCj();
+  toast('Guardado ✅');
+}
+function eliminarDetalleCj(){
+  if(!isAdmin() || !_detalleCj) return;
+  var it=_itemDetalleCj(); if(!it) return;
+  if(!confirm('¿Eliminar "'+it.nombre+'"? Esto no se puede deshacer.')) return;
+  var tipo=_detalleCj.tipo;
+  var arr = tipo==='posta' ? dataCj.postas : dataCj.juegos;
+  var idx = arr.indexOf(it);
+  if(idx>=0) arr.splice(idx,1);
+  saveCj(dataCj);
+  cerrarDetalleCj();
+  if(tipo==='posta') renderPostasCj(); else renderJuegosCj();
+  toast('Eliminado');
+}
+function agregarIntegranteDetalleCj(){
+  if(!isAdmin() || !_detalleCj) return;
+  var el=document.getElementById('cjd-nuevo-integ'); var n=el?el.value.trim():'';
+  if(!n){toast('Poné un nombre');return;}
+  var it=_itemDetalleCj(); if(!it) return;
+  it.integrantes.push(n);
+  saveCj(dataCj);
+  renderDetalleCj();
+  if(_detalleCj.tipo==='posta') renderPostasCj(); else renderJuegosCj();
+}
+function quitarIntegranteDetalleCj(j){
+  if(!isAdmin() || !_detalleCj) return;
+  var it=_itemDetalleCj(); if(!it) return;
+  it.integrantes.splice(j,1);
+  saveCj(dataCj);
+  renderDetalleCj();
+  if(_detalleCj.tipo==='posta') renderPostasCj(); else renderJuegosCj();
 }
 function renderPatrullasCj(){
   dataCj=loadCj();
