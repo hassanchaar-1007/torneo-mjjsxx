@@ -779,6 +779,26 @@ Eventos actuales:
   dato disponible (de listas/documentos que comparta), sin que haga falta pedirlo cada vez.
 - sw subió a **v3.53**.
 
+### Etapa 22 — Sesión del 29/09/2026, más tarde (fix agregar link de fotos + duplicado de Halcones)
+- **Bug de usabilidad reportado**: el usuario no podía agregar más de un link de fotos por
+  integrante. La causa era el diseño de la Etapa 21: un solo `prompt()` donde había que escribir
+  TODOS los links juntos separados por coma (incluido editar a mano el texto que ya estaba para
+  agregarle uno nuevo) — muy propenso a error, sobre todo desde el celular. **Se rediseñó a
+  agregar/quitar de a uno**: `agregarFotoLinkCj(idx)` pide un solo link nuevo (prompt en blanco)
+  y lo agrega a la lista existente sin tocar los demás; cada link ya cargado muestra un `×` al
+  lado (`quitarFotoLinkCj(idx,li)`, con confirm) para sacarlo individualmente. Reemplaza a
+  `editarFotosLinkCj` (eliminada). Mismo campo de Firebase (`campajor_privado/<clave>/
+  fotosLink[i]`, array de strings, compatible con los strings sueltos legacy) — no hizo falta
+  migrar datos, solo cambió la UI de edición. Verificado en preview local con datos simulados
+  (0/1/2 links y string legacy) antes de deployar.
+- **Duplicado de Halcones detectado y corregido**: había dos tarjetas "Halcones" en
+  `campajor.patrullas` — la original (10 integrantes, sin color estructurado) y una vacía (0
+  integrantes) que sí tenía el color negro/verde militar bien cargado. El usuario lo resolvió
+  él mismo desde la app (sin que Claude tocara Firebase): le puso el color a la original y borró
+  la vacía. Mismo patrón de lección que el duplicado de JAGUA TIRIKA (Etapa 11) — pasa cuando
+  hay más de un intento de cargar la misma patrulla sin cruzar contra el estado real primero.
+- sw subió a **v3.54**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)

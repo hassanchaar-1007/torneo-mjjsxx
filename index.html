@@ -3902,15 +3902,18 @@ function verCedulasCj(){
       + integrantes.map(function(m,i){
           var linksRaw = fotosLink[i];
           var links = Array.isArray(linksRaw) ? linksRaw.filter(function(x){return !!x;}) : (linksRaw ? [linksRaw] : []);
-          var linksHtml = links.length
-            ? links.map(function(l,li){ return '<a href="'+esc(l)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver fotos'+(links.length>1?' '+(li+1):'')+'</a>'; }).join(' · ')
-            : campo('','agregar link de fotos');
+          var linksHtml = links.map(function(l,li){
+            return '<a href="'+esc(l)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver fotos'+(links.length>1?' '+(li+1):'')+'</a> <span onclick="quitarFotoLinkCj('+i+','+li+')" title="Quitar este link" style="cursor:pointer;color:var(--w50);">×</span>';
+          }).join(' · ');
+          linksHtml = links.length
+            ? linksHtml + ' <span onclick="agregarFotoLinkCj('+i+')" title="Agregar otro link" style="cursor:pointer;color:var(--gold);font-weight:700;">+ otro</span>'
+            : '<span onclick="agregarFotoLinkCj('+i+')" style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:700;text-decoration:underline dotted;">— agregar link de fotos</span>';
           return '<div style="padding:8px 0;border-top:1px solid var(--w20,rgba(255,255,255,.08));">'
             + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="flex:1;font-weight:700;">'+esc(m)+'</div><label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--w50);cursor:pointer;" title="Foto familiar entregada">📸 <input type="checkbox" '+(fotos[i]?'checked':'')+' onchange="toggleFotoFamiliarCj('+i+')" style="width:15px;height:15px;cursor:pointer;"></label></div>'
             + '<div style="display:flex;flex-wrap:wrap;gap:10px;">'
             + '<span onclick="editarCampoPrivadoCj('+i+',\'alergias\',\'Alergias\')">⚕️ '+campo(alergias[i],'alergias')+'</span>'
             + '</div>'
-            + '<div style="margin-top:5px;">📷 '+linksHtml+' <span onclick="editarFotosLinkCj('+i+')" title="Agregar o editar (separá varios links con coma)" style="cursor:pointer;opacity:.7;">✏️</span></div>'
+            + '<div style="margin-top:5px;">📷 '+linksHtml+'</div>'
             + '</div>';
         }).join('');
   }, function(err){
@@ -3941,10 +3944,11 @@ function editarCampoPrivadoCj(idx, campo, label){
   }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
   if(pr && pr.catch) pr.catch(function(){});
 }
-// fotosLink admite VARIOS links por integrante (a veces hay más de una foto/álbum) - se editan
-// juntos en un mismo prompt separados por coma, y se guardan como array de arrays en
-// campajor_privado/<clave>/fotosLink (compatible con datos viejos que tenían un string suelto).
-function editarFotosLinkCj(idx){
+// fotosLink admite VARIOS links por integrante (a veces hay más de una foto/álbum) - se guardan
+// como array de arrays en campajor_privado/<clave>/fotosLink (compatible con datos viejos que
+// tenían un string suelto). Se agregan/quitan de a UNO (antes era un solo prompt con comas,
+// muy propenso a error desde el celular - Etapa 22).
+function agregarFotoLinkCj(idx){
   if(!isAdmin())return;
   if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
   var nombre = _cedulasPatrullaActual;
@@ -3954,14 +3958,36 @@ function editarFotosLinkCj(idx){
   var pr = ref.once('value', function(snap){
     var actuales = snap.val() || [];
     var actualRaw = actuales[idx];
-    var actualArr = Array.isArray(actualRaw) ? actualRaw : (actualRaw ? [actualRaw] : []);
-    var nueva = prompt('Link(s) de fotos (Google Drive) — si hay más de uno, separalos con coma:', actualArr.join(', '));
-    if(nueva===null) return;
-    var arr = nueva.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+    var actualArr = Array.isArray(actualRaw) ? actualRaw.slice() : (actualRaw ? [actualRaw] : []);
+    var nuevo = prompt('Link de Google Drive a agregar:', '');
+    if(nuevo===null) return;
+    nuevo = nuevo.trim();
+    if(!nuevo) return;
+    actualArr.push(nuevo);
     while(actuales.length <= idx) actuales.push([]);
-    actuales[idx] = arr;
+    actuales[idx] = actualArr;
     var pr2 = ref.set(actuales);
-    pr2.then(function(){ toast('Links de fotos actualizados 📷'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
+    pr2.then(function(){ toast('Link agregado 📷'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
+  }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+function quitarFotoLinkCj(idx, li){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar este link de fotos?'))return;
+  if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
+  var nombre = _cedulasPatrullaActual;
+  if(!nombre) return;
+  var clave = sanitizarClaveCj(nombre);
+  var ref = privadoCjRef.child(clave).child('fotosLink');
+  var pr = ref.once('value', function(snap){
+    var actuales = snap.val() || [];
+    var actualRaw = actuales[idx];
+    var actualArr = Array.isArray(actualRaw) ? actualRaw.slice() : (actualRaw ? [actualRaw] : []);
+    actualArr.splice(li,1);
+    while(actuales.length <= idx) actuales.push([]);
+    actuales[idx] = actualArr;
+    var pr2 = ref.set(actuales);
+    pr2.then(function(){ toast('Link quitado'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
   }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
   if(pr && pr.catch) pr.catch(function(){});
 }
