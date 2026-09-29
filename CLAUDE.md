@@ -798,6 +798,15 @@ Eventos actuales:
   la vacía. Mismo patrón de lección que el duplicado de JAGUA TIRIKA (Etapa 11) — pasa cuando
   hay más de un intento de cargar la misma patrulla sin cruzar contra el estado real primero.
 - sw subió a **v3.54**.
+- **Nueva patrulla "Plantel Integración J52"** creada (vía Admin SDK, script puntual borrado
+  después de correr) para que el propio plantel tenga su acceso ("Mi patrulla") igual que
+  cualquier otra: 22 integrantes = los 21 del roster "Plantel Integración J52" (Etapa 17) +
+  **Hassan Chaar** (el admin/usuario), que se puso como `jefe`. Color marrón (`#8b5a2b`, el
+  color del plantel confirmado en la Etapa 14), sin subcampo. ⚠️ **Ojo**: el roster ya traía a
+  "Hassan Mustafa" (Líder de Grupo) como uno de los 21 — se agregó "Hassan Chaar" como entrada
+  aparte porque el usuario se identificó con ese nombre y no hay forma de confirmar sin
+  preguntar si son la misma persona (mismo criterio de "no asumir" de la Etapa 11). **Pendiente
+  de confirmar con el usuario** si hay que sacar el duplicado.
 
 ---
 
