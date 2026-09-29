@@ -581,7 +581,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div id="cj-masiva-preview" style="margin-top:10px;"></div>
     </div>
     <div class="card" id="cj-cedulas-viewer" style="display:none;border:1px dashed var(--danger,#ff5a5a);">
-      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Datos privados · solo Staff (cédula, celular, fecha, alergias, fotos familiares, link de fotos)</div>
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Datos privados · solo Staff (alergias, fotos familiares, link de fotos)</div>
       <div class="form-group" style="margin-top:8px;"><label>Patrulla</label><select id="cj-ced-patrulla" onchange="verCedulasCj()"></select></div>
       <div id="cj-ced-lista" style="margin-top:8px;font-size:13px;color:var(--w80);line-height:1.7;"></div>
     </div>
@@ -3894,22 +3894,23 @@ function verCedulasCj(){
   var clave = sanitizarClaveCj(nombre);
   var pr = privadoCjRef.child(clave).once('value', function(snap){
     var priv = snap.val() || {};
-    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotosLink = priv.fotosLink || [], fotos = pat.fotosFamiliares || [];
+    var alergias = priv.alergias || [], fotosLink = priv.fotosLink || [], fotos = pat.fotosFamiliares || [];
     var integrantes = pat.integrantes || [];
     if(!integrantes.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Esta patrulla todavía no tiene integrantes cargados.</p>'; return; }
     var campo = function(valor, ph){ return '<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:700;white-space:nowrap;text-decoration:underline dotted;">'+esc(valor||('— '+ph))+'</span>'; };
     out.innerHTML = '<p style="font-size:11px;color:var(--w50);margin-bottom:6px;">Tocá cualquier dato para editarlo o cargarlo. La casilla marca si ya mandó su foto familiar.</p>'
       + integrantes.map(function(m,i){
-          var link = fotosLink[i]||'';
+          var linksRaw = fotosLink[i];
+          var links = Array.isArray(linksRaw) ? linksRaw.filter(function(x){return !!x;}) : (linksRaw ? [linksRaw] : []);
+          var linksHtml = links.length
+            ? links.map(function(l,li){ return '<a href="'+esc(l)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver fotos'+(links.length>1?' '+(li+1):'')+'</a>'; }).join(' · ')
+            : campo('','agregar link de fotos');
           return '<div style="padding:8px 0;border-top:1px solid var(--w20,rgba(255,255,255,.08));">'
             + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><div style="flex:1;font-weight:700;">'+esc(m)+'</div><label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--w50);cursor:pointer;" title="Foto familiar entregada">📸 <input type="checkbox" '+(fotos[i]?'checked':'')+' onchange="toggleFotoFamiliarCj('+i+')" style="width:15px;height:15px;cursor:pointer;"></label></div>'
             + '<div style="display:flex;flex-wrap:wrap;gap:10px;">'
-            + '<span onclick="editarCampoPrivadoCj('+i+',\'cedulas\',\'Cédula\')">🪪 '+campo(cedulas[i],'cédula')+'</span>'
-            + '<span onclick="editarCampoPrivadoCj('+i+',\'celulares\',\'Celular\')">📱 '+campo(celulares[i],'celular')+'</span>'
-            + '<span onclick="editarCampoPrivadoCj('+i+',\'fechasNacimiento\',\'Fecha de nacimiento\')">🎂 '+campo(fechas[i],'fecha')+'</span>'
             + '<span onclick="editarCampoPrivadoCj('+i+',\'alergias\',\'Alergias\')">⚕️ '+campo(alergias[i],'alergias')+'</span>'
             + '</div>'
-            + '<div style="margin-top:5px;">📷 '+(link?'<a href="'+esc(link)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver fotos</a> <span onclick="editarCampoPrivadoCj('+i+',\'fotosLink\',\'Link de fotos (Google Drive)\')" style="cursor:pointer;opacity:.7;">✏️</span>':'<span onclick="editarCampoPrivadoCj('+i+',\'fotosLink\',\'Link de fotos (Google Drive)\')">'+campo('','agregar link de fotos')+'</span>')+'</div>'
+            + '<div style="margin-top:5px;">📷 '+linksHtml+' <span onclick="editarFotosLinkCj('+i+')" title="Agregar o editar (separá varios links con coma)" style="cursor:pointer;opacity:.7;">✏️</span></div>'
             + '</div>';
         }).join('');
   }, function(err){
@@ -3937,6 +3938,30 @@ function editarCampoPrivadoCj(idx, campo, label){
     actuales[idx] = nueva;
     var pr2 = ref.set(actuales);
     pr2.then(function(){ toast(label+' actualizado 🪪'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
+  }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+// fotosLink admite VARIOS links por integrante (a veces hay más de una foto/álbum) - se editan
+// juntos en un mismo prompt separados por coma, y se guardan como array de arrays en
+// campajor_privado/<clave>/fotosLink (compatible con datos viejos que tenían un string suelto).
+function editarFotosLinkCj(idx){
+  if(!isAdmin())return;
+  if(!fbReady || !privadoCjRef){ toast('Sin conexión a Firebase'); return; }
+  var nombre = _cedulasPatrullaActual;
+  if(!nombre) return;
+  var clave = sanitizarClaveCj(nombre);
+  var ref = privadoCjRef.child(clave).child('fotosLink');
+  var pr = ref.once('value', function(snap){
+    var actuales = snap.val() || [];
+    var actualRaw = actuales[idx];
+    var actualArr = Array.isArray(actualRaw) ? actualRaw : (actualRaw ? [actualRaw] : []);
+    var nueva = prompt('Link(s) de fotos (Google Drive) — si hay más de uno, separalos con coma:', actualArr.join(', '));
+    if(nueva===null) return;
+    var arr = nueva.split(',').map(function(s){return s.trim();}).filter(function(s){return s;});
+    while(actuales.length <= idx) actuales.push([]);
+    actuales[idx] = arr;
+    var pr2 = ref.set(actuales);
+    pr2.then(function(){ toast('Links de fotos actualizados 📷'); verCedulasCj(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisar reglas de campajor_privado)'); });
   }, function(){ toast('⚠️ No se pudo leer (revisar reglas de campajor_privado)'); });
   if(pr && pr.catch) pr.catch(function(){});
 }

@@ -753,7 +753,31 @@ Eventos actuales:
   ("Ver fotos" en dorado si ya está cargado, o "agregar link de fotos" clickeable) — pedido
   explícito del usuario ("uno debajo de otro y al lado el espacio del link"). Sin `overflow-x`,
   se acomoda solo en mobile por ser flex-wrap en vez de tabla.
-- sw subió a **v3.51**.
+- **Jefe de Fogón confirmado**: el usuario avisó que la jefa es **Mónica Fernández** (el roster
+  de la Etapa 17 solo traía la etiqueta compartida "NOCHE DEL FUEGO", sin un jefe único
+  marcado) — se actualizó la tarjeta correspondiente en Staff.
+- sw subió a **v3.52**.
+
+### Etapa 21 — Sesión del 29/09/2026 (varios links de fotos por integrante + panel de datos privados solo fotos/alergias)
+- El usuario avisó que **algunos integrantes tienen más de un link de fotos**. `fotosLink` pasó
+  de un string suelto por integrante a un **array de links** (`campajor_privado/<clave>/
+  fotosLink[i]` ahora es `[str, str, ...]`, compatible hacia atrás con los strings sueltos que
+  ya había cargados — se tratan como array de 1 elemento). Nueva función dedicada
+  `editarFotosLinkCj(idx)` (reemplaza el uso genérico de `editarCampoPrivadoCj` para este campo
+  puntual): un solo `prompt()` con todos los links actuales separados por coma, el admin edita
+  la lista completa y se vuelve a partir por coma al guardar. En pantalla se muestran todos:
+  "Ver fotos" si hay uno solo, "Ver fotos 1 · Ver fotos 2 · …" si hay varios.
+- **El panel "🪪 Datos privados" (Patrullas) se simplificó a pedido del usuario**: ahora solo
+  muestra y permite editar **alergias** y **link(s) de fotos** por integrante — se sacaron
+  cédula, celular y fecha de nacimiento de esa vista (decisión explícita del usuario, confirmada
+  con `AskUserQuestion` dado que la cédula se había cargado justamente para el control de
+  entrada a Tati Yupi — el usuario prefirió igual sacarla de ahí). **El dato NO se borró**: sigue
+  intacto en `campajor_privado` y `editarCampoPrivadoCj(idx,campo,label)` sigue andando para
+  cualquier campo si hace falta re-exponerlo más adelante — solo se quitaron esos 3 `<span>` de
+  la UI de esta pantalla.
+- **El usuario pidió que las alergias las vaya cargando Claude por su cuenta** cuando tenga el
+  dato disponible (de listas/documentos que comparta), sin que haga falta pedirlo cada vez.
+- sw subió a **v3.53**.
 
 ---
 
@@ -863,7 +887,10 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 // postas/juegos/cronoSab/cronoDom se siembran una sola vez desde POSTAS_CJ/JUEGOS_CJ/
 // CRONO_SAB_CJ/CRONO_DOM_CJ (normCj) si todavia no existen en dataCj; de ahi en mas viven en
 // Firebase como el resto de dataCj (agregar/editar/eliminar items no toca los arrays fijos).
-// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str], fotosLink:[str] }
+// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str], fotosLink:[[str]] }
+// fotosLink[i] es un ARRAY de links (uno o varios por integrante) - ver Etapa 21. Solo
+// alergias+fotosLink se muestran en el panel de Patrullas; cedulas/celulares/fechasNacimiento
+// siguen en el dato pero sin UI que los muestre por ahora (decision del usuario, Etapa 21).
 // (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
 // campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo
 // autoinscripciones): { ..., esOficial:true, grito:str } - grito POR PATRULLA, distinto del
