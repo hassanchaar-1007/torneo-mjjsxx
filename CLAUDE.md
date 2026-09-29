@@ -725,10 +725,10 @@ Eventos actuales:
     Alba Perez.
   - Jefe de Espiritualidad: Jadichi Escobar + Nery Miranda (ayudantes: Fabiana Centurión, Andrés
     Flecha, Fabio Rivas, Georgia Ramírez, Rodrigo Duré).
-  - Jefe de Fogón: el roster **no marca un jefe único** — solo aparece la etiqueta "NOCHE DEL
-    FUEGO" como tarea compartida de Mónica Fernández, Karen Aquino, Carlos Britos, Hassan
-    Mustafa, Luis Fernando y Selva Cantero (gente que YA tiene otro rol principal) — se dejó
-    documentado tal cual está, sin inventar un jefe que el archivo no especifica.
+  - Jefe de Fogón: el roster no marcaba un jefe único (solo la etiqueta "NOCHE DEL FUEGO"
+    compartida) — **el usuario confirmó que la jefa es Mónica Fernández**; el resto
+    (Karen Aquino, Carlos Britos, Hassan Mustafa, Luis Fernando, Selva Cantero) queda como
+    equipo de Noche del Fuego.
   - Jefe de Cocina: Arturo López (ayudantes: Javier Coronil, Walter Maidana, Ivan Ramírez,
     Leslie Francou Chaar).
   - Jefe de Limpieza General: Pedro Perez (sector masculino) + Fátima Melgarejo (sector
