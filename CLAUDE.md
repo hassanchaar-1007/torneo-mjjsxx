@@ -665,6 +665,42 @@ Eventos actuales:
   necesita competir por espacio con nada).
 - sw subió a **v3.48**.
 
+### Etapa 18 — Sesión del 28/09/2026, noche (bug de overflow horizontal en mobile)
+- El usuario avisó: "en celular [no] entre en pantalla, hay secciones que no se ven todo". Se
+  probó con `resize_window` (preset mobile, 375px) y se confirmó `document.body.scrollWidth`
+  mayor al viewport en el Inicio de CAMPAJOR.
+- **Causa raíz**: `#cj-inicio-columns` (la grilla de 2 columnas armada en la Etapa 13) usaba
+  `grid-template-columns: repeat(auto-fit, minmax(420px, 1fr))`. Con `auto-fit` y un solo
+  bloque restante (como pasa en pantallas angostas), el navegador igual fuerza ese bloque a
+  **420px mínimos** — más ancho que cualquier celular — aunque el contenedor mida 375px. El
+  arreglo intuitivo `minmax(min(420px, 100%), 1fr)` (documentado como solución estándar para
+  este problema) **no funcionó acá**: el `100%` dentro de `min()` no se resolvió contra el
+  ancho del contenedor en el contexto de `auto-fit` con repetición automática — quirk conocido
+  de la spec (el porcentaje dentro del mínimo de un `minmax()` en un `repeat()` automático
+  puede tratarse como indefinido). **Se probó y confirmó** el mismo patrón `minmax(min(Npx,
+  100%),1fr)` SÍ funciona bien en grillas con más ítems variables (`cj-postas-list`,
+  `cj-yincanas-list`, etc.) — el problema es específico de mezclar `auto-fit` + `min()` + pocos
+  ítems/algunos con `grid-column:1/-1` (span completo).
+  - **Fix aplicado en `#cj-inicio-columns`**: se abandonó `auto-fit`/`minmax` y se pasó a un
+    patrón más simple y confiable — `grid-template-columns: repeat(2, minmax(0, 1fr))` fijo,
+    más un `@media (max-width: 820px) { grid-template-columns: 1fr; }` para colapsar a una sola
+    columna en mobile/tablet. Verificado en ambos anchos (375px mobile y desktop): en desktop
+    sigue viéndose igual que antes (Lema y "Solo recuerda" a todo el ancho vía su propio
+    `grid-column:1/-1`, el resto emparejado de a 2), en mobile ya no desborda.
+  - **Se aplicó el mismo `minmax(min(Npx,100%),1fr)` de forma preventiva** a las demás grillas
+    `auto-fit` del sitio (`cj-postas-list`, `cj-yincanas-list`, `reglamentoTopGrid`,
+    `staffRolesGrid`, `orgGrid`) — esas SÍ resuelven bien con ese patrón (confirmado con
+    `getComputedStyle` en 375px), se dejaron así en vez de migrarlas también a media queries
+    fijas para no tocar de más código que ya andaba bien.
+  - Se revisaron TODAS las pestañas de CAMPAJOR y del Torneo en 375px (`document.body.
+    scrollWidth` vs `window.innerWidth`) — ninguna otra tenía overflow horizontal.
+  - **Lección para la próxima vez que algo "no entra en el celular"**: no asumir por lectura de
+    código que un `minmax(min(Npx,100%),1fr)` va a andar — probarlo con `resize_window` preset
+    mobile + `getComputedStyle(...).gridTemplateColumns` antes de darlo por solucionado (acá
+    hizo falta un segundo intento porque el primer fix "correcto en teoría" no se resolvía
+    igual en la práctica con `auto-fit`).
+- sw subió a **v3.49**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
