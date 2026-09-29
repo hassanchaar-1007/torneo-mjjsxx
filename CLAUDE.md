@@ -713,6 +713,48 @@ Eventos actuales:
   no hay, "— agregar link" clickeable (mismo patrón visual que cédula/celular/etc.).
 - sw subió a **v3.50**.
 
+### Etapa 20 — Sesión del 29/09/2026 (nombres reales en Manual de Funciones, Plan del día editable, rediseño del panel de datos privados)
+- **Manual de Funciones (Staff)**: cada tarjeta de rol mezclaba el título con las etiquetas
+  (ayudantes/virtud/subcampos) en la misma línea, lo que cortaba mal el título (screenshot del
+  usuario). Se separó: título del cargo en su propia línea, badges en una línea aparte debajo.
+- **Se agregaron los nombres reales de quién ocupa cada cargo este año**, cruzando el roster
+  "Plantel J52" (Etapa 17) con cada tarjeta — nueva caja "👤 A cargo este año (Plantel J52)" en
+  cada una:
+  - Jefe de Subcampo: Sto. Tomás → Mónica Fernández + Denis González · Santiago → Karen Aquino +
+    Jhonatan Amarilla · San Juan → Mónica Zárate + Enrique Garay · San Pedro → Carlos Britos +
+    Alba Perez.
+  - Jefe de Espiritualidad: Jadichi Escobar + Nery Miranda (ayudantes: Fabiana Centurión, Andrés
+    Flecha, Fabio Rivas, Georgia Ramírez, Rodrigo Duré).
+  - Jefe de Fogón: el roster **no marca un jefe único** — solo aparece la etiqueta "NOCHE DEL
+    FUEGO" como tarea compartida de Mónica Fernández, Karen Aquino, Carlos Britos, Hassan
+    Mustafa, Luis Fernando y Selva Cantero (gente que YA tiene otro rol principal) — se dejó
+    documentado tal cual está, sin inventar un jefe que el archivo no especifica.
+  - Jefe de Cocina: Arturo López (ayudantes: Javier Coronil, Walter Maidana, Ivan Ramírez,
+    Leslie Francou Chaar).
+  - Jefe de Limpieza General: Pedro Perez (sector masculino) + Fátima Melgarejo (sector
+    femenino), con 8 ayudantes.
+  - Jefe de Utilería de Juegos: Lorenzo Bogado (ayudantes: Emilce Acosta, Adrían Massi, Hugo
+    Villalba, Luis Fernando).
+  - Líder de Grupo · Jefe de Campo: Hassan Mustafa (Líder de Grupo) + Rolando Ledesma (Jefe de
+    Campo) + Richard Fernández (Sub Jefe de Campo) + Fátima Ovelar/Gerónimo Rodriguez
+    (Coordinación) — el roster trae "Coordinador" como cargo propio, sin tarjeta dedicada
+    todavía; se sumó dentro de la de Líder de Grupo por ahora.
+- **"📝 Plan del día — borrador"** — nueva tarjeta en Organización: un `<textarea>` libre
+  (`dataCj.planDiaBorrador`, admin-only, botón "Guardar borrador") para que el usuario anote el
+  cronograma del día como se le vaya ocurriendo (recepción, postas, almuerzo, baño y aseo,
+  juegos, etc.) sin preocuparse por prolijidad — cuando termine, pide que se le dé formato. A
+  propósito NO se auto-formatea ni se conecta con `cronoSab`/`cronoDom` (Etapa 14) — es un
+  scratchpad aparte, más simple, tal como lo pidió el usuario.
+- **Panel "🪪 Datos privados" (Patrullas) rediseñado**: pasó de una `<table>` ancha (necesitaba
+  scroll horizontal, y el usuario avisó que "aún no vi el campo para link de fotos" — probable
+  causa real: el cambio de la Etapa 19 nunca se había deployado todavía) a una **lista vertical,
+  un bloque por integrante** — nombre + casilla de foto arriba, cédula/celular/fecha/alergias en
+  una fila que se ajusta sola, y el **link de fotos en su propia línea debajo, bien visible**
+  ("Ver fotos" en dorado si ya está cargado, o "agregar link de fotos" clickeable) — pedido
+  explícito del usuario ("uno debajo de otro y al lado el espacio del link"). Sin `overflow-x`,
+  se acomoda solo en mobile por ser flex-wrap en vez de tabla.
+- sw subió a **v3.51**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -816,7 +858,8 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
   postas: [{n, nombre, mat, exp, vid, ora, consigna, lider:str, integrantes:[str]}],   // editable (alta/baja incluida), ver Etapa 14
   juegos: [{n, nombre, exp, mat, seg, vir, lider:str, integrantes:[str]}],             // editable (alta/baja incluida), ver Etapa 14
   cronoSab: [{hora, actividad}], cronoDom: [{hora, actividad}],                        // editable, ver Etapa 14
-  plantel: [{nombre, cargo, grupo:'Plantel Integración J52'|'Plantel Apoyo J52'}] }    // editable, ver Etapa 17
+  plantel: [{nombre, cargo, grupo:'Plantel Integración J52'|'Plantel Apoyo J52'}],     // editable, ver Etapa 17
+  planDiaBorrador: str }                                                              // texto libre, ver Etapa 20
 // postas/juegos/cronoSab/cronoDom se siembran una sola vez desde POSTAS_CJ/JUEGOS_CJ/
 // CRONO_SAB_CJ/CRONO_DOM_CJ (normCj) si todavia no existen en dataCj; de ahi en mas viven en
 // Firebase como el resto de dataCj (agregar/editar/eliminar items no toca los arrays fijos).
