@@ -701,6 +701,18 @@ Eventos actuales:
     igual en la práctica con `auto-fit`).
 - sw subió a **v3.49**.
 
+### Etapa 19 — Sesión del 29/09/2026 (link de fotos de Google Drive por integrante, solo Staff)
+- Pedido del usuario: agregar un link de fotos (Google Drive) por integrante de cada patrulla —
+  aclaró de entrada que **solo Staff lo debe ver**, nada público en Inicio ni en la lista
+  general de patrullas.
+- **Nuevo campo `fotosLink`** en `campajor_privado/<clave>` (array paralelo a `integrantes`,
+  mismo patrón que `cedulas`/`celulares`/`fechasNacimiento`/`alergias` — admin-only, nunca en el
+  nodo público `campajor`). No hizo falta tocar `editarCampoPrivadoCj` (ya era genérica para
+  cualquier campo) — solo se agregó la columna nueva en la tabla de "🪪 Datos privados" de
+  Patrullas: si hay link, muestra "📷 Ver fotos" (abre en pestaña nueva) + ✏️ para cambiarlo; si
+  no hay, "— agregar link" clickeable (mismo patrón visual que cédula/celular/etc.).
+- sw subió a **v3.50**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)
@@ -808,7 +820,7 @@ Proyecto: **`torneo-mjjsxx`** · URL RTDB: `https://torneo-mjjsxx-default-rtdb.f
 // postas/juegos/cronoSab/cronoDom se siembran una sola vez desde POSTAS_CJ/JUEGOS_CJ/
 // CRONO_SAB_CJ/CRONO_DOM_CJ (normCj) si todavia no existen en dataCj; de ahi en mas viven en
 // Firebase como el resto de dataCj (agregar/editar/eliminar items no toca los arrays fijos).
-// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str] }
+// campajor_privado/<clave>: { cedulas:[str], celulares:[str], fechasNacimiento:[str], alergias:[str], fotosLink:[str] }
 // (arrays paralelos al indice de integrantes de esa patrulla; admin-only, ver seccion 6)
 // campajor_inscripciones/<PIN> ademas sirve de "acceso" para patrullas OFICIALES (no solo
 // autoinscripciones): { ..., esOficial:true, grito:str } - grito POR PATRULLA, distinto del

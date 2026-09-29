@@ -581,7 +581,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div id="cj-masiva-preview" style="margin-top:10px;"></div>
     </div>
     <div class="card" id="cj-cedulas-viewer" style="display:none;border:1px dashed var(--danger,#ff5a5a);">
-      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Datos privados · solo Staff (cédula, celular, fecha, alergias, fotos familiares)</div>
+      <div style="font-size:12px;color:var(--danger,#ff5a5a);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🪪 Datos privados · solo Staff (cédula, celular, fecha, alergias, fotos familiares, link de fotos)</div>
       <div class="form-group" style="margin-top:8px;"><label>Patrulla</label><select id="cj-ced-patrulla" onchange="verCedulasCj()"></select></div>
       <div id="cj-ced-lista" style="margin-top:8px;font-size:13px;color:var(--w80);line-height:1.7;"></div>
     </div>
@@ -3831,19 +3831,21 @@ function verCedulasCj(){
   var clave = sanitizarClaveCj(nombre);
   var pr = privadoCjRef.child(clave).once('value', function(snap){
     var priv = snap.val() || {};
-    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotos = pat.fotosFamiliares || [];
+    var cedulas = priv.cedulas || [], celulares = priv.celulares || [], fechas = priv.fechasNacimiento || [], alergias = priv.alergias || [], fotosLink = priv.fotosLink || [], fotos = pat.fotosFamiliares || [];
     var integrantes = pat.integrantes || [];
     if(!integrantes.length){ out.innerHTML = '<p style="color:var(--w50);font-size:12px;">Esta patrulla todavía no tiene integrantes cargados.</p>'; return; }
     var campo = function(valor, ph){ return '<span style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:700;white-space:nowrap;text-decoration:underline dotted;">'+esc(valor||('— '+ph))+'</span>'; };
     out.innerHTML = '<p style="font-size:11px;color:var(--w50);margin-bottom:6px;">Tocá cualquier dato para editarlo o cargarlo. La casilla marca si ya mandó su foto familiar.</p>'
       + '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12.5px;">'
       + integrantes.map(function(m,i){
+          var link = fotosLink[i]||'';
           return '<tr style="border-bottom:1px solid var(--w20,rgba(255,255,255,.08));">'
             + '<td style="padding:5px 6px 5px 0;font-weight:700;">'+esc(m)+'</td>'
             + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'cedulas\',\'Cédula\')">🪪 '+campo(cedulas[i],'agregar cédula')+'</td>'
             + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'celulares\',\'Celular\')">📱 '+campo(celulares[i],'agregar celular')+'</td>'
             + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'fechasNacimiento\',\'Fecha de nacimiento\')">🎂 '+campo(fechas[i],'agregar fecha')+'</td>'
             + '<td style="padding:5px 6px;" onclick="editarCampoPrivadoCj('+i+',\'alergias\',\'Alergias\')">⚕️ '+campo(alergias[i],'agregar alergias')+'</td>'
+            + '<td style="padding:5px 6px;">📷 '+(link?'<a href="'+esc(link)+'" target="_blank" rel="noopener" style="color:var(--gold);" onclick="event.stopPropagation()">Ver fotos</a> <span onclick="editarCampoPrivadoCj('+i+',\'fotosLink\',\'Link de fotos (Google Drive)\')" style="cursor:pointer;opacity:.7;">✏️</span>':'<span onclick="editarCampoPrivadoCj('+i+',\'fotosLink\',\'Link de fotos (Google Drive)\')">'+campo('','agregar link')+'</span>')+'</td>'
             + '<td style="padding:5px 6px;text-align:center;" title="Foto familiar entregada"><input type="checkbox" '+(fotos[i]?'checked':'')+' onchange="toggleFotoFamiliarCj('+i+')" style="width:16px;height:16px;cursor:pointer;"></td>'
             + '</tr>';
         }).join('')
