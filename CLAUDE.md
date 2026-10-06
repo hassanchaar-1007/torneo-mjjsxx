@@ -807,6 +807,10 @@ Eventos actuales:
   aparte porque el usuario se identificó con ese nombre y no hay forma de confirmar sin
   preguntar si son la misma persona (mismo criterio de "no asumir" de la Etapa 11). **Pendiente
   de confirmar con el usuario** si hay que sacar el duplicado.
+- **Color "Azul marino" (`#1e3a6e`) agregado a `PALETA_COLORES_CJ`** (ahora 21 colores) a
+  pedido del usuario — no estaba en la lista y lo necesitaba para una patrulla todavía sin
+  definir. Distinto del "Azul" existente (`#4da6ff`, celeste brillante) y del "Celeste"
+  (`#7ab8ff`): el marino es oscuro. sw subió a **v3.55**.
 
 ---
 
