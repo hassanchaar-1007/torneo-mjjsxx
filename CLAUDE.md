@@ -812,6 +812,39 @@ Eventos actuales:
   definir. Distinto del "Azul" existente (`#4da6ff`, celeste brillante) y del "Celeste"
   (`#7ab8ff`): el marino es oscuro. sw subió a **v3.55**.
 
+### Etapa 23 — Sesión del 09/10/2026 (esquema paso a paso en Organización + módulo Fogón)
+- **El usuario es parte del equipo de Fogón** y pidió organizar esa actividad. Contexto que
+  pasó (quedó reflejado en los textos): el Fogón es el sábado a la noche, se enciende una gran
+  llama = símbolo del fuego interior (la fe, el amor a Jesús, que a veces se quiere apagar y hay
+  que volver a encender). **Caperucitas y Loros** = patrullas veteranas, ejemplo de llama que
+  resiste los años; los recién salidos de Jornadas traen la llama nueva que contagia. En el
+  Fogón se presentan números artísticos (graciosos, fábulas con enseñanza, canto, baile con
+  coreo), se evalúan y hay un ganador a "Mejor Presentación". Su idea de guión: Richard
+  Fernández abre con palabra emotiva → Richard + Mónica Fernández hacen animación/descontracción
+  → se presentan los números uno a uno.
+- **Nuevo "📋 Esquema del CAMPAJOR · paso a paso" en Organización** (`#cj-programa-cont`): el
+  desarrollo completo día por día, hora por hora, con un campo **detalle/explicación** por paso.
+  Dato `dataCj.programa:[{dia,hora,actividad,detalle}]`. Se **siembra una vez** desde el
+  cronograma vigente (`d.cronoSab`/`d.cronoDom`, agrupado en "Sábado 17/10"/"Domingo 18/10") —
+  es un dato APARTE del cronograma (editarlo no toca la pestaña Cronograma y viceversa). La fila
+  del Fogón arranca con el guión completo de la noche ya cargado (`FOGON_DETALLE_DEFAULT_CJ`).
+  Admin: editar cada campo con click→prompt (`editarProgramaCampoCj`), quitar paso
+  (`quitarProgramaCj`), agregar paso a un día (`agregarProgramaCj`) o un día nuevo
+  (`agregarDiaProgramaCj`). `renderProgramaCj` llamada desde `showCj('organizacion')`.
+- **Nuevo módulo "🔥 Fogón · Números artísticos"** (`#cj-fogon-cont`, también en Organización,
+  borde rojo-fuego): tabla de los números a presentar. Dato `dataCj.fogonNumeros:[{id,n,
+  patrulla,tema,puntos}]`. Cada fila muestra el **escudo de la patrulla estirado** (64×64, sale
+  de `campajor.patrullas` cruzando por nombre; si no hay escudo, cae al ícono de remera con el
+  color). El de **mayor puntaje** se marca con 🏆 (mejor presentación). Admin: agregar número
+  (select de patrulla + tema + puntos, `agregarFogonCj`), editar Nº/tema con prompt
+  (`editarFogonCampoCj`), cambiar puntos con input inline (`setFogonPuntosCj`), quitar
+  (`quitarFogonCj`). Cada número tiene `id` propio (`fn`+timestamp) para editar/borrar sin
+  depender del índice. `renderFogonCj` llamada desde `showCj('organizacion')`.
+  - **Decisión abierta**: la puntuación del Fogón es **autocontenida** por ahora (no suma al
+    Ranking general ni al premio "Virtud del Jornadista"). Si el usuario quiere que alimente el
+    ranking, se puede wirear más adelante — preguntar antes.
+- sw subió a **v3.56**.
+
 ---
 
 ## 3. Cuentas y accesos (CRÍTICO para trabajar desde otra máquina)

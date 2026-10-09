@@ -1002,6 +1002,18 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <button class="btn btn-primary btn-sm" onclick="guardarPlanDiaCj()" style="margin-top:8px;">💾 Guardar borrador</button>
     </div>
 
+    <div class="card" style="border-left:3px solid var(--neon);">
+      <div style="font-size:12px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">📋 Esquema del CAMPAJOR · paso a paso</div>
+      <p style="font-size:12px;color:var(--w50);margin-top:6px;line-height:1.5;">El desarrollo completo, día por día y hora por hora. Tocá cualquier campo para editarlo (horario, actividad, y la explicación de cómo se hace cada paso). Es editable: agregá, cambiá o quitá lo que haga falta.</p>
+      <div id="cj-programa-cont" style="margin-top:12px;"></div>
+    </div>
+
+    <div class="card" style="border:1px solid #ff6b6b;">
+      <div style="font-size:12px;color:#ff6b6b;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🔥 Fogón · Números artísticos</div>
+      <p style="font-size:12px;color:var(--w50);margin-top:6px;line-height:1.5;">Cargá cada número en el orden de presentación: patrulla, tema o nombre del número, y la puntuación. El escudo de la patrulla aparece solo. El de mayor puntaje queda marcado como 🏆 mejor presentación.</p>
+      <div id="cj-fogon-cont" style="margin-top:12px;"></div>
+    </div>
+
     <div id="orgGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:16px;align-items:start;">
 
     <div class="card" style="border-left:3px solid rgba(255,90,90,.7);">
@@ -2803,6 +2815,17 @@ var CRONO_DOM_CJ = [
   ['11:00–14:00','Almuerzo + levantar campamento'],
   ['14:00–15:30','Clausura: ranking, premios "Virtud del Jornadista" 🏅 y agradecimientos']
 ];
+// Guion por defecto de la noche del Fogón (Etapa 23) - el usuario lo edita desde el esquema.
+var FOGON_DETALLE_DEFAULT_CJ = [
+  'La gran llama que se enciende es el fuego interior: la fe, el amor a Jesús. A veces se quiere apagar, y el Fogón es el momento de volver a avivarla entre todos. Las Caperucitas y los Loros son el ejemplo vivo (la llama que resiste los años); los recién salidos de Jornadas traen la llama nueva y fuerte que contagia y nos recuerda nuestro propio comienzo.',
+  '',
+  '1) Encendido de la llama — se prende el fuego. Momento simbólico que abre la noche.',
+  '2) Palabra del Fogón — Richard Fernández abre con palabras emotivas sobre la llama interior: la fe que a veces se quiere apagar pero siempre hay que volver a encender; el ejemplo de Caperucitas y Loros; la llama nueva de los que recién salen; y el cierre ligado al Cuarto Día (la llama se la llevan a la vida).',
+  '3) Animación / descontracción — Richard + Mónica Fernández hacen una serie de actividades cortas (cantos de Jornadas, dinámicas, un juego rápido) para cortar el aburrimiento, soltar al grupo y levantar el ánimo antes de los números.',
+  '4) Números artísticos — se presentan de a uno (ver módulo "🔥 Fogón · Números artísticos"). Graciosos, fábulas con enseñanza, canto, baile con coreo. Richard/Mónica hacen de nexo entre número y número.',
+  '5) Premiación — se elige la Mejor Presentación (criterios: creatividad, mensaje/enseñanza, energía y participación de toda la patrulla, reacción del público).',
+  '6) Cierre — palabra final breve ligada a la llama + canto de cierre, dejando el clima tendido hacia el domingo (Rosario y Misa). Frutos: Escucha, Silencio y Diálogo.'
+].join('\n');
 // Cada posta encarna un tipo de oración (charla "Virtudes del Jornadista", convivencia jul/2026)
 var POSTAS_CJ = [
   {n:1,nombre:'Palo Borracho',resp:'Sofía, Teto y Calixto',mat:'Palo de escoba 1m, pelota o conos',exp:'Girar 10 vueltas con la cabeza en el palo y llevar la pelota a 5–10 m.',vid:'https://www.youtube.com/watch?v=Nnx1lY-fGyc',ora:'Adoración',consigna:'Antes de jugar: reconocemos la grandeza de Dios en la naturaleza que nos rodea.'},
@@ -2955,6 +2978,19 @@ function normCj(d){
   // Cronograma: misma logica de semilla-una-vez-y-despues-editable que postas/juegos.
   if(!d.cronoSab) d.cronoSab = CRONO_SAB_CJ.map(function(r){ return {hora:r[0], actividad:r[1]}; });
   if(!d.cronoDom) d.cronoDom = CRONO_DOM_CJ.map(function(r){ return {hora:r[0], actividad:r[1]}; });
+  // Esquema paso a paso (Organización, Etapa 23): version detallada del cronograma, con un
+  // campo "detalle" por paso para explicar como se hace. Se siembra una vez desde el cronograma
+  // actual (dia por dia) y de ahi en mas es editable aparte. La fila del Fogon arranca con el
+  // guion de la noche ya cargado (FOGON_DETALLE_DEFAULT_CJ).
+  if(!d.programa){
+    d.programa = [];
+    (d.cronoSab||[]).forEach(function(r){ d.programa.push({ dia:'Sábado 17/10', hora:r.hora, actividad:r.actividad, detalle: /fog[oó]n/i.test(r.actividad||'') ? FOGON_DETALLE_DEFAULT_CJ : '' }); });
+    (d.cronoDom||[]).forEach(function(r){ d.programa.push({ dia:'Domingo 18/10', hora:r.hora, actividad:r.actividad, detalle:'' }); });
+  }
+  d.programa.forEach(function(r){ if(r.dia===undefined) r.dia=''; if(r.hora===undefined) r.hora=''; if(r.actividad===undefined) r.actividad=''; if(r.detalle===undefined) r.detalle=''; });
+  // Modulo Fogon (Etapa 23): numeros artisticos a presentar en la noche del Fogon. Cada uno:
+  // {id, n (orden), patrulla, tema, puntos}. El escudo sale de la patrulla (campajor.patrullas).
+  if(!d.fogonNumeros) d.fogonNumeros = [];
   if(!Array.isArray(d.premios)){ var pk=Object.keys(d.premios); d.premios=pk.map(function(k){return d.premios[k];}).filter(function(x){return !!x;}); }
   d.patrullas = d.patrullas.map(function(p){
     if(typeof p === 'string') return { nombre:p, jefe:'', integrantes:[], subcampo:'' };  // compat: nombres viejos
@@ -3071,6 +3107,164 @@ function guardarPlanDiaCj(){
   dataCj.planDiaBorrador = el.value;
   saveCj(dataCj);
   toast('Borrador guardado 📝');
+}
+// ===== Esquema paso a paso (Organización) — ver Etapa 23 =====
+// dataCj.programa = [{dia, hora, actividad, detalle}]. Agrupado por dia al renderizar.
+function renderProgramaCj(){
+  var cont=document.getElementById('cj-programa-cont'); if(!cont) return;
+  dataCj=loadCj();
+  var prog=dataCj.programa||[];
+  var dias=[]; prog.forEach(function(r){ if(dias.indexOf(r.dia)===-1) dias.push(r.dia); });
+  var admin=isAdmin();
+  var html='';
+  dias.forEach(function(dia){
+    html+='<div style="font-size:13px;font-weight:800;color:var(--gold);margin:14px 0 6px;">'+esc(dia||'Sin día')+'</div>';
+    prog.forEach(function(r,i){
+      if(r.dia!==dia) return;
+      html+='<div style="padding:9px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));">'
+        + '<div style="display:flex;gap:10px;align-items:baseline;">'
+        + '<div style="color:var(--neon);font-weight:800;font-size:12.5px;min-width:96px;'+(admin?'cursor:pointer;':'')+'"'+(admin?' onclick="editarProgramaCampoCj('+i+',\'hora\',\'Horario\')"':'')+'>'+esc(r.hora||(admin?'— horario':''))+'</div>'
+        + '<div style="flex:1;font-size:13.5px;font-weight:600;'+(admin?'cursor:pointer;':'')+'"'+(admin?' onclick="editarProgramaCampoCj('+i+',\'actividad\',\'Actividad\')"':'')+'>'+esc(r.actividad||(admin?'— actividad':''))+'</div>'
+        + (admin?'<span onclick="quitarProgramaCj('+i+')" title="Quitar paso" style="cursor:pointer;color:var(--danger,#ff5a5a);font-size:12px;">×</span>':'')
+        + '</div>'
+        + (r.detalle || admin
+            ? '<div style="margin-top:4px;margin-left:106px;font-size:12.5px;color:var(--w80);line-height:1.5;white-space:pre-wrap;'+(admin?'cursor:pointer;':'')+'"'+(admin?' onclick="editarProgramaCampoCj('+i+',\'detalle\',\'Explicación (cómo se hace este paso)\')"':'')+'>'+(r.detalle?esc(r.detalle):'<span style="color:var(--w50);font-style:italic;">+ agregar explicación</span>')+'</div>'
+            : '')
+        + '</div>';
+    });
+    if(admin){
+      html+='<div style="margin-top:8px;"><button class="btn btn-secondary btn-sm" onclick="agregarProgramaCj(\''+esc(dia)+'\')">+ Agregar paso a '+esc(dia)+'</button></div>';
+    }
+  });
+  if(admin){
+    html+='<div style="margin-top:14px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'
+      + '<input id="cj-programa-nuevo-dia" placeholder="Nuevo día (ej: Viernes 16/10)" style="flex:1;min-width:180px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">'
+      + '<button class="btn btn-secondary btn-sm" onclick="agregarDiaProgramaCj()">+ Agregar día</button></div>';
+  }
+  cont.innerHTML = html || '<p style="color:var(--w50);font-size:12.5px;">Todavía no hay esquema cargado.</p>';
+}
+function editarProgramaCampoCj(i, campo, label){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var r=(dataCj.programa||[])[i]; if(!r) return;
+  var nueva=prompt(label+':', r[campo]||'');
+  if(nueva===null) return;
+  r[campo]=nueva;
+  saveCj(dataCj); renderProgramaCj();
+}
+function quitarProgramaCj(i){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar este paso del esquema?'))return;
+  dataCj=loadCj();
+  (dataCj.programa||[]).splice(i,1);
+  saveCj(dataCj); renderProgramaCj();
+}
+function agregarProgramaCj(dia){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  if(!dataCj.programa) dataCj.programa=[];
+  // insertar el paso nuevo al final del bloque de ese dia
+  var ultimo=-1;
+  dataCj.programa.forEach(function(r,idx){ if(r.dia===dia) ultimo=idx; });
+  var nuevo={dia:dia, hora:'', actividad:'', detalle:''};
+  if(ultimo===-1) dataCj.programa.push(nuevo); else dataCj.programa.splice(ultimo+1,0,nuevo);
+  saveCj(dataCj); renderProgramaCj();
+}
+function agregarDiaProgramaCj(){
+  if(!isAdmin())return;
+  var el=document.getElementById('cj-programa-nuevo-dia'); var dia=el?el.value.trim():'';
+  if(!dia){toast('Escribí el nombre del día');return;}
+  dataCj=loadCj();
+  if(!dataCj.programa) dataCj.programa=[];
+  dataCj.programa.push({dia:dia, hora:'', actividad:'', detalle:''});
+  saveCj(dataCj); renderProgramaCj();
+}
+// ===== Módulo Fogón: números artísticos (Organización) — ver Etapa 23 =====
+// dataCj.fogonNumeros = [{id, n, patrulla, tema, puntos}]. El escudo sale de campajor.patrullas.
+function _patrullaPorNombreCj(nombre){
+  return (dataCj.patrullas||[]).filter(function(p){return p.nombre===nombre;})[0] || null;
+}
+function renderFogonCj(){
+  var cont=document.getElementById('cj-fogon-cont'); if(!cont) return;
+  dataCj=loadCj();
+  var nums=(dataCj.fogonNumeros||[]).slice().sort(function(a,b){return (a.n||0)-(b.n||0);});
+  var admin=isAdmin();
+  var maxPuntos=nums.reduce(function(m,x){return Math.max(m, Number(x.puntos)||0);},0);
+  var html='';
+  if(!nums.length){
+    html+='<p style="color:var(--w50);font-size:12.5px;">Todavía no hay números cargados.</p>';
+  } else {
+    html+=nums.map(function(x){
+      var p=_patrullaPorNombreCj(x.patrulla);
+      var escudo = (p&&p.escudo)
+        ? '<img src="'+p.escudo+'" style="width:64px;height:64px;border-radius:12px;object-fit:cover;border:1px solid var(--w30);flex-shrink:0;">'
+        : '<div style="width:64px;height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+(p?iconoRemeraCj(p):'<span style="font-size:26px;">🔥</span>')+'</div>';
+      var ganador = (Number(x.puntos)||0)>0 && (Number(x.puntos)||0)===maxPuntos;
+      return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));'+(ganador?'background:rgba(255,200,40,.06);border-radius:10px;':'')+'">'
+        + '<div style="font-weight:800;color:var(--gold);font-size:16px;min-width:30px;text-align:center;'+(admin?'cursor:pointer;':'')+'"'+(admin?' onclick="editarFogonCampoCj(\''+x.id+'\',\'n\',\'Número (orden)\')"':'')+'>'+esc(String(x.n||'?'))+'</div>'
+        + escudo
+        + '<div style="flex:1;min-width:0;">'
+        +   '<div style="font-weight:700;font-size:13.5px;">'+(ganador?'🏆 ':'')+esc(x.patrulla||'(sin patrulla)')+'</div>'
+        +   '<div style="font-size:12.5px;color:var(--w80);margin-top:2px;'+(admin?'cursor:pointer;':'')+'"'+(admin?' onclick="editarFogonCampoCj(\''+x.id+'\',\'tema\',\'Tema o nombre del número\')"':'')+'>'+esc(x.tema||(admin?'— agregar tema/nombre':''))+'</div>'
+        + '</div>'
+        + '<div style="text-align:right;">'
+        +   '<div style="font-size:11px;color:var(--w50);">Puntos</div>'
+        +   (admin
+              ? '<input type="number" value="'+esc(String(x.puntos||0))+'" onchange="setFogonPuntosCj(\''+x.id+'\',this.value)" style="width:72px;padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:14px;font-weight:800;text-align:right;">'
+              : '<div style="font-size:16px;font-weight:800;color:var(--gold);">'+esc(String(x.puntos||0))+'</div>')
+        + '</div>'
+        + (admin?'<span onclick="quitarFogonCj(\''+x.id+'\')" title="Quitar número" style="cursor:pointer;color:var(--danger,#ff5a5a);font-size:14px;">×</span>':'')
+        + '</div>';
+    }).join('');
+  }
+  if(admin){
+    var opts='<option value="">— elegí patrulla —</option>'+(dataCj.patrullas||[]).map(function(p){return '<option value="'+esc(p.nombre)+'">'+esc(p.nombre)+'</option>';}).join('');
+    html+='<div style="margin-top:14px;padding-top:12px;border-top:1px dashed var(--w30);">'
+      + '<div style="font-size:11.5px;color:var(--w50);margin-bottom:6px;">➕ Agregar número</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">'
+      + '<select id="cj-fogon-nuevo-patrulla" style="flex:1;min-width:160px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">'+opts+'</select>'
+      + '<input id="cj-fogon-nuevo-tema" placeholder="Tema o nombre del número" style="flex:2;min-width:180px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">'
+      + '<input id="cj-fogon-nuevo-puntos" type="number" placeholder="Pts" style="width:70px;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;">'
+      + '<button class="btn btn-secondary btn-sm" onclick="agregarFogonCj()">+ Agregar</button>'
+      + '</div></div>';
+  }
+  cont.innerHTML = html;
+}
+function agregarFogonCj(){
+  if(!isAdmin())return;
+  var pat=document.getElementById('cj-fogon-nuevo-patrulla'), tema=document.getElementById('cj-fogon-nuevo-tema'), pts=document.getElementById('cj-fogon-nuevo-puntos');
+  var patrulla=pat?pat.value:'', t=tema?tema.value.trim():'', pu=pts?pts.value:'';
+  if(!patrulla){toast('Elegí la patrulla');return;}
+  dataCj=loadCj();
+  if(!dataCj.fogonNumeros) dataCj.fogonNumeros=[];
+  var maxN=dataCj.fogonNumeros.reduce(function(m,x){return Math.max(m, Number(x.n)||0);},0);
+  dataCj.fogonNumeros.push({ id:'fn'+Date.now(), n:maxN+1, patrulla:patrulla, tema:t, puntos:Number(pu)||0 });
+  saveCj(dataCj); renderFogonCj();
+  toast('Número agregado 🔥');
+}
+function _fogonPorId(id){ return (dataCj.fogonNumeros||[]).filter(function(x){return x.id===id;})[0]||null; }
+function editarFogonCampoCj(id, campo, label){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var x=_fogonPorId(id); if(!x) return;
+  var nueva=prompt(label+':', x[campo]!==undefined?x[campo]:'');
+  if(nueva===null) return;
+  x[campo] = campo==='n' ? (Number(nueva)||0) : nueva.trim();
+  saveCj(dataCj); renderFogonCj();
+}
+function setFogonPuntosCj(id, valor){
+  if(!isAdmin())return;
+  dataCj=loadCj();
+  var x=_fogonPorId(id); if(!x) return;
+  x.puntos=Number(valor)||0;
+  saveCj(dataCj); renderFogonCj();
+}
+function quitarFogonCj(id){
+  if(!isAdmin())return;
+  if(!confirm('¿Quitar este número del Fogón?'))return;
+  dataCj=loadCj();
+  dataCj.fogonNumeros=(dataCj.fogonNumeros||[]).filter(function(x){return x.id!==id;});
+  saveCj(dataCj); renderFogonCj();
 }
 // ===== Accesos de Staff: el admin crea logins nuevos con los mismos permisos que el suyo =====
 // Usa una instancia SECUNDARIA de Firebase (createUserWithEmailAndPassword autentica en la
@@ -3362,7 +3556,7 @@ function showCj(name){
   if(name==='patrullas') renderPatrullasCj();
   if(name==='ranking') renderRankingCj();
   if(name==='funciones'){ renderGritoPlantelCj(); renderAccesosStaffCj(); renderPlantelCj(); }
-  if(name==='organizacion') renderPlanDiaCj();
+  if(name==='organizacion'){ renderPlanDiaCj(); renderProgramaCj(); renderFogonCj(); }
   if((name==='funciones'||name==='organizacion') && !isAdmin() && !isViewerUnlocked()){ showCj('reglamento'); return; }
   if(name==='finanzas'){
     if(!isAdmin()){ showCj('reglamento'); return; }
