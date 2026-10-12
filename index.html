@@ -3835,6 +3835,7 @@ function renderPatrullasCj(){
   var f=document.getElementById('cj-patrullas-form'); if(f) f.style.display = isAdmin()?'block':'none';
   var cm=document.getElementById('cj-carga-masiva'); if(cm) cm.style.display = isAdmin()?'block':'none';
   var cv=document.getElementById('cj-cedulas-viewer'); if(cv){ cv.style.display = isAdmin()?'block':'none'; if(isAdmin()) renderSelectCedulasCj(); }
+  if(isAdmin() && _vehiculosCj===null){ loadVehiculosCj(function(){ try{ renderPatrullasCj(); }catch(e){} }); }
   var l=document.getElementById('cj-patrullas-list');
   if(!l) return;
   if(dataCj.patrullas.length===0){ l.innerHTML='<p style="color:var(--w50);text-align:center;">Aún no hay patrullas cargadas</p>'; return; }
@@ -3882,8 +3883,65 @@ function renderPatrullasCj(){
       + '<div style="margin-top:8px;">'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
       + scSel
       + (isAdmin()?'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-integ-'+i+'" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')addIntegranteCj('+i+')" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="addIntegranteCj('+i+')">+ Integrante</button></div>':'')
+      + (isAdmin()?vehiculosBloqueCj(i,p):'')
       + '</div>';
   }).join('');
+}
+// ===== Vehículos por patrulla (chapas, conductor) — SOLO Staff, viven en campajor_privado =====
+var _vehiculosCj = null; // cache: clave sanitizada -> array de strings; null = no cargado aún
+function loadVehiculosCj(cb){
+  if(!fbReady || !privadoCjRef){ _vehiculosCj = {}; if(cb) cb(); return; }
+  var pr = privadoCjRef.once('value', function(snap){
+    var all = snap.val() || {}; _vehiculosCj = {};
+    Object.keys(all).forEach(function(k){ if(all[k] && all[k].vehiculos) _vehiculosCj[k] = all[k].vehiculos; });
+    if(cb) cb();
+  }, function(){ _vehiculosCj = {}; if(cb) cb(); });
+  if(pr && pr.catch) pr.catch(function(){});
+}
+function vehiculosBloqueCj(i, p){
+  var clave = sanitizarClaveCj(p.nombre);
+  var vehs = (_vehiculosCj && _vehiculosCj[clave]) || [];
+  var items;
+  if(_vehiculosCj === null){ items = '<span style="color:var(--w50);font-size:12px;">cargando…</span>'; }
+  else if(vehs.length){
+    items = vehs.map(function(v,j){
+      return '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12.5px;color:var(--w80);">'
+        + '<span style="flex:1;">🚗 '+esc(v)+'</span>'
+        + '<span title="Editar" style="cursor:pointer;opacity:.7;" onclick="editarVehiculoCj('+i+','+j+')">✏️</span>'
+        + '<span title="Quitar" style="cursor:pointer;color:var(--danger,#ff5a5a);font-weight:800;" onclick="quitarVehiculoCj('+i+','+j+')">×</span>'
+        + '</div>';
+    }).join('');
+  } else { items = '<span style="color:var(--w50);font-size:12px;">Sin vehículos cargados</span>'; }
+  return '<div style="margin-top:10px;border-top:1px dashed var(--w20,rgba(255,255,255,.1));padding-top:8px;">'
+    + '<div style="font-size:12px;color:var(--teal);font-weight:700;margin-bottom:4px;">🚗 Vehículos · solo Staff</div>'
+    + items
+    + '<button class="btn btn-secondary btn-sm" style="margin-top:6px;" onclick="agregarVehiculoCj('+i+')">+ Agregar vehículo</button>'
+    + '</div>';
+}
+function _guardarVehiculosCj(clave, arr, cbOk){
+  if(!privadoCjRef){ toast('Sin conexión'); return; }
+  if(!_vehiculosCj) _vehiculosCj = {};
+  _vehiculosCj[clave] = arr;
+  var pr = privadoCjRef.child(clave).child('vehiculos').set(arr);
+  if(pr && pr.then) pr.then(function(){ if(cbOk) cbOk(); }).catch(function(){ toast('⚠️ No se pudo guardar (revisá reglas de campajor_privado)'); });
+}
+function agregarVehiculoCj(i){
+  if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!p)return;
+  var v=prompt('Vehículo — marca, modelo, chapa, color, conductor:',''); if(v===null)return; v=v.trim(); if(!v)return;
+  var clave=sanitizarClaveCj(p.nombre); var arr=((_vehiculosCj&&_vehiculosCj[clave])||[]).slice(); arr.push(v);
+  _guardarVehiculosCj(clave, arr, function(){ toast('🚗 Vehículo agregado'); renderPatrullasCj(); });
+}
+function editarVehiculoCj(i,j){
+  if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!p)return;
+  var clave=sanitizarClaveCj(p.nombre); var arr=((_vehiculosCj&&_vehiculosCj[clave])||[]).slice(); if(arr[j]===undefined)return;
+  var v=prompt('Editar vehículo:', arr[j]); if(v===null)return; v=v.trim(); if(!v)return;
+  arr[j]=v; _guardarVehiculosCj(clave, arr, function(){ toast('🚗 Vehículo actualizado'); renderPatrullasCj(); });
+}
+function quitarVehiculoCj(i,j){
+  if(!isAdmin())return; dataCj=loadCj(); var p=dataCj.patrullas[i]; if(!p)return;
+  var clave=sanitizarClaveCj(p.nombre); var arr=((_vehiculosCj&&_vehiculosCj[clave])||[]).slice(); if(arr[j]===undefined)return;
+  if(!confirm('¿Quitar este vehículo?\n'+arr[j]))return;
+  arr.splice(j,1); _guardarVehiculosCj(clave, arr, function(){ toast('Vehículo quitado'); renderPatrullasCj(); });
 }
 function setColorPatrullaCj(i, campo, valor){
   if(!isAdmin())return;
