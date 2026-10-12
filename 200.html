@@ -747,6 +747,13 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         • Participá de la misa y de todas las actividades y juegos<br>
         • No sacar la Eucaristía de la capilla, ni comulgar sin confesarse estando en pecado grave
       </div>
+      <div style="font-size:12.5px;color:var(--gold);font-weight:800;margin-top:12px;">🧹 Aseo y limpieza</div>
+      <div style="font-size:13px;line-height:1.8;color:var(--w80);margin-top:4px;">
+        • Cada patrulla mantiene limpio su sector y los espacios comunes<br>
+        • Llevá bolsas de residuos y juntá tu basura: nos llevamos TODO al salir<br>
+        • Cuidá los baños y las zonas de cocina, dejalos como te gustaría encontrarlos<br>
+        • Tati Yupi es casa prestada: la dejamos mejor de como la encontramos 🌿
+      </div>
     </div>
   </div>
 </div>
@@ -4466,16 +4473,21 @@ function renderMiPatrullaCj(){
   var fotosHtml = '';
   if(pyp && pyp.oficial){
     var ofInteg = pyp.oficial.integrantes||[], fotos = pyp.oficial.fotosFamiliares||[];
+    var ffLinks = (currentUser.patrulla.fotosFamiliaresLinks)||[];
     if(ofInteg.length){
       fotosHtml = '<div class="card" style="margin-top:10px;"><div style="font-size:12px;color:var(--teal);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">📸 Fotos familiares</div>'
-        + '<p style="font-size:11.5px;color:var(--w50);margin-bottom:6px;">El staff marca acá quién ya entregó la suya.</p>'
-        + ofInteg.map(function(m,i){ return '<div style="display:flex;align-items:center;gap:8px;padding:2px 0;font-size:13px;">'+(fotos[i]?'✅':'⬜')+' <span style="flex:1;">'+esc(m)+'</span></div>'; }).join('')
+        + '<p style="font-size:11.5px;color:var(--w50);margin-bottom:6px;">Solo tu patrulla ve esto. ✅ = foto entregada · tocá "Ver foto" para abrirla.</p>'
+        + ofInteg.map(function(m,i){
+            var la=ffLinks[i]; var arr=Array.isArray(la)?la.filter(Boolean):(la?[la]:[]);
+            var lh=arr.map(function(l,li){ return '<a href="'+esc(l)+'" target="_blank" rel="noopener" style="color:var(--gold);">Ver foto'+(arr.length>1?' '+(li+1):'')+'</a>'; }).join(' · ');
+            return '<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:13px;">'+(fotos[i]?'✅':'⬜')+' <span style="flex:1;">'+esc(m)+'</span>'+(lh?'<span style="font-size:12px;">'+lh+'</span>':'')+'</div>';
+          }).join('')
         + '</div>';
     }
   }
   c.innerHTML='<div class="card" style="border:1px solid var(--neon-dim);">'
     +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><div style="font-weight:800;font-size:15px;flex:1;">🚩 Mi patrulla</div>'+estado+'</div>'
-    +'<p style="font-size:12px;color:var(--w50);margin-top:6px;">Acá podés cargar el grito de guerra de tu patrulla y revisar tu puntaje. También podés ver a las demás patrullas en la pestaña Patrullas y toda la esencia del Tesoro en Inicio.</p>'
+    +'<p style="font-size:12px;color:var(--w50);margin-top:6px;">Acá cargás el grito de guerra y el sketch de tu patrulla, revisás tu puntaje y ves las fotos familiares de tus integrantes (solo las ve tu patrulla). También podés mirar las demás patrullas en la pestaña Patrullas, qué llevar y preparar, el reglamento y toda la esencia del Tesoro en Inicio.</p>'
     +'<div class="form-group" style="margin-top:10px;"><label>Nombre</label><input type="text" id="cj-mi-nombre"></div>'
     +'<div class="form-group"><label>Jefe / responsable</label><input type="text" id="cj-mi-jefe"></div>'
     +'<div class="form-group"><label>Celular</label><input type="tel" id="cj-mi-celular"></div>'
@@ -4484,6 +4496,7 @@ function renderMiPatrullaCj(){
     +'<div>'+(integ||'<span style="color:var(--w50);font-size:12px;">Sin integrantes aún</span>')+'</div>'
     +'<div style="display:flex;gap:6px;margin-top:8px;"><input id="cj-mi-nuevo-integ" placeholder="Nombre del integrante" onkeydown="if(event.key===\'Enter\')agregarIntegranteMiPatrulla()" style="flex:1;padding:7px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;"><button class="btn btn-secondary btn-sm" onclick="agregarIntegranteMiPatrulla()">+ Integrante</button></div>'
     +'<div class="form-group" style="margin-top:10px;"><label>📣 Grito de guerra</label><textarea id="cj-mi-grito" rows="4" placeholder="Escribí acá el grito de guerra de tu patrulla..." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea></div>'
+    +'<div class="form-group"><label>🎭 Sketch / número artístico</label><textarea id="cj-mi-sketch" rows="3" placeholder="Contanos qué van a presentar (mini teatro, sketch, coreo, canto, baile...), el mensaje o virtud que trabajan, y si usan música de fondo (pásenla con anticipación)." style="width:100%;padding:8px 10px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;"></textarea></div>'
     +'<button class="btn btn-primary btn-block" onclick="guardarMiPatrulla()" style="margin-top:6px;">💾 Guardar cambios</button>'
     +'</div>'
     +puntajeHtml+fotosHtml;
@@ -4492,6 +4505,7 @@ function renderMiPatrullaCj(){
   document.getElementById('cj-mi-celular').value=p.celular||'';
   document.getElementById('cj-mi-correo').value=p.correo||'';
   document.getElementById('cj-mi-grito').value=p.grito||'';
+  document.getElementById('cj-mi-sketch').value=p.sketch||'';
 }
 function _persistirMiPatrulla(msgOk){
   if(!currentUser||currentUser.type!=='patrulla'||!fbReady||!inscCjRef) return;
@@ -4518,6 +4532,7 @@ function guardarMiPatrulla(){
   p.nombre=nombre; p.jefe=jefe; p.celular=celular;
   p.correo=document.getElementById('cj-mi-correo').value.trim();
   p.grito=document.getElementById('cj-mi-grito').value.trim();
+  p.sketch=document.getElementById('cj-mi-sketch').value.trim();
   _persistirMiPatrulla('Cambios guardados ✅');
   updateUserBadge();
 }
@@ -4590,27 +4605,37 @@ function accesoPatrullaCj(i){
   if(!isAdmin() || !fbReady || !inscCjRef) return;
   dataCj=loadCj();
   var p=dataCj.patrullas[i]; if(!p) return;
-  var pr = inscCjRef.once('value', function(snap){
-    var v=snap.val()||{};
-    var pinExistente=null;
-    Object.keys(v).forEach(function(k){ if(v[k] && v[k].esOficial && v[k].nombre===p.nombre) pinExistente=k; });
-    if(pinExistente){
-      prompt('Clave de acceso de "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pinExistente);
-      return;
-    }
-    (function intentar(n){
-      if(n>=8){ toast('No se pudo generar la clave, probá de nuevo'); return; }
-      var pin=String(Math.floor(100000+Math.random()*900000));
-      inscCjRef.child(pin).once('value', function(s2){
-        if(s2.exists()) return intentar(n+1);
-        var reg={ pin:pin, nombre:p.nombre, jefe:p.jefe||'', celular:'', correo:'', integrantes:(p.integrantes||[]).slice(), estado:'aprobada', esOficial:true, fecha:new Date().toISOString() };
-        inscCjRef.child(pin).set(reg).then(function(){
-          prompt('Clave generada para "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pin);
-        }).catch(function(){ toast('Error al generar la clave'); });
-      }, function(){ toast('Error de conexión'); });
-    })(0);
-  });
-  if(pr && pr.catch) pr.catch(function(){});
+  var clave=sanitizarClaveCj(p.nombre);
+  var _done=false;
+  function conLinks(links){
+    if(_done) return; _done=true;
+    var pr = inscCjRef.once('value', function(snap){
+      var v=snap.val()||{};
+      var pinExistente=null;
+      Object.keys(v).forEach(function(k){ if(v[k] && v[k].esOficial && v[k].nombre===p.nombre) pinExistente=k; });
+      if(pinExistente){
+        inscCjRef.child(pinExistente).child('fotosFamiliaresLinks').set(links);
+        prompt('Clave de acceso de "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pinExistente);
+        return;
+      }
+      (function intentar(n){
+        if(n>=8){ toast('No se pudo generar la clave, probá de nuevo'); return; }
+        var pin=String(Math.floor(100000+Math.random()*900000));
+        inscCjRef.child(pin).once('value', function(s2){
+          if(s2.exists()) return intentar(n+1);
+          var reg={ pin:pin, nombre:p.nombre, jefe:p.jefe||'', celular:'', correo:'', integrantes:(p.integrantes||[]).slice(), fotosFamiliaresLinks:links, estado:'aprobada', esOficial:true, fecha:new Date().toISOString() };
+          inscCjRef.child(pin).set(reg).then(function(){
+            prompt('Clave generada para "'+p.nombre+'" (compartila con la patrulla para que entre a "Mi patrulla"):', pin);
+          }).catch(function(){ toast('Error al generar la clave'); });
+        }, function(){ toast('Error de conexión'); });
+      })(0);
+    });
+    if(pr && pr.catch) pr.catch(function(){});
+  }
+  if(privadoCjRef){
+    var prL = privadoCjRef.child(clave).child('fotosLink').once('value', function(s){ conLinks(s.val()||[]); }, function(){ conLinks([]); });
+    if(prL && prL.catch) prL.catch(function(){ conLinks([]); });
+  } else { conLinks([]); }
 }
 function rechazarInscripcionCj(pin){
   if(!isAdmin())return;
