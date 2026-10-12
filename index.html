@@ -360,7 +360,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <div style="font-size:12.5px;color:var(--neon);font-weight:700;text-transform:uppercase;letter-spacing:1px;">🚩 Patrullas Inscriptas (<span id="cj-inscriptas-total">0</span>)</div>
       <div id="cj-inscriptas-empty" style="display:none;color:var(--w50);font-size:13px;margin-top:10px;">Todavía no hay patrullas inscriptas. ¡Sé la primera! 🚩</div>
       <div id="cj-inscriptas-carousel" style="margin-top:12px;">
-        <img id="cj-inscriptas-escudo" style="display:none;width:110px;height:110px;border-radius:16px;object-fit:cover;border:1px solid var(--w30);margin-bottom:10px;">
+        <img id="cj-inscriptas-escudo" style="display:none;width:110px;height:110px;border-radius:16px;object-fit:contain;background:var(--navy3,#121a42);border:1px solid var(--w30);margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
           <button onclick="navInscriptosCj(-1)" class="btn btn-secondary btn-sm" style="padding:6px 14px;font-size:16px;">‹</button>
           <div style="min-width:220px;">
@@ -2975,7 +2975,7 @@ var PALETA_COLORES_CJ = [
   {l:'Rojo', h:'#ff5a5a'}, {l:'Bordó', h:'#8b2e3f'}, {l:'Celeste', h:'#7ab8ff'}, {l:'Azul', h:'#4da6ff'}, {l:'Azul marino', h:'#1e3a6e'},
   {l:'Amarillo', h:'#ffc828'}, {l:'Dorado', h:'#ffd700'}, {l:'Rosa/Fucsia', h:'#ff2ea6'},
   {l:'Negro', h:'#3a3a3a'}, {l:'Blanco', h:'#ffffff'}, {l:'Gris', h:'#9aa0a6'}, {l:'Plateado', h:'#c0c0c0'},
-  {l:'Marrón', h:'#8b5a2b'}, {l:'Turquesa', h:'#1abc9c'}, {l:'Cian', h:'#22d3ee'}
+  {l:'Marrón', h:'#8b5a2b'}, {l:'Beige', h:'#d9c9a3'}, {l:'Turquesa', h:'#1abc9c'}, {l:'Cian', h:'#22d3ee'}
 ];
 function selectColorCj(id, valorActual, onchangeFn){
   return '<select id="'+id+'" onchange="'+onchangeFn+'" style="padding:5px 8px;background:var(--navy);border:1px solid var(--w30);border-radius:8px;color:var(--white);font-size:12.5px;">'
@@ -3260,7 +3260,7 @@ function renderFogonCj(){
     html+=nums.map(function(x){
       var p=_patrullaPorNombreCj(x.patrulla);
       var escudo = (p&&p.escudo)
-        ? '<img src="'+p.escudo+'" style="width:64px;height:64px;border-radius:12px;object-fit:cover;border:1px solid var(--w30);flex-shrink:0;">'
+        ? '<img src="'+p.escudo+'" style="width:64px;height:64px;border-radius:12px;object-fit:contain;background:var(--navy3,#121a42);border:1px solid var(--w30);flex-shrink:0;">'
         : '<div style="width:64px;height:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+(p?iconoRemeraCj(p):'<span style="font-size:26px;">🔥</span>')+'</div>';
       var ganador = (Number(x.puntos)||0)>0 && (Number(x.puntos)||0)===maxPuntos;
       return '<div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--w20,rgba(255,255,255,.1));'+(ganador?'background:rgba(255,200,40,.06);border-radius:10px;':'')+'">'
@@ -3864,7 +3864,7 @@ function renderPatrullasCj(){
     }
     var escudoBox;
     if(p.escudo){
-      escudoBox = '<img src="'+p.escudo+'" style="width:44px;height:44px;border-radius:10px;object-fit:cover;border:1px solid var(--w30);'+(isAdmin()?'cursor:pointer;':'')+'"'+(isAdmin()?' title="Click para cambiar el escudo" onclick="document.getElementById(\'cj-escudo-'+i+'\').click()"':'')+'>'
+      escudoBox = '<img src="'+p.escudo+'" style="width:54px;height:54px;border-radius:10px;object-fit:contain;background:var(--navy3,#121a42);border:1px solid var(--w30);'+(isAdmin()?'cursor:pointer;':'')+'"'+(isAdmin()?' title="Click para cambiar el escudo" onclick="document.getElementById(\'cj-escudo-'+i+'\').click()"':'')+'>'
         + (isAdmin()?'<span onclick="quitarEscudoCj('+i+')" title="Quitar escudo" style="cursor:pointer;color:var(--danger,#ff5a5a);font-size:11px;display:block;text-align:center;">quitar</span>':'');
     } else if(isAdmin()){
       escudoBox = '<div onclick="document.getElementById(\'cj-escudo-'+i+'\').click()" title="Subir escudo" style="width:44px;height:44px;border-radius:10px;border:1px dashed var(--w30);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;color:var(--w50);">🛡️</div>';
