@@ -215,10 +215,10 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     <button onclick="volverAJornadas()" style="opacity:.85;">← Eventos</button>
     <button data-cj="inicio" class="active" onclick="showCj('inicio')">Inicio</button>
     <button data-cj="inscripcion" onclick="showCj('inscripcion')">Inscripción</button>
-    <button data-cj="cronograma" onclick="showCj('cronograma')">Cronograma</button>
+    <button data-cj="cronograma" id="navCjCronograma" onclick="showCj('cronograma')" style="display:none;">Cronograma</button>
     <button data-cj="quellevar" onclick="showCj('quellevar')">🎒 Qué llevar</button>
-    <button data-cj="postas" onclick="showCj('postas')">Postas</button>
-    <button data-cj="yincanas" onclick="showCj('yincanas')">Juegos</button>
+    <button data-cj="postas" id="navCjPostas" onclick="showCj('postas')" style="display:none;">Postas</button>
+    <button data-cj="yincanas" id="navCjYincanas" onclick="showCj('yincanas')" style="display:none;">Juegos</button>
     <button data-cj="patrullas" onclick="showCj('patrullas')">Patrullas</button>
     <button data-cj="ranking" onclick="showCj('ranking')">🏆 Ranking</button>
     <button data-cj="reglamento" onclick="showCj('reglamento')">📜 Reglamento</button>
@@ -351,8 +351,8 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
       <p style="color:var(--w50);font-size:14px;margin-top:4px;">Campamento de integración · M.J.J.S.XX.</p>
       <div style="margin-top:12px;">
         <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">📅 Sáb 17 y Dom 18/10</span>
-        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🎯 24 Juegos</span>
-        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔥 Fogón</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🏕️ Aventura y fe</span>
+        <span style="display:inline-block;background:var(--navy3,#121a42);border:1px solid var(--w30);border-radius:20px;padding:6px 14px;margin:4px;font-size:13px;font-weight:700;">🔎 En busca del Tesoro</span>
       </div>
       <div id="fraseCampajor" style="min-height:44px;display:flex;align-items:center;justify-content:center;margin-top:10px;padding:0 10px;font-size:15px;font-weight:800;color:var(--gold);transition:opacity .6s;opacity:1;"></div>
     </div>
@@ -383,11 +383,11 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     <div class="card">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Qué incluye</div>
-      <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de competencia entre patrullas: <b>5 postas</b> de recepción, <b>24 juegos</b> con puntaje, gritos de subcampo, apertura oficial, fogón con números artísticos, misa, competencia de obstáculos y clausura con premiaciones.</p>
+      <p style="margin-top:8px;font-size:14px;line-height:1.6;">Dos días de convivencia entre patrullas: aventura, oración, mucha hermandad y sorpresas. Apertura, gritos de subcampo, Santa Misa y clausura con premiaciones. <span style="color:var(--gold);">Lo demás… se vive en el momento.</span></p>
     </div>
     <div class="card" style="border-left:3px solid var(--gold);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">🙏 La oración: el oxígeno del alma</div>
-      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">"Es el alma que respira la presencia de Dios." Los <b>5 tipos de oración</b> guían nuestras <b>5 postas</b> de recepción:</p>
+      <p style="margin-top:8px;font-size:13.5px;line-height:1.55;color:var(--w80);">"Es el alma que respira la presencia de Dios." Vamos a vivir los <b>5 tipos de oración</b>:</p>
       <div style="margin-top:8px;">
         <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">1️⃣ Adoración</span>
         <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">2️⃣ Confesión</span>
@@ -395,7 +395,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">4️⃣ Intercesión</span>
         <span style="display:inline-block;background:rgba(255,200,40,.1);border:1px solid var(--gold-dim);border-radius:16px;padding:5px 12px;margin:3px 4px 3px 0;font-size:12.5px;font-weight:700;">5️⃣ Petición</span>
       </div>
-      <p style="margin-top:10px;font-size:13px;color:var(--w80);">Frutos de la oración: <b>👂 Escucha</b> · <b>🤫 Silencio</b> · <b>💬 Diálogo</b> — los tres momentos de nuestro fogón.</p>
+      <p style="margin-top:10px;font-size:13px;color:var(--w80);">Frutos de la oración: <b>👂 Escucha</b> · <b>🤫 Silencio</b> · <b>💬 Diálogo</b>.</p>
     </div>
     <div class="card" style="border-left:3px solid var(--gold);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;">✝️ Nuestra esencia · Virtudes del Jornadista</div>
@@ -440,7 +440,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
         <div style="background:var(--navy3,#121a42);border:1px solid rgba(255,90,90,.5);border-radius:12px;padding:10px 12px;margin-bottom:8px;">
           <div style="font-weight:900;font-size:15px;color:#ff6b6b;">🔥 SAN JUAN · La Antorcha <span style="font-size:10.5px;font-weight:800;border:1px solid rgba(255,90,90,.6);border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:middle;">ROJO</span> <span style="font-size:10.5px;font-weight:800;border:1px solid rgba(255,90,90,.6);border-radius:10px;padding:1px 8px;margin-left:4px;vertical-align:middle;">🔥 FUEGO</span></div>
           <div style="font-size:12.5px;color:var(--w80);margin-top:2px;">El discípulo amado corrió al sepulcro: <i>"vio y creyó"</i> <span style="color:var(--w50);font-size:11.5px;">(Jn 20,8)</span> — enciende la <b>CARIDAD</b>, el amor que ilumina.</div>
-          <div style="font-size:12px;color:var(--w50);margin-top:3px;">🔥 Fuego: <i>"¿No ardía nuestro corazón cuando nos hablaba en el camino?"</i> (Lc 24,32) — el fuego del amor… y del fogón.</div>
+          <div style="font-size:12px;color:var(--w50);margin-top:3px;">🔥 Fuego: <i>"¿No ardía nuestro corazón cuando nos hablaba en el camino?"</i> (Lc 24,32) — el fuego del amor.</div>
         </div>
         <div style="background:var(--navy3,#121a42);border:1px solid rgba(77,166,255,.5);border-radius:12px;padding:10px 12px;">
           <div style="font-weight:900;font-size:15px;color:#4da6ff;">🎣 SAN PEDRO · La Red <span style="font-size:10.5px;font-weight:800;border:1px solid rgba(77,166,255,.6);border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:middle;">AZUL</span> <span style="font-size:10.5px;font-weight:800;border:1px solid rgba(77,166,255,.6);border-radius:10px;padding:1px 8px;margin-left:4px;vertical-align:middle;">💧 AGUA</span></div>
@@ -456,7 +456,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     <div class="card" style="text-align:center;background:linear-gradient(135deg, rgba(0,230,118,0.10) 0%, var(--navy2) 60%);border:1px solid var(--neon-dim);">
       <div style="font-size:20px;font-weight:900;color:var(--white);">¿Listos para la aventura?</div>
-      <div style="font-size:13px;color:var(--w50);margin-top:4px;">Fe, barro, fogón y amistad: sumate con tu patrulla.</div>
+      <div style="font-size:13px;color:var(--w50);margin-top:4px;">Fe, barro, aventura y amistad: sumate con tu patrulla.</div>
       <button class="cta-inscripcion" style="margin-top:14px;font-size:16px;padding:12px 32px;" onclick="showCj('inscripcion')">🚩 ¡INSCRIBÍ TU PATRULLA!</button>
     </div>
   </div>
@@ -573,7 +573,7 @@ body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background
     </div>
     <div class="card" style="border:1px dashed var(--gold-dim);">
       <div style="font-size:12px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">🔍 ¿Qué te vas a encontrar?</div>
-      <p style="font-size:13.5px;color:var(--w80);line-height:1.7;">Hay un Tesoro escondido, y no es solo una forma de decir. Vas a caminar una senda, vas a cruzarte con postas que no son lo que parecen, y al final del camino hay algo que solo se entiende viviéndolo. Cuatro subcampos, un montón de juegos, un fogón, una misa que se va a sentir distinta... y una pregunta que te va a perseguir todo el fin de semana: <strong style="color:var(--gold);">¿qué estás buscando vos?</strong></p>
+      <p style="font-size:13.5px;color:var(--w80);line-height:1.7;">Hay un Tesoro escondido, y no es solo una forma de decir. Vas a caminar una senda y, al final del camino, hay algo que solo se entiende viviéndolo. Cuatro subcampos, momentos de aventura y de oración, una misa que se va a sentir distinta... y una pregunta que te va a perseguir todo el fin de semana: <strong style="color:var(--gold);">¿qué estás buscando vos?</strong></p>
       <p style="font-size:12px;color:var(--w50);margin-top:8px;font-style:italic;">Si alguien te cuenta de más antes de tiempo... ¡Viví tu momento! 😉</p>
     </div>
   </div>
@@ -1480,7 +1480,7 @@ function unlockFunciones(){
 // Para sumar un evento nuevo: agregá un objeto aquí. tipo define qué secciones muestra.
 var EVENTOS = [
   { id:'torneo',   nombre:'Torneo de Integración', anio:'2026', tipo:'deportivo',  emoji:'🏆', desc:'Fútbol masculino/femenino, vóley y pádel', activo:true },
-  { id:'campajor', nombre:'CAMPAJOR',              anio:'2026', tipo:'campamento', emoji:'🏕️', desc:'Campamento: postas, juegos, fogón y ranking de patrullas', activo:true }
+  { id:'campajor', nombre:'CAMPAJOR',              anio:'2026', tipo:'campamento', emoji:'🏕️', desc:'Campamento de integración: patrullas, espíritu y aventura', activo:true }
 ];
 var currentEvento = null; // null = estás en la portada del movimiento (JORNADAS)
 function getEvento(id){ for(var i=0;i<EVENTOS.length;i++){ if(EVENTOS[i].id===id) return EVENTOS[i]; } return null; }
@@ -1926,6 +1926,11 @@ function updateUserBadge() {
     oBtn.style.display = puedeVerFunciones ? '' : 'none';
     if (!puedeVerFunciones && oBtn.classList.contains('active')) showCj('reglamento');
   }
+  // Cronograma, Postas y Juegos son SIGILO (sorpresa del evento): solo Staff/codigo los ve.
+  ['navCjCronograma','navCjPostas','navCjYincanas'].forEach(function(id){
+    var btn=document.getElementById(id);
+    if(btn){ btn.style.display = puedeVerFunciones ? '' : 'none'; if(!puedeVerFunciones && btn.classList.contains('active')) showCj('reglamento'); }
+  });
   // Finanzas: SOLO admin (a diferencia de Staff/Organizacion, ni siquiera el codigo TESORO26
   // la ve - son montos de plata, no contenido espiritual/organizativo).
   var finBtn = document.getElementById('navCjFinanzas');
@@ -3614,6 +3619,9 @@ function setupCampajorSync(){
 }
 
 function showCj(name){
+  var _staff = isAdmin() || isViewerUnlocked();
+  if(!_staff && (name==='funciones'||name==='organizacion'||name==='cronograma'||name==='postas'||name==='yincanas')) name='reglamento';
+  if(!isAdmin() && name==='finanzas') name='reglamento';
   var pages=document.querySelectorAll('.page');
   for(var i=0;i<pages.length;i++) pages[i].classList.remove('active');
   document.getElementById('page-cj-'+name).classList.add('active');
